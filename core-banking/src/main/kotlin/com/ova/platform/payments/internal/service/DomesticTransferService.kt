@@ -1,5 +1,6 @@
 package com.ova.platform.payments.internal.service
 
+import com.ova.platform.compliance.internal.service.ComplianceService
 import com.ova.platform.ledger.internal.model.AccountStatus
 import com.ova.platform.ledger.internal.model.EntryDirection
 import com.ova.platform.ledger.internal.model.PostingInstruction
@@ -30,6 +31,7 @@ class DomesticTransferService(
     private val statusHistoryRepository: PaymentStatusHistoryRepository,
     private val ledgerService: LedgerService,
     private val accountService: AccountService,
+    private val complianceService: ComplianceService,
     private val outboxPublisher: OutboxPublisher,
     private val auditService: AuditService
 ) {
@@ -41,8 +43,8 @@ class DomesticTransferService(
      * Steps:
      * 1. Idempotency check
      * 2. Validate sender and receiver accounts
-     * 3. Compliance check (stub)
-     * 4. Create payment order
+     * 3. Create payment order
+     * 4. Compliance check via ComplianceService (sanctions screening + transaction monitoring)
      * 5. Post double-entry via LedgerService (debit sender, credit receiver)
      * 6. Update status to completed
      */
@@ -113,9 +115,20 @@ class DomesticTransferService(
             )
         )
 
-        // Step 4: Compliance check (stub - always passes for domestic)
+        // Step 4: Compliance check via real ComplianceService
         transitionStatus(paymentOrder.id, PaymentStatus.INITIATED, PaymentStatus.COMPLIANCE_CHECK, null)
-        performComplianceCheck(paymentOrder)
+        try {
+            complianceService.checkPayment(
+                senderId = senderAccount.userId,
+                receiverId = receiverAccount.userId,
+                amount = amount,
+                currency = currency,
+                transactionType = PaymentType.DOMESTIC_P2P.value
+            )
+        } catch (e: ComplianceRejectedException) {
+            transitionStatus(paymentOrder.id, PaymentStatus.COMPLIANCE_CHECK, PaymentStatus.FAILED, e.message)
+            throw e
+        }
         transitionStatus(paymentOrder.id, PaymentStatus.COMPLIANCE_CHECK, PaymentStatus.PROCESSING, "Compliance check passed")
 
         // Step 5: Post double-entry via LedgerService
@@ -185,20 +198,6 @@ class DomesticTransferService(
         )
 
         return paymentOrderRepository.findById(paymentOrder.id) ?: paymentOrder
-    }
-
-    /**
-     * Stub compliance check for domestic transfers.
-     * In production, this would call an external compliance/AML service.
-     */
-    private fun performComplianceCheck(order: PaymentOrder) {
-        // Stub: reject transfers over a very high threshold for demo purposes
-        val domesticLimit = BigDecimal("1000000.00")
-        if (order.amount > domesticLimit) {
-            transitionStatus(order.id, PaymentStatus.COMPLIANCE_CHECK, PaymentStatus.FAILED, "Amount exceeds domestic transfer limit")
-            throw ComplianceRejectedException("Amount exceeds domestic transfer limit of $domesticLimit ${order.currency}")
-        }
-        log.debug("Compliance check passed for orderId={}", order.id)
     }
 
     private fun transitionStatus(orderId: UUID, from: PaymentStatus, to: PaymentStatus, reason: String?) {

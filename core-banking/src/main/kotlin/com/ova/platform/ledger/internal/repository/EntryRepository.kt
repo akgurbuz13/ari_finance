@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Repository
 import java.math.BigDecimal
 import java.sql.ResultSet
+import java.time.Instant
 import java.util.UUID
 
 @Repository
@@ -62,6 +63,23 @@ class EntryRepository(private val jdbcTemplate: JdbcTemplate) {
             )
             """,
             BigDecimal::class.java, accountId
+        ) ?: BigDecimal.ZERO
+    }
+
+    fun getBalanceAt(accountId: UUID, at: Instant): BigDecimal {
+        return jdbcTemplate.queryForObject(
+            """
+            SELECT COALESCE(
+                (SELECT balance_after FROM ledger.entries
+                 WHERE account_id = ? AND created_at <= ?
+                 ORDER BY created_at DESC, id DESC
+                 LIMIT 1),
+                0
+            )
+            """,
+            BigDecimal::class.java,
+            accountId,
+            java.sql.Timestamp.from(at)
         ) ?: BigDecimal.ZERO
     }
 }

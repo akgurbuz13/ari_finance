@@ -8,6 +8,8 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Repository
 import java.sql.ResultSet
+import java.sql.Timestamp
+import java.time.Instant
 import java.util.UUID
 
 @Repository
@@ -77,5 +79,88 @@ class TransactionRepository(
             """,
             rowMapper, accountId, limit, offset
         )
+    }
+
+    fun findByAccountIdAndFilters(
+        accountId: UUID,
+        type: String?,
+        from: Instant?,
+        to: Instant?,
+        limit: Int,
+        offset: Int
+    ): List<Transaction> {
+        val conditions = mutableListOf<String>()
+        val params = mutableListOf<Any>()
+
+        conditions.add("e.account_id = ?")
+        params.add(accountId)
+
+        if (type != null) {
+            conditions.add("t.type = ?")
+            params.add(type)
+        }
+        if (from != null) {
+            conditions.add("t.created_at >= ?")
+            params.add(Timestamp.from(from))
+        }
+        if (to != null) {
+            conditions.add("t.created_at <= ?")
+            params.add(Timestamp.from(to))
+        }
+
+        val whereClause = conditions.joinToString(" AND ")
+
+        params.add(limit)
+        params.add(offset)
+
+        return jdbcTemplate.query(
+            """
+            SELECT DISTINCT t.* FROM ledger.transactions t
+            JOIN ledger.entries e ON e.transaction_id = t.id
+            WHERE $whereClause
+            ORDER BY t.created_at DESC
+            LIMIT ? OFFSET ?
+            """,
+            rowMapper,
+            *params.toTypedArray()
+        )
+    }
+
+    fun countByAccountIdAndFilters(
+        accountId: UUID,
+        type: String?,
+        from: Instant?,
+        to: Instant?
+    ): Long {
+        val conditions = mutableListOf<String>()
+        val params = mutableListOf<Any>()
+
+        conditions.add("e.account_id = ?")
+        params.add(accountId)
+
+        if (type != null) {
+            conditions.add("t.type = ?")
+            params.add(type)
+        }
+        if (from != null) {
+            conditions.add("t.created_at >= ?")
+            params.add(Timestamp.from(from))
+        }
+        if (to != null) {
+            conditions.add("t.created_at <= ?")
+            params.add(Timestamp.from(to))
+        }
+
+        val whereClause = conditions.joinToString(" AND ")
+
+        return jdbcTemplate.queryForObject(
+            """
+            SELECT COUNT(DISTINCT t.id) FROM ledger.transactions t
+            JOIN ledger.entries e ON e.transaction_id = t.id
+            WHERE $whereClause
+            """,
+            Long::class.java,
+            *params.toTypedArray()
+        ) ?: 0L
     }
 }

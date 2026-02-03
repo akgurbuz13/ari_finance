@@ -2,12 +2,14 @@ package com.ova.platform.compliance.internal.service
 
 import com.ova.platform.shared.security.AuditService
 import org.slf4j.LoggerFactory
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.util.UUID
 
 @Service
 class TransactionMonitoringService(
+    private val jdbcTemplate: JdbcTemplate,
     private val auditService: AuditService
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
@@ -41,20 +43,22 @@ class TransactionMonitoringService(
             requiresReview = true
         }
 
-        // Rule 2: Daily limit check
-        // TODO: Query actual daily total from ledger
+        // Rule 2: Daily limit check using actual daily total from ledger
         val dailyLimit = if (currency == "TRY") DAILY_LIMIT_TRY else DAILY_LIMIT_EUR
-        if (amount > dailyLimit) {
-            log.warn("User {} exceeded daily limit: {} {}", userId, amount, currency)
+        val existingDailyTotal = getDailyDebitTotal(userId, currency)
+        val projectedDailyTotal = existingDailyTotal + amount
+
+        if (projectedDailyTotal > dailyLimit) {
+            log.warn(
+                "User {} exceeded daily limit: existing={} + current={} = {} {} (limit={})",
+                userId, existingDailyTotal, amount, projectedDailyTotal, currency, dailyLimit
+            )
             return MonitoringResult(
                 allowed = false,
-                alerts = listOf("Daily limit exceeded"),
+                alerts = listOf("Daily limit exceeded: projected total $projectedDailyTotal $currency exceeds limit of $dailyLimit $currency"),
                 requiresReview = false
             )
         }
-
-        // Rule 3: Velocity check
-        // TODO: Check transaction frequency from Redis/DB
 
         if (alerts.isNotEmpty()) {
             auditService.log(
@@ -72,5 +76,25 @@ class TransactionMonitoringService(
             alerts = alerts,
             requiresReview = requiresReview
         )
+    }
+
+    /**
+     * Queries the sum of all debit entries from the user's accounts in the last 24 hours
+     * for the given currency. This joins ledger.entries with ledger.accounts to find
+     * all accounts belonging to the user, then sums debit amounts.
+     */
+    private fun getDailyDebitTotal(userId: UUID, currency: String): BigDecimal {
+        val sql = """
+            SELECT COALESCE(SUM(e.amount), 0)
+            FROM ledger.entries e
+            JOIN ledger.accounts a ON e.account_id = a.id
+            WHERE a.user_id = ?
+              AND e.currency = ?
+              AND e.direction = 'debit'
+              AND e.created_at >= now() - INTERVAL '24 hours'
+              AND a.account_type = 'user_wallet'
+        """
+        return jdbcTemplate.queryForObject(sql, BigDecimal::class.java, userId, currency)
+            ?: BigDecimal.ZERO
     }
 }
