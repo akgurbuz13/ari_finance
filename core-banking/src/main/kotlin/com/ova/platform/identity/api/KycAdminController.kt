@@ -1,6 +1,6 @@
-package com.ova.platform.compliance.api
+package com.ova.platform.identity.api
 
-import com.ova.platform.compliance.internal.service.CaseManagementService
+import com.ova.platform.identity.internal.service.KycService
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import org.springframework.http.ResponseEntity
@@ -11,28 +11,27 @@ import org.springframework.web.bind.annotation.*
 import java.util.UUID
 
 @RestController
-@RequestMapping("/api/v1/admin/compliance")
+@RequestMapping("/api/v1/admin/kyc")
 @PreAuthorize("hasRole('ADMIN')")
-class ComplianceAdminController(
-    private val caseManagementService: CaseManagementService,
+class KycAdminController(
+    private val kycService: KycService,
     private val jdbcTemplate: JdbcTemplate
 ) {
 
-    @GetMapping("/cases")
-    fun listCases(
+    @GetMapping("/verifications")
+    fun listVerifications(
         @RequestParam(defaultValue = "1") page: Int,
         @RequestParam(defaultValue = "10") pageSize: Int,
         @RequestParam(required = false) status: String?,
-        @RequestParam(required = false) type: String?,
         @RequestParam(required = false) search: String?,
         @RequestParam(defaultValue = "created_at") sortBy: String,
         @RequestParam(defaultValue = "desc") sortOrder: String
-    ): ResponseEntity<CaseListResponse> {
+    ): ResponseEntity<KycListResponse> {
         val clampedPage = page.coerceAtLeast(1)
         val clampedPageSize = pageSize.coerceIn(1, 100)
         val offset = (clampedPage - 1) * clampedPageSize
 
-        val allowedSortColumns = setOf("created_at", "updated_at", "status", "type")
+        val allowedSortColumns = setOf("created_at", "status", "provider", "level")
         val safeSortBy = if (sortBy in allowedSortColumns) sortBy else "created_at"
         val safeSortOrder = if (sortOrder.lowercase() == "asc") "ASC" else "DESC"
 
@@ -40,18 +39,14 @@ class ComplianceAdminController(
         val params = mutableListOf<Any>()
 
         if (!status.isNullOrBlank()) {
-            conditions.add("cc.status = ?")
+            conditions.add("k.status = ?")
             params.add(status)
         }
 
-        if (!type.isNullOrBlank()) {
-            conditions.add("cc.type = ?")
-            params.add(type)
-        }
-
         if (!search.isNullOrBlank()) {
-            conditions.add("(cc.description ILIKE ? OR u.email ILIKE ?)")
+            conditions.add("(u.email ILIKE ? OR u.first_name ILIKE ? OR u.last_name ILIKE ?)")
             val pattern = "%$search%"
+            params.add(pattern)
             params.add(pattern)
             params.add(pattern)
         }
@@ -60,20 +55,22 @@ class ComplianceAdminController(
 
         val countSql = """
             SELECT COUNT(*)
-            FROM shared.compliance_cases cc
-            JOIN identity.users u ON cc.user_id = u.id
+            FROM identity.kyc_verifications k
+            JOIN identity.users u ON k.user_id = u.id
             $whereClause
         """
         val total = jdbcTemplate.queryForObject(countSql, Long::class.java, *params.toTypedArray()) ?: 0L
 
         val querySql = """
-            SELECT cc.id, cc.type, cc.user_id, cc.status, cc.description,
-                   cc.assigned_to, cc.created_at, cc.updated_at, cc.resolved_at, cc.resolution,
-                   COALESCE(u.first_name || ' ' || u.last_name, u.email) as user_name
-            FROM shared.compliance_cases cc
-            JOIN identity.users u ON cc.user_id = u.id
+            SELECT k.id, k.user_id, k.provider, k.status, k.level, k.created_at,
+                   k.decision_at, k.decision_by, k.rejection_reason,
+                   u.email,
+                   COALESCE(u.first_name || ' ' || u.last_name, u.email) as user_name,
+                   u.region
+            FROM identity.kyc_verifications k
+            JOIN identity.users u ON k.user_id = u.id
             $whereClause
-            ORDER BY cc.$safeSortBy $safeSortOrder
+            ORDER BY k.$safeSortBy $safeSortOrder
             LIMIT ? OFFSET ?
         """
         val queryParams = params.toMutableList()
@@ -81,24 +78,23 @@ class ComplianceAdminController(
         queryParams.add(offset)
 
         val items = jdbcTemplate.query(querySql, { rs, _ ->
-            ComplianceCaseResponse(
+            KycVerificationResponse(
                 id = rs.getString("id"),
-                type = rs.getString("type"),
                 userId = rs.getString("user_id"),
                 userName = rs.getString("user_name") ?: "",
-                description = rs.getString("description"),
-                assignedTo = rs.getString("assigned_to") ?: "",
+                email = rs.getString("email"),
                 status = rs.getString("status"),
-                priority = derivePriority(rs.getString("type")),
-                createdAt = rs.getTimestamp("created_at").toInstant().toString(),
-                updatedAt = rs.getTimestamp("updated_at").toInstant().toString(),
-                resolvedAt = rs.getTimestamp("resolved_at")?.toInstant()?.toString(),
-                resolution = rs.getString("resolution")
+                provider = rs.getString("provider"),
+                region = rs.getString("region"),
+                submittedAt = rs.getTimestamp("created_at").toInstant().toString(),
+                reviewedAt = rs.getTimestamp("decision_at")?.toInstant()?.toString(),
+                reviewedBy = rs.getString("decision_by"),
+                rejectionReason = rs.getString("rejection_reason")
             )
         }, *queryParams.toTypedArray())
 
         return ResponseEntity.ok(
-            CaseListResponse(
+            KycListResponse(
                 items = items,
                 total = total,
                 page = clampedPage,
@@ -107,49 +103,44 @@ class ComplianceAdminController(
         )
     }
 
-    @PostMapping("/cases/{caseId}/resolve")
-    fun resolveCase(
-        @PathVariable caseId: UUID,
-        @Valid @RequestBody request: ResolveCaseRequest
-    ): ResponseEntity<Void> {
+    @PostMapping("/verifications/{verificationId}/approve")
+    fun approveKyc(@PathVariable verificationId: UUID): ResponseEntity<Void> {
         val adminId = UUID.fromString(SecurityContextHolder.getContext().authentication.principal as String)
-        caseManagementService.resolveCase(caseId, adminId, request.resolution)
+        kycService.approveKyc(verificationId, adminId)
         return ResponseEntity.ok().build()
     }
 
-    private fun derivePriority(type: String): String {
-        return when (type) {
-            "sanctions_hit" -> "critical"
-            "pep_match" -> "high"
-            "suspicious_activity" -> "high"
-            "velocity_breach" -> "medium"
-            "manual_review" -> "low"
-            else -> "medium"
-        }
+    @PostMapping("/verifications/{verificationId}/reject")
+    fun rejectKyc(
+        @PathVariable verificationId: UUID,
+        @Valid @RequestBody request: AdminRejectKycRequest
+    ): ResponseEntity<Void> {
+        val adminId = UUID.fromString(SecurityContextHolder.getContext().authentication.principal as String)
+        kycService.rejectKyc(verificationId, adminId, request.reason)
+        return ResponseEntity.ok().build()
     }
 }
 
-data class ResolveCaseRequest(
-    @field:NotBlank val resolution: String
+data class AdminRejectKycRequest(
+    @field:NotBlank val reason: String
 )
 
-data class ComplianceCaseResponse(
+data class KycVerificationResponse(
     val id: String,
-    val type: String,
     val userId: String,
     val userName: String,
-    val description: String,
-    val assignedTo: String,
+    val email: String,
     val status: String,
-    val priority: String,
-    val createdAt: String,
-    val updatedAt: String,
-    val resolvedAt: String?,
-    val resolution: String?
+    val provider: String,
+    val region: String,
+    val submittedAt: String,
+    val reviewedAt: String?,
+    val reviewedBy: String?,
+    val rejectionReason: String?
 )
 
-data class CaseListResponse(
-    val items: List<ComplianceCaseResponse>,
+data class KycListResponse(
+    val items: List<KycVerificationResponse>,
     val total: Long,
     val page: Int,
     val pageSize: Int
