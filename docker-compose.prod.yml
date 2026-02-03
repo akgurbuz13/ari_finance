@@ -1,0 +1,97 @@
+version: '3.9'
+
+# Production-like compose for local testing of containerized services.
+# NOT for actual production use — production runs on K8s.
+
+services:
+  core-banking:
+    build:
+      context: .
+      dockerfile: core-banking/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ova
+      SPRING_DATASOURCE_USERNAME: ova
+      SPRING_DATASOURCE_PASSWORD: ova_secret
+      SPRING_DATA_REDIS_HOST: redis
+      OVA_JWT_SECRET: dev-jwt-secret-change-in-production
+      OVA_REGION: TR
+      OVA_BLOCKCHAIN_SERVICE_URL: http://blockchain-service:8081
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  blockchain-service:
+    build:
+      context: .
+      dockerfile: blockchain-service/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ova
+      SPRING_DATASOURCE_USERNAME: ova
+      SPRING_DATASOURCE_PASSWORD: ova_secret
+      OVA_BLOCKCHAIN_CORE_BANKING_URL: http://core-banking:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build:
+      context: web
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080/api/v1
+
+  admin-console:
+    build:
+      context: admin-console
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080/api/v1
+
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ova
+      POSTGRES_USER: ova
+      POSTGRES_PASSWORD: ova_secret
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ova -d ova"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_prod_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_prod_data:
+  redis_prod_data:

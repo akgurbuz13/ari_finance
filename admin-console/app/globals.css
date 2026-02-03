@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-admin-bg text-admin-text font-sans;
+  }
+
+  * {
+    @apply border-admin-border;
+  }
+}
+
+@layer components {
+  .admin-btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg
+           transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .admin-btn-primary {
+    @apply admin-btn bg-admin-accent text-white hover:bg-admin-accent-hover
+           focus:ring-admin-accent;
+  }
+
+  .admin-btn-danger {
+    @apply admin-btn bg-admin-danger text-white hover:bg-admin-danger-hover
+           focus:ring-admin-danger;
+  }
+
+  .admin-btn-secondary {
+    @apply admin-btn bg-white text-admin-text border border-admin-border
+           hover:bg-gray-50 focus:ring-gray-300;
+  }
+
+  .admin-btn-ghost {
+    @apply admin-btn text-admin-text-secondary hover:bg-gray-100
+           focus:ring-gray-300;
+  }
+
+  .admin-btn-success {
+    @apply admin-btn bg-admin-success text-white hover:bg-emerald-700
+           focus:ring-admin-success;
+  }
+
+  .admin-btn-warning {
+    @apply admin-btn bg-admin-warning text-white hover:bg-amber-700
+           focus:ring-admin-warning;
+  }
+
+  .admin-input {
+    @apply w-full px-3 py-2 text-sm border border-admin-border rounded-lg
+           bg-white placeholder-admin-text-muted
+           focus:outline-none focus:ring-2 focus:ring-admin-accent focus:border-admin-accent
+           transition-colors duration-150;
+  }
+
+  .admin-select {
+    @apply admin-input appearance-none cursor-pointer
+           bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20fill%3D%22none%22%3E%3Cpath%20stroke%3D%22%236B7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')]
+           bg-[length:20px_20px] bg-[position:right_8px_center] bg-no-repeat pr-10;
+  }
+
+  .admin-card {
+    @apply bg-admin-surface rounded-xl border border-admin-border shadow-card;
+  }
+
+  .admin-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .admin-badge-success {
+    @apply admin-badge bg-admin-success-light text-admin-success;
+  }
+
+  .admin-badge-warning {
+    @apply admin-badge bg-admin-warning-light text-admin-warning;
+  }
+
+  .admin-badge-danger {
+    @apply admin-badge bg-admin-danger-light text-admin-danger;
+  }
+
+  .admin-badge-info {
+    @apply admin-badge bg-admin-accent-light text-admin-accent;
+  }
+
+  .admin-badge-neutral {
+    @apply admin-badge bg-gray-100 text-admin-text-secondary;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #D1D5DB transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #D1D5DB;
+    border-radius: 3px;
+  }
+}

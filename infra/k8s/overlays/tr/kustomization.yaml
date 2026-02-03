@@ -1,0 +1,35 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: ova
+
+resources:
+  - ../../base
+
+patchesStrategicMerge:
+  - config.yaml
+
+commonLabels:
+  ova.region: tr
+
+configMapGenerator:
+  - name: ova-config
+    literals:
+      - spring.profiles.active=tr
+      - ova.region=TR
+      - redis.host=ova-redis.redis.cache.windows.net
+      - api.url=https://api.ova.com.tr
+
+images:
+  - name: core-banking
+    newName: ovaacr.azurecr.io/ova/core-banking
+    newTag: latest
+  - name: blockchain-service
+    newName: ovaacr.azurecr.io/ova/blockchain-service
+    newTag: latest
+  - name: ova-web
+    newName: ovaacr.azurecr.io/ova/web
+    newTag: latest
+  - name: ova-admin-console
+    newName: ovaacr.azurecr.io/ova/admin-console
+    newTag: latest

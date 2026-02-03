@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: core-banking
+  namespace: ova
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+        - name: core-banking
+          resources:
+            requests:
+              cpu: "1"
+              memory: 1Gi
+            limits:
+              cpu: "4"
+              memory: 2Gi
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ova-ingress
+  namespace: ova
+spec:
+  tls:
+    - hosts:
+        - api.ova.com.tr
+        - app.ova.com.tr
+        - admin.ova.com.tr
+      secretName: ova-tr-tls
+  rules:
+    - host: api.ova.com.tr
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: core-banking
+                port:
+                  number: 8080
+    - host: app.ova.com.tr
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 3000
+    - host: admin.ova.com.tr
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: admin-console
+                port:
+                  number: 3001

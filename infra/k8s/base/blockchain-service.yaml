@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blockchain-service
+  namespace: ova
+  labels:
+    app: blockchain-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blockchain-service
+  template:
+    metadata:
+      labels:
+        app: blockchain-service
+    spec:
+      serviceAccountName: blockchain-service
+      containers:
+        - name: blockchain-service
+          image: blockchain-service:latest
+          ports:
+            - containerPort: 8081
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: ova-config
+                  key: spring.profiles.active
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ova-db-credentials
+                  key: url
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: ova-db-credentials
+                  key: username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ova-db-credentials
+                  key: password
+            - name: OVA_BLOCKCHAIN_TR_L1_RPC_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ova-blockchain-config
+                  key: tr-l1-rpc-url
+            - name: OVA_BLOCKCHAIN_EU_L1_RPC_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ova-blockchain-config
+                  key: eu-l1-rpc-url
+          resources:
+            requests:
+              cpu: 250m
+              memory: 384Mi
+            limits:
+              cpu: "1"
+              memory: 768Mi
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8081
+            initialDelaySeconds: 60
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blockchain-service
+  namespace: ova
+spec:
+  selector:
+    app: blockchain-service
+  ports:
+    - port: 8081
+      targetPort: 8081
+  type: ClusterIP
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: blockchain-service
+  namespace: ova

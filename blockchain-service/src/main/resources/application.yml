@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: ova-blockchain-service
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:ova}
+    username: ${DB_USER:ova}
+    password: ${DB_PASSWORD:ova_dev_password}
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+server:
+  port: ${SERVER_PORT:8081}
+
+ova:
+  region: ${OVA_REGION:TR}
+  core-banking:
+    url: ${CORE_BANKING_URL:http://localhost:8080}
+  blockchain:
+    tr-l1:
+      rpc-url: ${TR_L1_RPC_URL:http://localhost:9650/ext/bc/tr/rpc}
+      chain-id: ${TR_L1_CHAIN_ID:99999}
+      stablecoin-address: ${TR_STABLECOIN_ADDRESS:}
+    eu-l1:
+      rpc-url: ${EU_L1_RPC_URL:http://localhost:9651/ext/bc/eu/rpc}
+      chain-id: ${EU_L1_CHAIN_ID:99998}
+      stablecoin-address: ${EU_STABLECOIN_ADDRESS:}
+    bridge:
+      contract-address: ${BRIDGE_CONTRACT_ADDRESS:}
+    wallet:
+      master-key: ${WALLET_MASTER_KEY:dev-master-key-do-not-use-in-production}
+    relayer:
+      private-key: ${RELAYER_PRIVATE_KEY:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

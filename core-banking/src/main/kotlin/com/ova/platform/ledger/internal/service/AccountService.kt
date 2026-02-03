@@ -1,0 +1,88 @@
+package com.ova.platform.ledger.internal.service
+
+import com.ova.platform.ledger.internal.model.Account
+import com.ova.platform.ledger.internal.model.AccountStatus
+import com.ova.platform.ledger.internal.model.AccountType
+import com.ova.platform.ledger.internal.repository.AccountRepository
+import com.ova.platform.shared.exception.ConflictException
+import com.ova.platform.shared.exception.NotFoundException
+import com.ova.platform.shared.security.AuditService
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
+import java.util.UUID
+
+@Service
+class AccountService(
+    private val accountRepository: AccountRepository,
+    private val auditService: AuditService
+) {
+
+    @Transactional
+    fun createUserWallet(userId: UUID, currency: String): Account {
+        val existing = accountRepository.findByUserIdAndCurrency(userId, currency)
+        if (existing != null) {
+            throw ConflictException("Account already exists for currency $currency")
+        }
+
+        val account = accountRepository.save(
+            Account(
+                userId = userId,
+                currency = currency,
+                accountType = AccountType.USER_WALLET
+            )
+        )
+
+        auditService.log(userId, "user", "create_account", "account", account.id.toString(),
+            details = mapOf("currency" to currency))
+
+        return account
+    }
+
+    fun getUserAccounts(userId: UUID): List<AccountWithBalance> {
+        return accountRepository.findAllByUserId(userId).map { account ->
+            AccountWithBalance(
+                account = account,
+                balance = accountRepository.getBalance(account.id)
+            )
+        }
+    }
+
+    fun getAccountById(accountId: UUID): Account {
+        return accountRepository.findById(accountId)
+            ?: throw NotFoundException("Account", accountId.toString())
+    }
+
+    fun getBalance(accountId: UUID): BigDecimal {
+        return accountRepository.getBalance(accountId)
+    }
+
+    @Transactional
+    fun freezeAccount(accountId: UUID, adminId: UUID) {
+        accountRepository.updateStatus(accountId, AccountStatus.FROZEN)
+        auditService.log(adminId, "admin", "freeze_account", "account", accountId.toString())
+    }
+
+    @Transactional
+    fun unfreezeAccount(accountId: UUID, adminId: UUID) {
+        accountRepository.updateStatus(accountId, AccountStatus.ACTIVE)
+        auditService.log(adminId, "admin", "unfreeze_account", "account", accountId.toString())
+    }
+
+    fun getOrCreateSystemAccount(currency: String, accountType: AccountType): Account {
+        val systemUserId = UUID.fromString("00000000-0000-0000-0000-000000000000")
+        return accountRepository.findSystemAccount(currency, accountType)
+            ?: accountRepository.save(
+                Account(
+                    userId = systemUserId,
+                    currency = currency,
+                    accountType = accountType
+                )
+            )
+    }
+}
+
+data class AccountWithBalance(
+    val account: Account,
+    val balance: BigDecimal
+)
