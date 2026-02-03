@@ -75,4 +75,11 @@ class KycRepository(private val jdbcTemplate: JdbcTemplate) {
             rowMapper, id
         ).firstOrNull()
     }
+
+    fun findByProviderRef(providerRef: String): KycVerification? {
+        return jdbcTemplate.query(
+            "SELECT * FROM identity.kyc_verifications WHERE provider_ref = ? ORDER BY created_at DESC LIMIT 1",
+            rowMapper, providerRef
+        ).firstOrNull()
+    }
 }

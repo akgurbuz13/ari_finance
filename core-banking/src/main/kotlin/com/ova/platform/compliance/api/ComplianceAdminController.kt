@@ -117,6 +117,143 @@ class ComplianceAdminController(
         return ResponseEntity.ok().build()
     }
 
+    // --- Sanctions List Admin Endpoints ---
+
+    @GetMapping("/sanctions")
+    fun listSanctions(
+        @RequestParam(defaultValue = "1") page: Int,
+        @RequestParam(defaultValue = "20") pageSize: Int,
+        @RequestParam(required = false) search: String?,
+        @RequestParam(required = false) listType: String?,
+        @RequestParam(required = false) active: Boolean?
+    ): ResponseEntity<SanctionsListResponse> {
+        val clampedPage = page.coerceAtLeast(1)
+        val clampedPageSize = pageSize.coerceIn(1, 100)
+        val offset = (clampedPage - 1) * clampedPageSize
+
+        val conditions = mutableListOf<String>()
+        val params = mutableListOf<Any>()
+
+        if (!search.isNullOrBlank()) {
+            conditions.add("full_name ILIKE ?")
+            params.add("%$search%")
+        }
+
+        if (!listType.isNullOrBlank()) {
+            conditions.add("list_type = ?")
+            params.add(listType)
+        }
+
+        if (active != null) {
+            conditions.add("active = ?")
+            params.add(active)
+        }
+
+        val whereClause = if (conditions.isEmpty()) "" else "WHERE " + conditions.joinToString(" AND ")
+
+        val countSql = "SELECT COUNT(*) FROM shared.sanctions_list $whereClause"
+        val total = jdbcTemplate.queryForObject(countSql, Long::class.java, *params.toTypedArray()) ?: 0L
+
+        val querySql = """
+            SELECT id, full_name, list_type, source, country, aliases, active, added_at, updated_at
+            FROM shared.sanctions_list
+            $whereClause
+            ORDER BY added_at DESC
+            LIMIT ? OFFSET ?
+        """
+        val queryParams = params.toMutableList()
+        queryParams.add(clampedPageSize)
+        queryParams.add(offset)
+
+        val items = jdbcTemplate.query(querySql, { rs, _ ->
+            val aliasArray = rs.getArray("aliases")
+            val aliases: List<String> = if (aliasArray != null) {
+                @Suppress("UNCHECKED_CAST")
+                (aliasArray.array as Array<String>).toList()
+            } else {
+                emptyList()
+            }
+            SanctionsEntryResponse(
+                id = rs.getLong("id"),
+                fullName = rs.getString("full_name"),
+                listType = rs.getString("list_type"),
+                source = rs.getString("source"),
+                country = rs.getString("country"),
+                aliases = aliases,
+                active = rs.getBoolean("active"),
+                addedAt = rs.getTimestamp("added_at").toInstant().toString(),
+                updatedAt = rs.getTimestamp("updated_at").toInstant().toString()
+            )
+        }, *queryParams.toTypedArray())
+
+        return ResponseEntity.ok(
+            SanctionsListResponse(
+                items = items,
+                total = total,
+                page = clampedPage,
+                pageSize = clampedPageSize
+            )
+        )
+    }
+
+    @PostMapping("/sanctions")
+    fun addSanctionsEntry(
+        @Valid @RequestBody request: CreateSanctionsEntryRequest
+    ): ResponseEntity<SanctionsEntryResponse> {
+        val id = jdbcTemplate.queryForObject(
+            """
+            INSERT INTO shared.sanctions_list (full_name, list_type, source, country, aliases)
+            VALUES (?, ?, ?, ?, ?::text[])
+            RETURNING id
+            """,
+            Long::class.java,
+            request.fullName,
+            request.listType,
+            request.source,
+            request.country,
+            request.aliases?.let { "{${it.joinToString(",") { alias -> "\"$alias\"" }}}" }
+        )!!
+
+        val entry = jdbcTemplate.queryForObject(
+            """
+            SELECT id, full_name, list_type, source, country, aliases, active, added_at, updated_at
+            FROM shared.sanctions_list WHERE id = ?
+            """,
+            { rs, _ ->
+                val aliasArray = rs.getArray("aliases")
+                val aliases: List<String> = if (aliasArray != null) {
+                    @Suppress("UNCHECKED_CAST")
+                    (aliasArray.array as Array<String>).toList()
+                } else {
+                    emptyList()
+                }
+                SanctionsEntryResponse(
+                    id = rs.getLong("id"),
+                    fullName = rs.getString("full_name"),
+                    listType = rs.getString("list_type"),
+                    source = rs.getString("source"),
+                    country = rs.getString("country"),
+                    aliases = aliases,
+                    active = rs.getBoolean("active"),
+                    addedAt = rs.getTimestamp("added_at").toInstant().toString(),
+                    updatedAt = rs.getTimestamp("updated_at").toInstant().toString()
+                )
+            },
+            id
+        )!!
+
+        return ResponseEntity.ok(entry)
+    }
+
+    @DeleteMapping("/sanctions/{id}")
+    fun deactivateSanctionsEntry(@PathVariable id: Long): ResponseEntity<Void> {
+        jdbcTemplate.update(
+            "UPDATE shared.sanctions_list SET active = false, updated_at = now() WHERE id = ?",
+            id
+        )
+        return ResponseEntity.ok().build()
+    }
+
     private fun derivePriority(type: String): String {
         return when (type) {
             "sanctions_hit" -> "critical"
@@ -150,6 +287,33 @@ data class ComplianceCaseResponse(
 
 data class CaseListResponse(
     val items: List<ComplianceCaseResponse>,
+    val total: Long,
+    val page: Int,
+    val pageSize: Int
+)
+
+data class CreateSanctionsEntryRequest(
+    @field:NotBlank val fullName: String,
+    @field:NotBlank val listType: String,
+    @field:NotBlank val source: String,
+    val country: String? = null,
+    val aliases: List<String>? = null
+)
+
+data class SanctionsEntryResponse(
+    val id: Long,
+    val fullName: String,
+    val listType: String,
+    val source: String,
+    val country: String?,
+    val aliases: List<String>,
+    val active: Boolean,
+    val addedAt: String,
+    val updatedAt: String
+)
+
+data class SanctionsListResponse(
+    val items: List<SanctionsEntryResponse>,
     val total: Long,
     val page: Int,
     val pageSize: Int
