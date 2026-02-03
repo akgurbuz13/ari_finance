@@ -5,10 +5,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
 @Component
+@ConditionalOnProperty(name = ["ova.outbox.poller.enabled"], havingValue = "true", matchIfMissing = true)
 class OutboxPoller(
     private val jdbcTemplate: JdbcTemplate,
     private val objectMapper: ObjectMapper,
@@ -50,13 +52,10 @@ class OutboxPoller(
         }
 
         if (ids.isNotEmpty()) {
+            val placeholders = ids.joinToString(",") { "?" }
             jdbcTemplate.update(
-                "UPDATE shared.outbox_events SET published = true WHERE id = ANY(?)",
-                java.sql.Array::class.java.cast(
-                    jdbcTemplate.dataSource?.connection?.use {
-                        it.createArrayOf("bigint", ids.toTypedArray())
-                    }
-                )
+                "UPDATE shared.outbox_events SET published = true WHERE id IN ($placeholders)",
+                *ids.toTypedArray()
             )
         }
     }
