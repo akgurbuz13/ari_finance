@@ -50,8 +50,8 @@ variable "validator_count" {
   type        = number
   default     = 3
   validation {
-    condition     = var.validator_count >= 3 && var.validator_count <= 10
-    error_message = "Validator count must be between 3 and 10."
+    condition     = var.validator_count >= 2 && var.validator_count <= 10
+    error_message = "Validator count must be between 2 and 10 (2 for testing, 3+ for production)."
   }
 }
 
