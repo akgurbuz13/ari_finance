@@ -3,23 +3,49 @@ package com.ova.platform.compliance.internal.service
 import com.ova.platform.identity.internal.repository.UserRepository
 import com.ova.platform.shared.security.AuditService
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.util.UUID
 
+/**
+ * Service for screening users and transactions against sanctions lists.
+ *
+ * REGULATORY COVERAGE:
+ * - Turkey: MASAK list (terrorist financing, asset freezes)
+ * - EU: Consolidated Financial Sanctions List (AMLD6)
+ * - International: UN Security Council, OFAC SDN
+ *
+ * SCREENING TYPES:
+ * 1. Name screening: Fuzzy matching using pg_trgm
+ * 2. ID screening: Exact match on national IDs, passport numbers
+ * 3. Entity screening: For business/corporate accounts
+ *
+ * THRESHOLDS:
+ * - Block (≥0.70): Automatic rejection, requires compliance review
+ * - Flag (≥0.40): Transaction allowed but flagged for review
+ * - Clear (<0.40): No significant match found
+ */
 @Service
 class SanctionsScreeningService(
     private val jdbcTemplate: JdbcTemplate,
     private val userRepository: UserRepository,
-    private val auditService: AuditService
+    private val auditService: AuditService,
+    private val sanctionsListProvider: SanctionsListProvider,
+    @Value("\${ova.compliance.sanctions.enabled:true}") private val enabled: Boolean,
+    @Value("\${ova.region:TR}") private val region: String
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
     companion object {
-        private const val BLOCK_THRESHOLD = 0.7
-        private const val FLAG_THRESHOLD = 0.4
-        private const val SEARCH_THRESHOLD = 0.3
+        // Matching thresholds - configurable based on risk appetite
+        private const val BLOCK_THRESHOLD = 0.70   // Automatic block
+        private const val FLAG_THRESHOLD = 0.40    // Flag for review
+        private const val SEARCH_THRESHOLD = 0.30  // Minimum for consideration
+
+        // Higher thresholds for terrorist financing (zero tolerance)
+        private const val TERRORIST_BLOCK_THRESHOLD = 0.60
     }
 
     data class ScreeningResult(
@@ -275,5 +301,128 @@ class SanctionsScreeningService(
     private fun buildFullName(firstName: String?, lastName: String?): String? {
         val parts = listOfNotNull(firstName?.trim(), lastName?.trim()).filter { it.isNotBlank() }
         return if (parts.isEmpty()) null else parts.joinToString(" ")
+    }
+
+    /**
+     * Screen by national ID number (exact match).
+     */
+    fun screenByNationalId(nationalId: String): ScreeningResult {
+        if (!enabled) {
+            return ScreeningResult(passed = true)
+        }
+
+        log.info("Screening national ID against sanctions lists")
+
+        val match = jdbcTemplate.query(
+            """
+            SELECT full_name, list_type, source, country
+            FROM shared.sanctions_list
+            WHERE active = true AND national_id = ?
+            LIMIT 1
+            """,
+            { rs, _ ->
+                SanctionsMatch(
+                    fullName = rs.getString("full_name"),
+                    listType = rs.getString("list_type"),
+                    source = rs.getString("source"),
+                    country = rs.getString("country"),
+                    score = 1.0 // Exact match
+                )
+            },
+            nationalId
+        ).firstOrNull()
+
+        if (match != null) {
+            saveScreeningResult(
+                screenedType = "user",
+                screenedId = UUID.randomUUID(), // Placeholder
+                screenedName = nationalId,
+                result = "blocked",
+                matchType = "national_id_exact",
+                matchScore = 1.0,
+                matchDetails = "Exact national ID match: ${match.fullName} from ${match.source}"
+            )
+
+            return ScreeningResult(
+                passed = false,
+                matchType = "national_id_exact",
+                matchDetails = "Exact match against ${match.fullName} (${match.source})",
+                matchScore = 1.0
+            )
+        }
+
+        return ScreeningResult(passed = true)
+    }
+
+    /**
+     * Check if sanctions lists are up to date.
+     */
+    fun checkListHealth(): Map<String, Any> {
+        val stats = sanctionsListProvider.getStatistics()
+        val isReady = sanctionsListProvider.isReady()
+
+        val sources = listOf("MASAK", "UN", "EU", "OFAC")
+        val lastUpdates = sources.associateWith { source ->
+            sanctionsListProvider.getLastUpdateTime(source)?.toString() ?: "never"
+        }
+
+        return mapOf(
+            "enabled" to enabled,
+            "ready" to isReady,
+            "totalEntries" to (stats["totalEntries"] ?: 0),
+            "lastUpdates" to lastUpdates,
+            "region" to region
+        )
+    }
+
+    /**
+     * Save screening result for audit trail.
+     */
+    private fun saveScreeningResult(
+        screenedType: String,
+        screenedId: UUID,
+        screenedName: String,
+        result: String,
+        matchType: String?,
+        matchScore: Double?,
+        matchDetails: String?,
+        ipAddress: String? = null
+    ) {
+        try {
+            jdbcTemplate.update(
+                """
+                INSERT INTO shared.screening_results
+                    (screened_type, screened_id, screened_name, result, match_type,
+                     match_score, match_details, ip_address)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?::inet)
+                """,
+                screenedType,
+                screenedId,
+                screenedName,
+                result,
+                matchType,
+                matchScore,
+                matchDetails,
+                ipAddress
+            )
+        } catch (e: Exception) {
+            log.warn("Failed to save screening result: {}", e.message)
+        }
+    }
+
+    /**
+     * Get screening history for a user.
+     */
+    fun getScreeningHistory(userId: UUID): List<Map<String, Any?>> {
+        return jdbcTemplate.queryForList(
+            """
+            SELECT id, screened_name, result, match_type, match_score, match_details, created_at
+            FROM shared.screening_results
+            WHERE screened_id = ?
+            ORDER BY created_at DESC
+            LIMIT 50
+            """,
+            userId
+        )
     }
 }

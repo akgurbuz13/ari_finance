@@ -5,8 +5,16 @@ metadata:
   namespace: ova
   labels:
     app: core-banking
+    app.kubernetes.io/name: core-banking
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: ova-platform
 spec:
   replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: core-banking
@@ -14,13 +22,52 @@ spec:
     metadata:
       labels:
         app: core-banking
+        app.kubernetes.io/name: core-banking
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/actuator/prometheus"
     spec:
       serviceAccountName: core-banking
+      automountServiceAccountToken: false
+      # Pod Security Context - run as non-root
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      # Prevent scheduling on same node for HA
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - core-banking
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: core-banking
           image: core-banking:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
+              name: http
+              protocol: TCP
+          # Container Security Context - strict security
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           env:
             - name: SPRING_PROFILES_ACTIVE
               valueFrom:
@@ -52,11 +99,21 @@ spec:
                 secretKeyRef:
                   name: ova-jwt-secret
                   key: secret
+            - name: OVA_INTERNAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ova-internal-api-key
+                  key: api-key
             - name: OVA_REGION
               valueFrom:
                 configMapKeyRef:
                   name: ova-config
                   key: ova.region
+            - name: OVA_CORS_ALLOWED_ORIGINS
+              valueFrom:
+                configMapKeyRef:
+                  name: ova-config
+                  key: cors.allowed-origins
           resources:
             requests:
               cpu: 500m
@@ -64,18 +121,44 @@ spec:
             limits:
               cpu: "2"
               memory: 1Gi
+          # Writable directories for Spring Boot temp files
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: spring-tmp
+              mountPath: /app/tmp
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
               port: 8080
             initialDelaySeconds: 30
             periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
               port: 8080
             initialDelaySeconds: 60
             periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          # Startup probe for slow-starting containers
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 30
+      # Ephemeral volumes for temp files (read-only root filesystem)
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: spring-tmp
+          emptyDir: {}
+      # Graceful shutdown
+      terminationGracePeriodSeconds: 30
 ---
 apiVersion: v1
 kind: Service

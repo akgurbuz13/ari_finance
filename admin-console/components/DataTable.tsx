@@ -179,7 +179,7 @@ export default function DataTable<T>({
               sortedData.map((row) => (
                 <tr
                   key={rowKey(row)}
-                  className="hover:bg-gray-50/50 transition-colors"
+                  className="group hover:bg-gray-50/50 transition-colors"
                 >
                   {columns.map((col) => (
                     <td key={col.key} className="px-4 py-3 text-admin-text">

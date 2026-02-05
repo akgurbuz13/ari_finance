@@ -24,7 +24,7 @@ dependencies {
     // Database
     runtimeOnly("org.postgresql:postgresql")
     implementation("org.flywaydb:flyway-core")
-    implementation("org.flywaydb:flyway-database-postgresql")
+    implementation("org.flywaydb:flyway-database-postgresql:10.4.1")
 
     // Web3j for Ethereum/Avalanche interaction
     implementation("org.web3j:core:4.10.3")

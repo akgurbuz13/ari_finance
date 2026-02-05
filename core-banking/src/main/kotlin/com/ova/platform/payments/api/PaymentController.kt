@@ -5,7 +5,9 @@ import com.ova.platform.payments.internal.model.PaymentStatusHistory
 import com.ova.platform.payments.internal.repository.PaymentOrderRepository
 import com.ova.platform.payments.internal.repository.PaymentStatusHistoryRepository
 import com.ova.platform.payments.internal.service.CrossBorderTransferService
+import com.ova.platform.payments.internal.service.DepositService
 import com.ova.platform.payments.internal.service.DomesticTransferService
+import com.ova.platform.payments.internal.service.WithdrawalService
 import com.ova.platform.shared.exception.NotFoundException
 import jakarta.validation.Valid
 import jakarta.validation.constraints.DecimalMin
@@ -24,6 +26,8 @@ import java.util.UUID
 class PaymentController(
     private val domesticTransferService: DomesticTransferService,
     private val crossBorderTransferService: CrossBorderTransferService,
+    private val depositService: DepositService,
+    private val withdrawalService: WithdrawalService,
     private val paymentOrderRepository: PaymentOrderRepository,
     private val statusHistoryRepository: PaymentStatusHistoryRepository
 ) {
@@ -43,6 +47,48 @@ class PaymentController(
             currency = request.currency,
             description = request.description,
             initiatorId = userId
+        )
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(order.toResponse())
+    }
+
+    @PostMapping("/deposit")
+    fun initiateDeposit(
+        @Valid @RequestBody request: DepositRequest,
+        @RequestHeader("Idempotency-Key") idempotencyKey: String
+    ): ResponseEntity<PaymentOrderResponse> {
+        val userId = currentUserId()
+
+        val order = depositService.initiateDeposit(
+            idempotencyKey = idempotencyKey,
+            userId = userId,
+            accountId = request.accountId,
+            amount = request.amount,
+            currency = request.currency,
+            sourceIban = request.sourceIban,
+            preferredRail = request.preferredRail,
+            description = request.description
+        )
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(order.toResponse())
+    }
+
+    @PostMapping("/withdrawal")
+    fun initiateWithdrawal(
+        @Valid @RequestBody request: WithdrawalRequest,
+        @RequestHeader("Idempotency-Key") idempotencyKey: String
+    ): ResponseEntity<PaymentOrderResponse> {
+        val userId = currentUserId()
+
+        val order = withdrawalService.initiateWithdrawal(
+            idempotencyKey = idempotencyKey,
+            userId = userId,
+            accountId = request.accountId,
+            amount = request.amount,
+            currency = request.currency,
+            destinationIban = request.destinationIban,
+            preferredRail = request.preferredRail,
+            description = request.description
         )
 
         return ResponseEntity.status(HttpStatus.CREATED).body(order.toResponse())
@@ -144,6 +190,44 @@ data class DomesticTransferRequest(
     @field:Pattern(regexp = "TRY|EUR", message = "Currency must be TRY or EUR")
     val currency: String,
 
+    val description: String? = null
+)
+
+data class DepositRequest(
+    @field:NotNull
+    val accountId: UUID,
+
+    @field:NotNull
+    @field:DecimalMin(value = "0.01", message = "Amount must be greater than zero")
+    val amount: BigDecimal,
+
+    @field:NotBlank
+    @field:Pattern(regexp = "TRY|EUR", message = "Currency must be TRY or EUR")
+    val currency: String,
+
+    @field:NotBlank
+    val sourceIban: String,
+
+    val preferredRail: String? = null,
+    val description: String? = null
+)
+
+data class WithdrawalRequest(
+    @field:NotNull
+    val accountId: UUID,
+
+    @field:NotNull
+    @field:DecimalMin(value = "0.01", message = "Amount must be greater than zero")
+    val amount: BigDecimal,
+
+    @field:NotBlank
+    @field:Pattern(regexp = "TRY|EUR", message = "Currency must be TRY or EUR")
+    val currency: String,
+
+    @field:NotBlank
+    val destinationIban: String,
+
+    val preferredRail: String? = null,
     val description: String? = null
 )
 

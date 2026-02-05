@@ -1,0 +1,47 @@
+---
+# Pod Disruption Budgets for Ova Platform
+# Ensures minimum availability during voluntary disruptions (upgrades, node drains)
+
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: core-banking-pdb
+  namespace: ova
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: core-banking
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: blockchain-service-pdb
+  namespace: ova
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: blockchain-service
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: web-pdb
+  namespace: ova
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: web
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: admin-console-pdb
+  namespace: ova
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: admin-console

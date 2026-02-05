@@ -12,6 +12,8 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
     "@openzeppelin/contracts": "^5.0.1",
+    "@openzeppelin/contracts-upgradeable": "^5.0.1",
+    "@openzeppelin/hardhat-upgrades": "^3.0.2",
     "hardhat": "^2.19.4",
     "typescript": "^5.3.3",
     "ts-node": "^10.9.2",

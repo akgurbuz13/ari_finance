@@ -1,5 +1,8 @@
 package com.ova.platform.rails.api
 
+import com.ova.platform.payments.internal.repository.RailReferenceRepository
+import com.ova.platform.payments.internal.repository.WebhookEvent
+import com.ova.platform.payments.internal.repository.WebhookEventRepository
 import com.ova.platform.rails.internal.adapter.RailAdapter
 import com.ova.platform.rails.internal.adapter.RailPaymentStatus
 import com.ova.platform.rails.internal.adapter.RailWebhookResult
@@ -17,7 +20,9 @@ import java.util.UUID
 @RequestMapping("/api/v1/webhooks/rails")
 class RailWebhookController(
     private val adapters: List<RailAdapter>,
-    private val railService: RailService
+    private val railService: RailService,
+    private val railReferenceRepository: RailReferenceRepository,
+    private val webhookEventRepository: WebhookEventRepository
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -59,14 +64,36 @@ class RailWebhookController(
         // Delegate payload parsing to the rail-specific adapter
         val result: RailWebhookResult = adapter.handleWebhook(payload, headers)
 
+        // Webhook deduplication: check if this event has already been processed
+        val eventId = extractEventId(provider, result, headers)
+        val isNew = webhookEventRepository.tryInsert(
+            WebhookEvent(
+                provider = provider,
+                eventId = eventId,
+                eventType = result.status.name,
+                payload = result.rawPayload
+            )
+        )
+
+        if (!isNew) {
+            log.info("Duplicate webhook detected provider={}, eventId={}", provider, eventId)
+            return ResponseEntity.ok(
+                WebhookAckResponse(
+                    accepted = true,
+                    message = "Duplicate webhook, already processed",
+                    externalReference = result.externalReference,
+                    status = result.status.name
+                )
+            )
+        }
+
         log.info(
             "Webhook processed provider={}, externalRef={}, status={}",
             provider, result.externalReference, result.status
         )
 
-        // Process the status update through RailService
-        // In a full implementation, the paymentId would be resolved from externalReference via a lookup table
-        val paymentId = resolvePaymentId(result.externalReference)
+        // Resolve internal payment ID from external reference via rail_references table
+        val paymentId = resolvePaymentId(provider, result.externalReference)
 
         if (paymentId != null) {
             railService.processConfirmation(
@@ -75,6 +102,19 @@ class RailWebhookController(
                 status = result.status,
                 paymentId = paymentId
             )
+
+            // Update rail reference status
+            val railRef = railReferenceRepository.findByExternalReference(provider, result.externalReference)
+            if (railRef != null) {
+                val newStatus = when (result.status) {
+                    RailPaymentStatus.COMPLETED -> "confirmed"
+                    RailPaymentStatus.FAILED, RailPaymentStatus.REJECTED -> "failed"
+                    else -> "submitted"
+                }
+                railReferenceRepository.updateStatus(railRef.id!!, newStatus, result.rawPayload)
+            }
+
+            webhookEventRepository.markProcessed(provider, eventId)
         } else {
             log.warn(
                 "Could not resolve paymentId for externalRef={}, provider={}",
@@ -107,12 +147,27 @@ class RailWebhookController(
     }
 
     /**
-     * Resolve the internal payment ID from an external rail reference.
-     * Stub: in production this would query a payments.rail_references mapping table.
+     * Resolve the internal payment ID from an external rail reference
+     * using the rail_references mapping table.
      */
-    private fun resolvePaymentId(externalReference: String): UUID? {
-        // Stub: return null to indicate lookup not yet implemented
-        return null
+    private fun resolvePaymentId(provider: String, externalReference: String): UUID? {
+        val railRef = railReferenceRepository.findByExternalReference(provider, externalReference)
+        return railRef?.paymentOrderId
+    }
+
+    /**
+     * Extract a unique event ID for deduplication. Uses provider-specific header
+     * if available, otherwise falls back to the external reference + status combo.
+     */
+    private fun extractEventId(provider: String, result: RailWebhookResult, headers: Map<String, String>): String {
+        // Provider-specific event ID headers
+        val headerEventId = when (provider) {
+            "fast" -> headers["x-fast-event-id"]
+            "eft" -> headers["x-eft-message-id"]
+            "sepa" -> headers["x-sepa-event-id"]
+            else -> null
+        }
+        return headerEventId ?: "${result.externalReference}:${result.status.name}"
     }
 }
 

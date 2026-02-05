@@ -26,6 +26,9 @@ class UnauthorizedException(message: String) :
 class InsufficientFundsException :
     OvaException(HttpStatus.UNPROCESSABLE_ENTITY, "Insufficient funds", "INSUFFICIENT_FUNDS")
 
+class InsufficientBalanceException(message: String) :
+    OvaException(HttpStatus.UNPROCESSABLE_ENTITY, message, "INSUFFICIENT_BALANCE")
+
 class ComplianceRejectedException(reason: String) :
     OvaException(HttpStatus.UNPROCESSABLE_ENTITY, "Compliance check failed: $reason", "COMPLIANCE_REJECTED")
 

@@ -9,6 +9,7 @@ data class Account(
     val currency: String,
     val accountType: AccountType,
     val status: AccountStatus = AccountStatus.ACTIVE,
+    val iban: String? = null,
     val createdAt: Instant = Instant.now()
 )
 

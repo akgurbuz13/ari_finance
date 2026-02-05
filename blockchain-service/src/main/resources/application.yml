@@ -7,6 +7,9 @@ spring:
     username: ${DB_USER:ova}
     password: ${DB_PASSWORD:ova_dev_password}
 
+  flyway:
+    enabled: false
+
   data:
     redis:
       host: ${REDIS_HOST:localhost}
@@ -19,21 +22,42 @@ ova:
   region: ${OVA_REGION:TR}
   core-banking:
     url: ${CORE_BANKING_URL:http://localhost:8080}
+    # SECURITY: API key for calling core-banking internal endpoints
+    internal-api-key: ${INTERNAL_API_KEY:}  # No default - must be configured
   blockchain:
     tr-l1:
       rpc-url: ${TR_L1_RPC_URL:http://localhost:9650/ext/bc/tr/rpc}
       chain-id: ${TR_L1_CHAIN_ID:99999}
       stablecoin-address: ${TR_STABLECOIN_ADDRESS:}
+      # Multisig governance addresses
+      multisig-address: ${TR_MULTISIG_ADDRESS:}
+      timelock-address: ${TR_TIMELOCK_ADDRESS:}
     eu-l1:
       rpc-url: ${EU_L1_RPC_URL:http://localhost:9651/ext/bc/eu/rpc}
       chain-id: ${EU_L1_CHAIN_ID:99998}
       stablecoin-address: ${EU_STABLECOIN_ADDRESS:}
+      multisig-address: ${EU_MULTISIG_ADDRESS:}
+      timelock-address: ${EU_TIMELOCK_ADDRESS:}
     bridge:
       contract-address: ${BRIDGE_CONTRACT_ADDRESS:}
+      # ICTT bridge contracts
+      tr-token-home-address: ${TR_TOKEN_HOME_ADDRESS:}
+      eu-token-home-address: ${EU_TOKEN_HOME_ADDRESS:}
     wallet:
-      master-key: ${WALLET_MASTER_KEY:dev-master-key-do-not-use-in-production}
+      # SECURITY: NO DEFAULT - Master key must be provided via secure secret management
+      # In production, use AWS KMS or HashiCorp Vault for key management
+      # This should be a reference to a secret, not the actual key
+      master-key: ${WALLET_MASTER_KEY:}  # No default - must be configured
+      # Use AWS KMS key ID for production signing
+      kms-key-id: ${WALLET_KMS_KEY_ID:}
     relayer:
-      private-key: ${RELAYER_PRIVATE_KEY:}
+      # SECURITY: NO DEFAULT - Relayer key must be provided via secure secret management
+      private-key: ${RELAYER_PRIVATE_KEY:}  # No default - must be configured
+    # Role-specific keys (to replace single master key)
+    keys:
+      minter: ${MINTER_PRIVATE_KEY:}
+      admin: ${ADMIN_PRIVATE_KEY:}
+      bridge-operator: ${BRIDGE_OPERATOR_PRIVATE_KEY:}
 
 management:
   endpoints:

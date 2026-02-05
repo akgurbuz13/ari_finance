@@ -29,7 +29,7 @@ dependencies {
     // Database
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.flywaydb:flyway-core")
-    implementation("org.flywaydb:flyway-database-postgresql")
+    implementation("org.flywaydb:flyway-database-postgresql:10.4.1")
     runtimeOnly("org.postgresql:postgresql")
 
     // jOOQ
@@ -45,6 +45,9 @@ dependencies {
 
     // OpenAPI
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+
+    // Rate Limiting
+    implementation("com.bucket4j:bucket4j-core:8.7.0")
 
     // Crypto
     implementation("org.bouncycastle:bcprov-jdk18on:1.77")

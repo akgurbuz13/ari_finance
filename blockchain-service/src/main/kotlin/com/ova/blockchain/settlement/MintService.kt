@@ -1,14 +1,25 @@
 package com.ova.blockchain.settlement
 
 import com.ova.blockchain.config.BlockchainConfig
+import com.ova.blockchain.config.Web3jProvider
+import com.ova.blockchain.contract.ContractFactory
+import com.ova.blockchain.repository.BlockchainTransaction
+import com.ova.blockchain.repository.BlockchainTransactionRepository
+import com.ova.blockchain.wallet.CustodialWalletService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.time.Instant
+import java.util.UUID
 
 @Service
 class MintService(
-    private val config: BlockchainConfig
+    private val config: BlockchainConfig,
+    private val web3jProvider: Web3jProvider,
+    private val contractFactory: ContractFactory,
+    private val walletService: CustodialWalletService,
+    private val txRepository: BlockchainTransactionRepository
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -19,26 +30,64 @@ class MintService(
         val error: String? = null
     )
 
-    fun mint(toAddress: String, amount: BigDecimal, currency: String): MintResult {
+    fun mint(toAddress: String, amount: BigDecimal, currency: String, paymentOrderId: UUID? = null): MintResult {
         log.info("Minting {} {} to address {}", amount, currency, toAddress)
 
-        // Convert amount to wei (18 decimals for ERC-20)
+        val chainId = web3jProvider.getChainIdForCurrency(currency)
         val amountWei = amount.multiply(BigDecimal.TEN.pow(18)).toBigInteger()
+        val minterCredentials = walletService.getMinterCredentials()
 
         try {
-            // TODO: Actual web3j contract interaction
-            // 1. Load stablecoin contract at config.getStablecoinAddress()
-            // 2. Call mint(toAddress, amountWei) with minter credentials from KMS
-            // 3. Wait for transaction receipt
+            val stablecoin = contractFactory.getStablecoin(chainId, minterCredentials)
 
-            // Stub: simulate successful mint
-            val txHash = "0x${java.util.UUID.randomUUID().toString().replace("-", "")}"
+            // Ensure recipient is allowlisted before minting
+            if (!stablecoin.allowlisted(toAddress)) {
+                log.info("Adding {} to allowlist before mint", toAddress)
+                stablecoin.addToAllowlist(toAddress)
+            }
 
-            log.info("Mint transaction submitted: txHash={}", txHash)
-            return MintResult(txHash = txHash, success = true, blockNumber = BigInteger.valueOf(1))
+            val receipt = stablecoin.mint(toAddress, amountWei)
+
+            val txHash = receipt.transactionHash
+            val blockNumber = receipt.blockNumber
+
+            // Persist transaction record
+            txRepository.save(
+                BlockchainTransaction(
+                    txHash = txHash,
+                    chainId = chainId,
+                    operation = "mint",
+                    toAddress = toAddress,
+                    amount = amount,
+                    currency = currency,
+                    status = "confirmed",
+                    blockNumber = blockNumber.toLong(),
+                    gasUsed = receipt.gasUsed.toLong(),
+                    paymentOrderId = paymentOrderId,
+                    confirmedAt = Instant.now()
+                )
+            )
+
+            log.info("Mint confirmed: txHash={}, block={}", txHash, blockNumber)
+            return MintResult(txHash = txHash, success = true, blockNumber = blockNumber)
 
         } catch (e: Exception) {
-            log.error("Mint failed for {} {} to {}", amount, currency, toAddress, e)
+            log.error("Mint failed for {} {} to {}: {}", amount, currency, toAddress, e.message, e)
+
+            txRepository.save(
+                BlockchainTransaction(
+                    txHash = "failed-${UUID.randomUUID()}",
+                    chainId = chainId,
+                    operation = "mint",
+                    toAddress = toAddress,
+                    amount = amount,
+                    currency = currency,
+                    status = "failed",
+                    paymentOrderId = paymentOrderId,
+                    errorMessage = e.message
+                )
+            )
+
             return MintResult(txHash = "", success = false, error = e.message)
         }
     }

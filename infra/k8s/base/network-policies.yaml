@@ -1,0 +1,265 @@
+---
+# Network Policies for Ova Platform
+# Implements defense-in-depth by restricting pod-to-pod communication
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: ova
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+# Allow core-banking to receive traffic from ingress and blockchain-service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: core-banking-ingress
+  namespace: ova
+spec:
+  podSelector:
+    matchLabels:
+      app: core-banking
+  policyTypes:
+    - Ingress
+  ingress:
+    # From ingress controller
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8080
+    # From blockchain-service (internal API callbacks)
+    - from:
+        - podSelector:
+            matchLabels:
+              app: blockchain-service
+      ports:
+        - protocol: TCP
+          port: 8080
+    # From prometheus for metrics scraping
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: monitoring
+      ports:
+        - protocol: TCP
+          port: 8080
+---
+# Allow core-banking egress to database, redis, and blockchain-service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: core-banking-egress
+  namespace: ova
+spec:
+  podSelector:
+    matchLabels:
+      app: core-banking
+  policyTypes:
+    - Egress
+  egress:
+    # To PostgreSQL database
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+    # To Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # To blockchain-service
+    - to:
+        - podSelector:
+            matchLabels:
+              app: blockchain-service
+      ports:
+        - protocol: TCP
+          port: 8081
+    # DNS resolution
+    - to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+# Allow blockchain-service to receive traffic from core-banking and ingress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: blockchain-service-ingress
+  namespace: ova
+spec:
+  podSelector:
+    matchLabels:
+      app: blockchain-service
+  policyTypes:
+    - Ingress
+  ingress:
+    # From core-banking
+    - from:
+        - podSelector:
+            matchLabels:
+              app: core-banking
+      ports:
+        - protocol: TCP
+          port: 8081
+    # From ingress controller (for admin APIs)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8081
+    # From prometheus
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: monitoring
+      ports:
+        - protocol: TCP
+          port: 8081
+---
+# Allow blockchain-service egress to core-banking, DB, and blockchain nodes
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: blockchain-service-egress
+  namespace: ova
+spec:
+  podSelector:
+    matchLabels:
+      app: blockchain-service
+  policyTypes:
+    - Egress
+  egress:
+    # To core-banking (callbacks)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: core-banking
+      ports:
+        - protocol: TCP
+          port: 8080
+    # To PostgreSQL
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+    # To Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # To Avalanche L1 nodes (external)
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+      ports:
+        - protocol: TCP
+          port: 9650
+        - protocol: TCP
+          port: 9651
+    # DNS
+    - to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+# Allow web app to receive traffic from ingress only
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: web-ingress
+  namespace: ova
+spec:
+  podSelector:
+    matchLabels:
+      app: web
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 3000
+  egress:
+    # Static frontend - only needs DNS
+    - to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+---
+# Allow admin-console to receive traffic from ingress only
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: admin-console-ingress
+  namespace: ova
+spec:
+  podSelector:
+    matchLabels:
+      app: admin-console
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 3001
+  egress:
+    # Static frontend - only needs DNS
+    - to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53

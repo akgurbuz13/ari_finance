@@ -15,6 +15,7 @@ import java.util.UUID
 @Service
 class AccountService(
     private val accountRepository: AccountRepository,
+    private val ibanGeneratorService: IbanGeneratorService,
     private val auditService: AuditService
 ) {
 
@@ -25,18 +26,25 @@ class AccountService(
             throw ConflictException("Account already exists for currency $currency")
         }
 
+        val iban = ibanGeneratorService.generateIban()
+
         val account = accountRepository.save(
             Account(
                 userId = userId,
                 currency = currency,
-                accountType = AccountType.USER_WALLET
+                accountType = AccountType.USER_WALLET,
+                iban = iban
             )
         )
 
         auditService.log(userId, "user", "create_account", "account", account.id.toString(),
-            details = mapOf("currency" to currency))
+            details = mapOf("currency" to currency, "iban" to iban))
 
         return account
+    }
+
+    fun findByIban(iban: String): Account? {
+        return accountRepository.findByIban(iban)
     }
 
     fun getUserAccounts(userId: UUID): List<AccountWithBalance> {

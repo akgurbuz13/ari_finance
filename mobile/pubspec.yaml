@@ -32,6 +32,9 @@ dependencies:
   # Typography
   google_fonts: ^6.1.0
 
+  # UUID generation
+  uuid: ^4.2.1
+
   # Cupertino icons (iOS style)
   cupertino_icons: ^1.0.6
 

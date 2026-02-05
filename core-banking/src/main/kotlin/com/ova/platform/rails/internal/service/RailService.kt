@@ -63,7 +63,7 @@ class RailService(
             description = description
         )
 
-        val result = rail.submitPayment(request)
+        val result = rail.submitPayment(request).copy(provider = rail.providerId)
 
         outboxPublisher.publish(
             RailPaymentSubmitted(
@@ -113,7 +113,7 @@ class RailService(
             description = description
         )
 
-        val result = rail.submitPayment(request)
+        val result = rail.submitPayment(request).copy(provider = rail.providerId)
 
         outboxPublisher.publish(
             RailPaymentSubmitted(

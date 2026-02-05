@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'core/theme/app_theme.dart';
+import 'core/services/notification_service.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/signup_screen.dart';
 import 'features/home/screens/home_screen.dart';
@@ -11,7 +12,14 @@ import 'features/settings/screens/settings_screen.dart';
 import 'features/onboarding/screens/kyc_screen.dart';
 import 'features/home/screens/history_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize notification service
+  // In production, Firebase.initializeApp() would be called here first
+  final notificationService = NotificationService();
+  await notificationService.initialize();
+
   runApp(const ProviderScope(child: OvaApp()));
 }
 

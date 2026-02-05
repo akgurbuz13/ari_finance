@@ -46,8 +46,48 @@ management:
 ova:
   region: ${OVA_REGION:TR}
   jwt:
-    secret: ${JWT_SECRET:dev-secret-key-change-in-production-must-be-at-least-256-bits-long}
+    # SECURITY: In production, use AWS Secrets Manager via spring-cloud-aws-secrets-manager
+    # or Kubernetes secrets mounted as environment variables
+    secret: ${JWT_SECRET:}  # No default - must be configured
+    # For RS256 asymmetric signing (recommended for production):
+    # private-key-path: ${JWT_PRIVATE_KEY_PATH:}
+    # public-key-path: ${JWT_PUBLIC_KEY_PATH:}
     access-token-expiry: 900 # 15 minutes in seconds
     refresh-token-expiry: 604800 # 7 days in seconds
   blockchain-service:
     url: ${BLOCKCHAIN_SERVICE_URL:http://localhost:8081}
+  internal:
+    # SECURITY: API key for service-to-service communication
+    # In production, use AWS Secrets Manager or Kubernetes secrets
+    api-key: ${INTERNAL_API_KEY:}  # No default - must be configured
+  cors:
+    # SECURITY: Comma-separated list of allowed origins
+    # In production, set explicitly - no wildcards allowed
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:}
+  rate-limit:
+    auth:
+      requests-per-minute: ${RATE_LIMIT_AUTH_PER_MINUTE:10}
+      requests-per-hour: ${RATE_LIMIT_AUTH_PER_HOUR:100}
+    general:
+      requests-per-minute: ${RATE_LIMIT_GENERAL_PER_MINUTE:60}
+  compliance:
+    sanctions:
+      enabled: ${SANCTIONS_ENABLED:true}
+      # MASAK (Turkey) - requires agreement with MASAK
+      masak-url: ${MASAK_SANCTIONS_URL:}
+      # UN Security Council Consolidated List
+      un-url: ${UN_SANCTIONS_URL:https://scsanctions.un.org/resources/xml/en/consolidated.xml}
+      # EU Consolidated Financial Sanctions
+      eu-url: ${EU_SANCTIONS_URL:https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content}
+      # OFAC SDN List
+      ofac-url: ${OFAC_SANCTIONS_URL:https://www.treasury.gov/ofac/downloads/sdn.xml}
+    masak:
+      enabled: ${MASAK_REPORTING_ENABLED:false}
+      api-url: ${MASAK_API_URL:}
+      institution-code: ${MASAK_INSTITUTION_CODE:}
+    transaction-monitoring:
+      enabled: ${TRANSACTION_MONITORING_ENABLED:true}
+      # Thresholds in TRY
+      threshold-try: ${MONITORING_THRESHOLD_TRY:85000}
+      # Thresholds in EUR
+      threshold-eur: ${MONITORING_THRESHOLD_EUR:10000}

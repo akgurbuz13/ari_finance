@@ -20,6 +20,7 @@ class AccountRepository(private val jdbcTemplate: JdbcTemplate) {
             currency = rs.getString("currency"),
             accountType = AccountType.fromValue(rs.getString("account_type")),
             status = AccountStatus.fromValue(rs.getString("status")),
+            iban = rs.getString("iban"),
             createdAt = rs.getTimestamp("created_at").toInstant()
         )
     }
@@ -27,13 +28,26 @@ class AccountRepository(private val jdbcTemplate: JdbcTemplate) {
     fun save(account: Account): Account {
         jdbcTemplate.update(
             """
-            INSERT INTO ledger.accounts (id, user_id, currency, account_type, status)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO ledger.accounts (id, user_id, currency, account_type, status, iban)
+            VALUES (?, ?, ?, ?, ?, ?)
             """,
             account.id, account.userId, account.currency,
-            account.accountType.value, account.status.value
+            account.accountType.value, account.status.value, account.iban
         )
         return account
+    }
+
+    fun findByIban(iban: String): Account? {
+        return jdbcTemplate.query(
+            "SELECT * FROM ledger.accounts WHERE iban = ?", rowMapper, iban
+        ).firstOrNull()
+    }
+
+    fun assignIban(accountId: UUID, iban: String) {
+        jdbcTemplate.update(
+            "UPDATE ledger.accounts SET iban = ? WHERE id = ? AND iban IS NULL",
+            iban, accountId
+        )
     }
 
     fun findById(id: UUID): Account? {

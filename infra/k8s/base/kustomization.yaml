@@ -10,7 +10,23 @@ resources:
   - web.yaml
   - admin-console.yaml
   - ingress.yaml
+  # Security hardening
+  - network-policies.yaml
+  - pod-disruption-budgets.yaml
+  # External secrets (requires external-secrets-operator)
+  # Uncomment when operator is installed:
+  # - external-secrets.yaml
 
 commonLabels:
   app.kubernetes.io/part-of: ova-platform
   app.kubernetes.io/managed-by: kustomize
+
+# Security-related patches applied to all deployments
+patches:
+  # Add security labels
+  - target:
+      kind: Deployment
+    patch: |-
+      - op: add
+        path: /metadata/labels/security.ova.io~1compliance
+        value: "required"

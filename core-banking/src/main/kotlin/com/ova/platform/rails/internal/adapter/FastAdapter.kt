@@ -48,6 +48,7 @@ data class RailPaymentRequest(
 data class RailSubmissionResult(
     val externalReference: String,
     val status: RailPaymentStatus,
+    val provider: String? = null,
     val submittedAt: Instant = Instant.now()
 )
 

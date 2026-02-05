@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/api/api_client.dart';
 import '../../../core/api/api_endpoints.dart';
+import '../../../core/services/biometric_service.dart';
+import '../../../core/services/notification_service.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../../shared/widgets/ova_button.dart';
 import '../../../shared/widgets/ova_text_field.dart';
@@ -21,10 +23,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   String? _message;
   Map<String, dynamic>? _user;
 
+  bool _biometricAvailable = false;
+  bool _biometricEnabled = false;
+  bool _pushEnabled = false;
+
   @override
   void initState() {
     super.initState();
     _loadUser();
+    _loadPreferences();
   }
 
   @override
@@ -43,6 +50,44 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         _lastNameController.text = _user?['lastName'] ?? '';
       });
     } catch (_) {}
+  }
+
+  Future<void> _loadPreferences() async {
+    final biometricService = ref.read(biometricServiceProvider);
+    final notificationService = ref.read(notificationServiceProvider);
+
+    final available = await biometricService.isAvailable();
+    final bioEnabled = await biometricService.isBiometricEnabled();
+    final pushEnabled = await notificationService.isPushEnabled();
+
+    if (mounted) {
+      setState(() {
+        _biometricAvailable = available;
+        _biometricEnabled = bioEnabled;
+        _pushEnabled = pushEnabled;
+      });
+    }
+  }
+
+  Future<void> _toggleBiometric(bool value) async {
+    final biometricService = ref.read(biometricServiceProvider);
+
+    if (value) {
+      // Verify the user can authenticate before enabling
+      final authenticated = await biometricService.authenticate(
+        reason: 'Verify your identity to enable biometric login',
+      );
+      if (!authenticated) return;
+    }
+
+    await biometricService.setBiometricEnabled(value);
+    setState(() => _biometricEnabled = value);
+  }
+
+  Future<void> _togglePush(bool value) async {
+    final notificationService = ref.read(notificationServiceProvider);
+    await notificationService.setPushEnabled(value);
+    setState(() => _pushEnabled = value);
   }
 
   Future<void> _saveProfile() async {
@@ -151,6 +196,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             // Security Section
             _SectionHeader(title: 'Security'),
             const SizedBox(height: 12),
+
+            // Biometric Auth
+            if (_biometricAvailable)
+              _ToggleRow(
+                icon: Icons.fingerprint,
+                title: 'Biometric Login',
+                subtitle: _biometricEnabled ? 'Enabled' : 'Tap to enable Face ID / fingerprint',
+                value: _biometricEnabled,
+                onChanged: _toggleBiometric,
+              ),
+            if (_biometricAvailable) const SizedBox(height: 12),
+
+            // 2FA
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -180,6 +238,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
             const SizedBox(height: 12),
+
+            // KYC
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -210,6 +270,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
             const SizedBox(height: 32),
 
+            // Notifications Section
+            _SectionHeader(title: 'Notifications'),
+            const SizedBox(height: 12),
+            _ToggleRow(
+              icon: Icons.notifications_outlined,
+              title: 'Push Notifications',
+              subtitle: _pushEnabled ? 'Enabled' : 'Receive transfer and security alerts',
+              value: _pushEnabled,
+              onChanged: _togglePush,
+            ),
+            const SizedBox(height: 32),
+
             // Logout
             OvaButton(label: 'Log Out', onPressed: _logout, secondary: true),
             const SizedBox(height: 32),
@@ -227,5 +299,53 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[700]));
+  }
+}
+
+class _ToggleRow extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  const _ToggleRow({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey[200]!),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 22, color: Colors.grey[600]),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                const SizedBox(height: 4),
+                Text(subtitle, style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+              ],
+            ),
+          ),
+          Switch.adaptive(
+            value: value,
+            onChanged: onChanged,
+            activeColor: Colors.black,
+          ),
+        ],
+      ),
+    );
   }
 }

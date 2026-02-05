@@ -1,0 +1,30 @@
+# Development profile configuration
+# NEVER use these values in production
+
+spring:
+  profiles:
+    active: dev
+
+ova:
+  jwt:
+    # Development-only secret - NEVER use in production
+    secret: dev-secret-key-for-local-development-only-change-in-production-must-be-at-least-256-bits
+  internal:
+    # Development-only API key
+    api-key: dev-internal-api-key-never-use-in-production
+  cors:
+    # Allow localhost for development
+    allowed-origins: http://localhost:3000,http://localhost:3001,http://localhost:8080
+  rate-limit:
+    auth:
+      requests-per-minute: 100  # Higher limit for dev testing
+      requests-per-hour: 1000
+    general:
+      requests-per-minute: 300
+
+# Enable Swagger in dev
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

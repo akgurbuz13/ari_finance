@@ -7,6 +7,8 @@ import {
   fetchUsers,
   suspendUser,
   reactivateUser,
+  freezeAccount,
+  unfreezeAccount,
   AdminUser,
   UserStatus,
 } from '../../lib/api';
@@ -26,6 +28,8 @@ export default function UsersPage() {
 
   const [suspendModal, setSuspendModal] = useState<string | null>(null);
   const [suspendReason, setSuspendReason] = useState('');
+  const [freezeModal, setFreezeModal] = useState<{ userId: string; accountId: string; currency: string } | null>(null);
+  const [freezeReason, setFreezeReason] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
 
   const loadData = useCallback(async () => {
@@ -90,6 +94,36 @@ export default function UsersPage() {
     } catch (err) {
       console.error('Error reactivating user:', err);
       alert('Failed to reactivate user');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleFreeze = async () => {
+    if (!freezeModal || !freezeReason) return;
+    try {
+      setActionLoading(true);
+      await freezeAccount(freezeModal.userId, freezeModal.accountId, freezeReason);
+      setFreezeModal(null);
+      setFreezeReason('');
+      await loadData();
+    } catch (err) {
+      console.error('Error freezing account:', err);
+      alert('Failed to freeze account');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUnfreeze = async (userId: string, accountId: string) => {
+    if (!confirm('Unfreeze this account?')) return;
+    try {
+      setActionLoading(true);
+      await unfreezeAccount(userId, accountId);
+      await loadData();
+    } catch (err) {
+      console.error('Error unfreezing account:', err);
+      alert('Failed to unfreeze account');
     } finally {
       setActionLoading(false);
     }
@@ -169,14 +203,38 @@ export default function UsersPage() {
       sortable: false,
       render: (row) =>
         row.accounts.length > 0 ? (
-          <div className="flex flex-col gap-0.5">
+          <div className="flex flex-col gap-1">
             {row.accounts.map((acc) => (
-              <span key={acc.id} className="text-xs text-gray-600">
-                {acc.currency}: {Number(acc.balance).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                {acc.status === 'frozen' && (
-                  <span className="text-red-500 ml-1">(frozen)</span>
+              <div key={acc.id} className="flex items-center gap-2">
+                <span className="text-xs text-gray-600">
+                  {acc.currency}: {Number(acc.balance).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </span>
+                {acc.status === 'frozen' ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleUnfreeze(row.id, acc.id);
+                    }}
+                    disabled={actionLoading}
+                    className="text-[10px] px-1.5 py-0.5 bg-red-100 text-red-700 rounded hover:bg-red-200 font-medium"
+                    title="Unfreeze this account"
+                  >
+                    Frozen - Unfreeze
+                  </button>
+                ) : (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFreezeModal({ userId: row.id, accountId: acc.id, currency: acc.currency });
+                    }}
+                    disabled={actionLoading}
+                    className="text-[10px] px-1.5 py-0.5 text-gray-400 rounded hover:bg-blue-50 hover:text-blue-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity"
+                    title="Freeze this account"
+                  >
+                    Freeze
+                  </button>
                 )}
-              </span>
+              </div>
             ))}
           </div>
         ) : (
@@ -317,6 +375,44 @@ export default function UsersPage() {
           value={suspendReason}
           onChange={(e) => setSuspendReason(e.target.value)}
           placeholder="Suspension reason..."
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          rows={3}
+        />
+      </Modal>
+
+      <Modal
+        open={!!freezeModal}
+        onClose={() => {
+          setFreezeModal(null);
+          setFreezeReason('');
+        }}
+        title="Freeze Account"
+        description={`Freeze the ${freezeModal?.currency || ''} account. The user will not be able to transact with this account until it is unfrozen.`}
+        footer={
+          <>
+            <button
+              onClick={() => {
+                setFreezeModal(null);
+                setFreezeReason('');
+              }}
+              className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleFreeze}
+              disabled={!freezeReason || actionLoading}
+              className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+            >
+              {actionLoading ? 'Freezing...' : 'Freeze Account'}
+            </button>
+          </>
+        }
+      >
+        <textarea
+          value={freezeReason}
+          onChange={(e) => setFreezeReason(e.target.value)}
+          placeholder="Reason for freezing this account..."
           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           rows={3}
         />

@@ -132,6 +132,18 @@ class PaymentOrderRepository(
         )
     }
 
+    fun updateRail(id: UUID, rail: String) {
+        jdbcTemplate.update(
+            """
+            UPDATE payments.payment_orders
+            SET metadata = jsonb_set(COALESCE(metadata, '{}'::jsonb), '{rail}', to_jsonb(?::text)),
+                updated_at = now()
+            WHERE id = ?
+            """,
+            rail, id
+        )
+    }
+
     fun delete(id: UUID) {
         jdbcTemplate.update(
             "DELETE FROM payments.payment_orders WHERE id = ?", id

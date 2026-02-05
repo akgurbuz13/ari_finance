@@ -233,6 +233,43 @@ export async function unfreezeAccount(userId: string, accountId: string): Promis
 }
 
 // ──────────────────────────────────────────────
+// Audit Log
+// ──────────────────────────────────────────────
+
+export interface AuditLogEntry {
+  id: string;
+  actorId: string | null;
+  actorType: string;
+  action: string;
+  resourceType: string;
+  resourceId: string;
+  details: string | null;
+  ipAddress: string | null;
+  createdAt: string;
+}
+
+export interface AuditLogResponse {
+  items: AuditLogEntry[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export async function fetchAuditLog(params: {
+  page?: number;
+  pageSize?: number;
+  action?: string;
+  actorType?: string;
+  resourceType?: string;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}): Promise<AuditLogResponse> {
+  const { data } = await adminApi.get<AuditLogResponse>("/dashboard/audit-log", { params });
+  return data;
+}
+
+// ──────────────────────────────────────────────
 // Settings
 // ──────────────────────────────────────────────
 
