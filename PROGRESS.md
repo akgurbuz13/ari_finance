@@ -238,6 +238,14 @@ After initial implementation of Phases 1-5, a comprehensive review revealed that
 | `scripts/deploy-contracts.sh` | Contract deployment |
 | `scripts/e2e-bridge-test.sh` | End-to-end test |
 
+### Documentation
+| File | Purpose |
+|------|---------|
+| `docs/LOCAL_TESTING_GUIDE.md` | Step-by-step local testing (with/without blockchain) |
+| `scripts/README.md` | AWS validator and E2E testing docs |
+| `docs/avalanche-docs.md` | Avalanche L1 reference |
+| `docs/compliance.md` | TR/EU regulatory requirements |
+
 ---
 
 ## Verification Checklist
