@@ -71,17 +71,16 @@ class AccountRepository(private val jdbcTemplate: JdbcTemplate) {
     }
 
     fun getBalance(accountId: UUID): BigDecimal {
-        val result = jdbcTemplate.queryForObject(
+        val results = jdbcTemplate.query(
             """
             SELECT COALESCE(balance_after, 0) as balance
             FROM ledger.entries
             WHERE account_id = ?
             ORDER BY created_at DESC, id DESC
             LIMIT 1
-            """,
-            BigDecimal::class.java, accountId
-        )
-        return result ?: BigDecimal.ZERO
+            """
+        , { rs, _ -> rs.getBigDecimal("balance") }, accountId)
+        return results.firstOrNull() ?: BigDecimal.ZERO
     }
 
     fun updateStatus(accountId: UUID, status: AccountStatus) {

@@ -1,10 +1,16 @@
 'use client';
 
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '../../lib/hooks/useAuth';
 
 export default function Header() {
   const { user, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/login');
+  };
 
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 fixed top-0 left-64 right-0 z-10">
@@ -16,7 +22,7 @@ export default function Header() {
           </span>
         )}
         <button
-          onClick={logout}
+          onClick={handleLogout}
           className="text-sm text-gray-500 hover:text-black transition-colors"
         >
           Logout

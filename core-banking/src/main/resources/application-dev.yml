@@ -1,9 +1,6 @@
 # Development profile configuration
 # NEVER use these values in production
-
-spring:
-  profiles:
-    active: dev
+# Activate with: --spring.profiles.active=dev
 
 ova:
   jwt:
