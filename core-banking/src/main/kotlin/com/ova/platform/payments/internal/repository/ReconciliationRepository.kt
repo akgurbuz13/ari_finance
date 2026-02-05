@@ -37,6 +37,7 @@ data class SafeguardingBalance(
     val discrepancy: BigDecimal = BigDecimal.ZERO,
     val asOfDate: LocalDate,
     val reconciled: Boolean = false,
+    val notes: String? = null,
     val createdAt: Instant = Instant.now()
 )
 
@@ -74,6 +75,7 @@ class ReconciliationRepository(private val jdbcTemplate: JdbcTemplate) {
             discrepancy = rs.getBigDecimal("discrepancy"),
             asOfDate = rs.getDate("as_of_date").toLocalDate(),
             reconciled = rs.getBoolean("reconciled"),
+            notes = rs.getString("notes"),
             createdAt = rs.getTimestamp("created_at").toInstant()
         )
     }
@@ -144,20 +146,21 @@ class ReconciliationRepository(private val jdbcTemplate: JdbcTemplate) {
             """
             INSERT INTO payments.safeguarding_balances
                 (currency, region, bank_name, bank_account, ledger_balance, bank_balance,
-                 discrepancy, as_of_date, reconciled)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 discrepancy, as_of_date, reconciled, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (currency, region, as_of_date)
             DO UPDATE SET
                 ledger_balance = EXCLUDED.ledger_balance,
                 bank_balance = EXCLUDED.bank_balance,
                 discrepancy = EXCLUDED.discrepancy,
-                reconciled = EXCLUDED.reconciled
+                reconciled = EXCLUDED.reconciled,
+                notes = EXCLUDED.notes
             RETURNING id
             """,
             Long::class.java,
             balance.currency, balance.region, balance.bankName, balance.bankAccount,
             balance.ledgerBalance, balance.bankBalance, balance.discrepancy,
-            java.sql.Date.valueOf(balance.asOfDate), balance.reconciled
+            java.sql.Date.valueOf(balance.asOfDate), balance.reconciled, balance.notes
         )!!
         return balance.copy(id = id)
     }

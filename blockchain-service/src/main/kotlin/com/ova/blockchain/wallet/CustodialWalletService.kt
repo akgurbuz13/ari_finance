@@ -74,6 +74,17 @@ class CustodialWalletService(
     }
 
     /**
+     * Get credentials for the bridge operator.
+     * Used for ICTT bridge operations (bridgeNativeTokens, bridgeWrappedTokensBack).
+     * In production: should use a dedicated bridge-operator key from KMS / Key Vault.
+     */
+    fun getBridgeOperatorCredentials(): Credentials {
+        // Uses the same master key as minter for now.
+        // In production, this should use a dedicated bridge-operator key.
+        return Credentials.create(config.walletMasterKey)
+    }
+
+    /**
      * Deterministic key derivation from master key + userId + index.
      * In production, this would be delegated to a KMS HSM.
      * This approach ensures the same userId always produces the same wallet address.

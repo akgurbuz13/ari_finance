@@ -22,6 +22,7 @@ data class BlockchainTransaction(
     val gasUsed: Long? = null,
     val paymentOrderId: UUID? = null,
     val errorMessage: String? = null,
+    val metadata: String? = null,
     val createdAt: Instant = Instant.now(),
     val confirmedAt: Instant? = null
 )
@@ -44,6 +45,7 @@ class BlockchainTransactionRepository(private val jdbcTemplate: JdbcTemplate) {
             gasUsed = rs.getLong("gas_used").takeIf { !rs.wasNull() },
             paymentOrderId = rs.getString("payment_order_id")?.let { UUID.fromString(it) },
             errorMessage = rs.getString("error_message"),
+            metadata = rs.getString("metadata"),
             createdAt = rs.getTimestamp("created_at").toInstant(),
             confirmedAt = rs.getTimestamp("confirmed_at")?.toInstant()
         )
@@ -54,20 +56,21 @@ class BlockchainTransactionRepository(private val jdbcTemplate: JdbcTemplate) {
             """
             INSERT INTO blockchain.transactions
                 (tx_hash, chain_id, operation, from_address, to_address, amount, currency,
-                 status, block_number, gas_used, payment_order_id, error_message, confirmed_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 status, block_number, gas_used, payment_order_id, error_message, metadata, confirmed_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (chain_id, tx_hash) DO UPDATE SET
                 status = EXCLUDED.status,
                 block_number = EXCLUDED.block_number,
                 gas_used = EXCLUDED.gas_used,
                 error_message = EXCLUDED.error_message,
+                metadata = COALESCE(EXCLUDED.metadata, blockchain.transactions.metadata),
                 confirmed_at = EXCLUDED.confirmed_at
             RETURNING id
             """,
             Long::class.java,
             tx.txHash, tx.chainId, tx.operation, tx.fromAddress, tx.toAddress,
             tx.amount, tx.currency, tx.status, tx.blockNumber, tx.gasUsed,
-            tx.paymentOrderId, tx.errorMessage,
+            tx.paymentOrderId, tx.errorMessage, tx.metadata,
             tx.confirmedAt?.let { java.sql.Timestamp.from(it) }
         )!!
         return tx.copy(id = id)
@@ -109,6 +112,38 @@ class BlockchainTransactionRepository(private val jdbcTemplate: JdbcTemplate) {
             LIMIT ?
             """,
             rowMapper, limit
+        )
+    }
+
+    /**
+     * Find transactions by transfer ID stored in metadata.
+     * Used for tracking cross-chain bridge transfers.
+     */
+    fun findByTransferId(transferId: String): List<BlockchainTransaction> {
+        return jdbcTemplate.query(
+            """
+            SELECT * FROM blockchain.transactions
+            WHERE metadata LIKE ?
+            ORDER BY created_at ASC
+            """,
+            rowMapper, "%\"transferId\":\"$transferId\"%"
+        )
+    }
+
+    /**
+     * Find pending bridge transfers on a specific chain.
+     * Used for monitoring and completing cross-chain operations.
+     */
+    fun findPendingBridgeTransfers(chainId: Long): List<BlockchainTransaction> {
+        return jdbcTemplate.query(
+            """
+            SELECT * FROM blockchain.transactions
+            WHERE chain_id = ?
+              AND operation IN ('bridge_initiate', 'bridge_back')
+              AND status IN ('pending', 'submitted', 'pending_relay')
+            ORDER BY created_at ASC
+            """,
+            rowMapper, chainId
         )
     }
 }

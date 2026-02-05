@@ -121,7 +121,7 @@ class OutboxPollerService(
         val amount = BigDecimal(payload.get("amount").asText())
         val currency = payload.get("currency").asText()
 
-        val result = bridgeService.initiateCrossChainTransfer(
+        val result = bridgeService.initiateBridgeTransfer(
             fromChainId, toChainId, fromAddress, toAddress, amount, currency
         )
 

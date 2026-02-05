@@ -29,6 +29,91 @@ class OvaBridgeAdapterContract(
 ) {
     private val txManager = RawTransactionManager(web3j, credentials, chainId)
 
+    /**
+     * Bridge native tokens to partner chain.
+     * Maps to Solidity: bridgeNativeTokens(address recipient, uint256 amount, uint256 feeAmount) returns (bytes32)
+     *
+     * This function:
+     * 1. Transfers native tokens from msg.sender to adapter
+     * 2. Calls TokenHome.bridgeTokens to lock tokens
+     * 3. Emits Teleporter message to destination chain
+     */
+    fun bridgeNativeTokens(recipient: String, amount: BigInteger, feeAmount: BigInteger): TransactionReceipt {
+        val function = Function(
+            "bridgeNativeTokens",
+            listOf(
+                Address(recipient),
+                Uint256(amount),
+                Uint256(feeAmount)
+            ),
+            listOf(object : TypeReference<Bytes32>() {}) // returns transferId
+        )
+        return executeTransaction(function)
+    }
+
+    /**
+     * Bridge wrapped tokens back to their home chain.
+     * Maps to Solidity: bridgeWrappedTokensBack(address recipient, uint256 amount, uint256 feeAmount) returns (bytes32)
+     *
+     * This function:
+     * 1. Burns wrapped tokens from msg.sender
+     * 2. Calls TokenRemote.bridgeBack
+     * 3. Sends Teleporter message to unlock on home chain
+     */
+    fun bridgeWrappedTokensBack(recipient: String, amount: BigInteger, feeAmount: BigInteger): TransactionReceipt {
+        val function = Function(
+            "bridgeWrappedTokensBack",
+            listOf(
+                Address(recipient),
+                Uint256(amount),
+                Uint256(feeAmount)
+            ),
+            listOf(object : TypeReference<Bytes32>() {}) // returns transferId
+        )
+        return executeTransaction(function)
+    }
+
+    /**
+     * Mark a transfer as completed (operator only).
+     * Maps to Solidity: markTransferCompleted(bytes32 transferId)
+     */
+    fun markTransferCompleted(transferId: ByteArray): TransactionReceipt {
+        val function = Function(
+            "markTransferCompleted",
+            listOf(Bytes32(transferId)),
+            emptyList()
+        )
+        return executeTransaction(function)
+    }
+
+    /**
+     * Mark a transfer as failed (operator only).
+     * Maps to Solidity: markTransferFailed(bytes32 transferId)
+     */
+    fun markTransferFailed(transferId: ByteArray): TransactionReceipt {
+        val function = Function(
+            "markTransferFailed",
+            listOf(Bytes32(transferId)),
+            emptyList()
+        )
+        return executeTransaction(function)
+    }
+
+    /**
+     * Check if adapter is paused.
+     */
+    fun paused(): Boolean {
+        val function = Function(
+            "paused",
+            emptyList(),
+            listOf(object : TypeReference<Bool>() {})
+        )
+        return executeCall(function) as Boolean
+    }
+
+    // Legacy methods kept for compatibility (may be removed in future)
+
+    @Deprecated("Use bridgeNativeTokens instead", ReplaceWith("bridgeNativeTokens(recipient, amount, BigInteger.ZERO)"))
     fun sendTokens(amount: BigInteger, destinationChainId: ByteArray, recipient: String): TransactionReceipt {
         val function = Function(
             "sendTokens",
@@ -42,6 +127,7 @@ class OvaBridgeAdapterContract(
         return executeTransaction(function)
     }
 
+    @Deprecated("Use markTransferCompleted instead")
     fun receiveTokens(messageId: ByteArray, recipient: String, amount: BigInteger): TransactionReceipt {
         val function = Function(
             "receiveTokens",
