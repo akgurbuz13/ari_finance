@@ -40,9 +40,13 @@ ova:
       timelock-address: ${EU_TIMELOCK_ADDRESS:}
     bridge:
       contract-address: ${BRIDGE_CONTRACT_ADDRESS:}
-      # ICTT bridge contracts
+      # ICTT bridge contracts - TokenHome (locks native tokens when bridging out)
       tr-token-home-address: ${TR_TOKEN_HOME_ADDRESS:}
       eu-token-home-address: ${EU_TOKEN_HOME_ADDRESS:}
+      # ICTT bridge contracts - TokenRemote (mints/burns wrapped tokens from partner chain)
+      # TR L1 has wEUR (wrapped EUR from EU), EU L1 has wTRY (wrapped TRY from TR)
+      tr-token-remote-address: ${TR_TOKEN_REMOTE_ADDRESS:}
+      eu-token-remote-address: ${EU_TOKEN_REMOTE_ADDRESS:}
     wallet:
       # SECURITY: NO DEFAULT - Master key must be provided via secure secret management
       # In production, use AWS KMS or HashiCorp Vault for key management
