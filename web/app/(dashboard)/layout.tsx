@@ -11,10 +11,10 @@ export default function DashboardLayout({
 }) {
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-ova-50">
         <Sidebar />
         <Header />
-        <main className="ml-64 pt-16 p-8">{children}</main>
+        <main className="ml-60 pt-16 p-8">{children}</main>
       </div>
     </AuthGuard>
   );

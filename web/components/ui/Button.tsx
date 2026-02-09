@@ -3,7 +3,7 @@
 import { clsx } from "clsx";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
+type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "link";
 type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -15,19 +15,21 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-black text-white hover:bg-gray-900 active:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500",
+    "bg-ova-navy text-white hover:bg-ova-navy-light hover:shadow-sm active:scale-[0.98] disabled:bg-ova-300 disabled:text-ova-500 disabled:cursor-not-allowed",
   secondary:
-    "bg-white text-black border border-gray-300 hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100 disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200",
+    "bg-white text-ova-900 border border-ova-300 hover:bg-ova-50 hover:border-ova-400 active:bg-ova-100 disabled:bg-ova-50 disabled:text-ova-400 disabled:border-ova-200",
   ghost:
-    "bg-transparent text-black hover:bg-gray-100 active:bg-gray-200 disabled:text-gray-400",
+    "bg-transparent text-ova-700 hover:bg-ova-100 active:bg-ova-200 disabled:text-ova-400",
   danger:
-    "bg-red-600 text-white hover:bg-red-700 active:bg-red-800 disabled:bg-red-200",
+    "bg-ova-red text-white hover:bg-[#B91C1C] active:bg-[#991B1B] disabled:bg-ova-red/40",
+  link:
+    "bg-transparent text-ova-blue hover:underline font-medium p-0 h-auto",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: "px-3.5 py-2 text-body-sm",
-  md: "px-5 py-2.5 text-body-sm",
-  lg: "px-7 py-3.5 text-body",
+  sm: "px-4 h-10 text-body-sm",
+  md: "px-6 h-12 text-body-sm",
+  lg: "px-8 h-14 text-body",
 };
 
 function LoadingSpinner() {
@@ -74,9 +76,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={clsx(
-          "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 cursor-pointer disabled:cursor-not-allowed",
+          "inline-flex items-center justify-center font-medium rounded-xl transition-all duration-base ease-out focus:outline-none focus:ring-2 focus:ring-ova-blue focus:ring-offset-2 cursor-pointer disabled:cursor-not-allowed",
+          variant !== "link" && sizeStyles[size],
           variantStyles[variant],
-          sizeStyles[size],
           fullWidth && "w-full",
           className,
         )}

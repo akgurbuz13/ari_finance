@@ -1,4 +1,5 @@
-import { InputHTMLAttributes, forwardRef } from 'react';
+import { InputHTMLAttributes, forwardRef } from "react";
+import { clsx } from "clsx";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -6,26 +7,35 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, className = '', ...props }, ref) => {
+  ({ label, error, className, ...props }, ref) => {
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-body-sm font-medium text-ova-700 mb-3">
             {label}
           </label>
         )}
         <input
           ref={ref}
-          className={`w-full px-4 py-3 border border-gray-300 rounded-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all ${
-            error ? 'border-red-500 focus:ring-red-500' : ''
-          } ${className}`}
+          className={clsx(
+            "w-full h-12 px-4 bg-white border rounded-xl text-ova-900 placeholder:text-ova-500 transition-all duration-base ease-out",
+            "focus:outline-none focus:border-ova-blue focus:ring-2 focus:ring-ova-blue/20",
+            error
+              ? "border-ova-red ring-2 ring-ova-red/20"
+              : "border-ova-300",
+            props.disabled && "bg-ova-100 text-ova-500 cursor-not-allowed",
+            className,
+          )}
           {...props}
         />
-        {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+        {error && (
+          <p className="mt-1.5 text-body-sm text-ova-red">{error}</p>
+        )}
       </div>
     );
-  }
+  },
 );
 
-Input.displayName = 'Input';
+Input.displayName = "Input";
+
 export default Input;

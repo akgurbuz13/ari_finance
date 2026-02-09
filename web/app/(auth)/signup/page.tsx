@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '../../../lib/hooks/useAuth';
 import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
+import { Shield } from 'lucide-react';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -34,18 +35,20 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-ova-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
+        {/* Logo */}
         <div className="text-center mb-10">
-          <Link href="/" className="text-4xl font-bold text-black tracking-tight">
-            Ova
+          <Link href="/" className="ova-logo text-4xl" aria-label="Ova home">
+            ova
           </Link>
-          <p className="mt-3 text-gray-500">Create your account</p>
+          <p className="mt-3 text-body-sm text-ova-500">Create your account</p>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+            <div className="p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red">
               {error}
             </div>
           )}
@@ -78,31 +81,39 @@ export default function SignupPage() {
             required
           />
 
+          {/* Region selector with flags */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label className="block text-body-sm font-medium text-ova-700 mb-3">
               Region
             </label>
             <select
               value={region}
               onChange={(e) => setRegion(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+              className="w-full h-12 px-4 bg-white border border-ova-300 rounded-xl text-ova-900 transition-all duration-base focus:outline-none focus:border-ova-blue focus:ring-2 focus:ring-ova-blue/20 appearance-none cursor-pointer"
             >
-              <option value="TR">Turkey</option>
-              <option value="EU">European Union</option>
+              <option value="TR">{'\u{1F1F9}\u{1F1F7}'} Turkey</option>
+              <option value="EU">{'\u{1F1EA}\u{1F1FA}'} European Union</option>
             </select>
           </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Creating account...' : 'Create account'}
+          <Button type="submit" fullWidth loading={loading}>
+            Create account
           </Button>
         </form>
 
-        <p className="mt-8 text-center text-sm text-gray-500">
+        {/* Links */}
+        <p className="mt-8 text-center text-body-sm text-ova-500">
           Already have an account?{' '}
-          <Link href="/login" className="text-black font-medium hover:underline">
+          <Link href="/login" className="text-ova-blue font-medium hover:underline">
             Sign in
           </Link>
         </p>
+
+        {/* Trust signal */}
+        <div className="mt-8 flex items-center justify-center gap-2 text-caption text-ova-400">
+          <Shield size={14} strokeWidth={1.5} />
+          <span>Secured with bank-grade encryption</span>
+        </div>
       </div>
     </div>
   );

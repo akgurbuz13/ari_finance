@@ -12,18 +12,27 @@ export default function Header() {
     router.push('/login');
   };
 
+  const initials = user
+    ? `${(user.firstName || user.email)?.[0] || ''}`.toUpperCase()
+    : '?';
+
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 fixed top-0 left-64 right-0 z-10">
-      <div />
-      <div className="flex items-center gap-4">
+    <header className="fixed top-0 left-60 right-0 z-10 flex h-16 items-center justify-end border-b border-ova-200 bg-white px-6">
+      <div className="flex items-center gap-3">
         {user && (
-          <span className="text-sm text-gray-600">
+          <span className="text-body-sm text-ova-700">
             {user.firstName || user.email}
           </span>
         )}
         <button
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-ova-navy text-caption font-medium text-white"
+          title={user?.email || 'User'}
+        >
+          {initials}
+        </button>
+        <button
           onClick={handleLogout}
-          className="text-sm text-gray-500 hover:text-black transition-colors"
+          className="text-body-sm text-ova-500 hover:text-ova-900 transition-colors duration-fast"
         >
           Logout
         </button>

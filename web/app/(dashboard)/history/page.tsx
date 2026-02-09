@@ -1,15 +1,64 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { ArrowUpRight, ArrowDownLeft, ArrowLeftRight, Clock } from 'lucide-react';
 import api from '../../../lib/api/client';
 import type { Account, Transaction } from '../../../lib/api/types';
 import Card from '../../../components/ui/Card';
+import StatusPill from '../../../components/ui/StatusPill';
+import Skeleton, { SkeletonCard } from '../../../components/ui/Skeleton';
+
+const txTypeIcons: Record<string, typeof ArrowUpRight> = {
+  deposit: ArrowDownLeft,
+  withdrawal: ArrowUpRight,
+  p2p_transfer: ArrowUpRight,
+  fx_conversion: ArrowLeftRight,
+  cross_border: ArrowLeftRight,
+  mint: ArrowDownLeft,
+  burn: ArrowUpRight,
+  fee: ArrowUpRight,
+};
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+function HistorySkeleton() {
+  return (
+    <div className="max-w-dashboard mx-auto space-y-6">
+      <div className="flex items-center justify-between">
+        <Skeleton variant="text" className="w-48 h-8" />
+        <Skeleton variant="rectangular" className="w-40 h-12" />
+      </div>
+      <SkeletonCard />
+      <div className="space-y-3">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="flex items-center gap-3">
+            <Skeleton variant="circular" className="w-8 h-8" />
+            <div className="flex-1 space-y-1">
+              <Skeleton variant="text" className="w-32 h-4" />
+              <Skeleton variant="text" className="w-20 h-3" />
+            </div>
+            <Skeleton variant="rectangular" className="w-20 h-6 rounded-full" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function HistoryPage() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [selectedAccount, setSelectedAccount] = useState('');
   const [loading, setLoading] = useState(true);
+  const [loadingTx, setLoadingTx] = useState(false);
+  const [limit, setLimit] = useState(50);
+  const [hasMore, setHasMore] = useState(false);
 
   useEffect(() => {
     api.get<Account[]>('/accounts').then(({ data }) => {
@@ -23,21 +72,36 @@ export default function HistoryPage() {
 
   useEffect(() => {
     if (!selectedAccount) return;
-    setLoading(true);
-    api.get<Transaction[]>(`/transactions/account/${selectedAccount}?limit=50`)
-      .then(({ data }) => setTransactions(data))
-      .finally(() => setLoading(false));
-  }, [selectedAccount]);
+    setLoadingTx(true);
+    api.get<Transaction[]>(`/transactions/account/${selectedAccount}?limit=${limit}`)
+      .then(({ data }) => {
+        setTransactions(data);
+        setHasMore(data.length >= limit);
+      })
+      .finally(() => setLoadingTx(false));
+  }, [selectedAccount, limit]);
+
+  const loadMore = () => {
+    setLimit((prev) => prev + 50);
+  };
+
+  if (loading) {
+    return <HistorySkeleton />;
+  }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-black">Transaction History</h1>
+    <div className="max-w-dashboard mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-h2 text-ova-900">Transaction History</h1>
         {accounts.length > 0 && (
           <select
             value={selectedAccount}
-            onChange={(e) => setSelectedAccount(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
+            onChange={(e) => {
+              setSelectedAccount(e.target.value);
+              setLimit(50);
+            }}
+            className="h-12 px-4 bg-white border border-ova-300 rounded-xl text-body-sm text-ova-700 focus:outline-none focus:border-ova-blue focus:ring-2 focus:ring-ova-blue/20 transition-all duration-base"
           >
             {accounts.map((a) => (
               <option key={a.id} value={a.id}>
@@ -48,50 +112,80 @@ export default function HistoryPage() {
         )}
       </div>
 
+      {/* Transaction list */}
       <Card>
-        {loading ? (
-          <div className="text-center py-8 text-gray-400">Loading...</div>
-        ) : transactions.length === 0 ? (
-          <div className="text-center py-8 text-gray-400">No transactions found</div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="text-left py-3 px-2 text-xs font-medium text-gray-500 uppercase">Type</th>
-                  <th className="text-left py-3 px-2 text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th className="text-left py-3 px-2 text-xs font-medium text-gray-500 uppercase">Reference</th>
-                  <th className="text-left py-3 px-2 text-xs font-medium text-gray-500 uppercase">Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {transactions.map((tx) => (
-                  <tr key={tx.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="py-3 px-2 text-sm font-medium text-black capitalize">
-                      {tx.type.replace('_', ' ')}
-                    </td>
-                    <td className="py-3 px-2">
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        tx.status === 'completed'
-                          ? 'bg-green-100 text-green-700'
-                          : tx.status === 'failed'
-                          ? 'bg-red-100 text-red-700'
-                          : 'bg-yellow-100 text-yellow-700'
-                      }`}>
-                        {tx.status}
-                      </span>
-                    </td>
-                    <td className="py-3 px-2 text-sm text-gray-500 font-mono text-xs">
-                      {tx.referenceId || '—'}
-                    </td>
-                    <td className="py-3 px-2 text-sm text-gray-500">
-                      {new Date(tx.createdAt).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {loadingTx ? (
+          <div className="space-y-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex items-center gap-3">
+                <Skeleton variant="circular" className="w-8 h-8" />
+                <div className="flex-1 space-y-1">
+                  <Skeleton variant="text" className="w-32 h-4" />
+                  <Skeleton variant="text" className="w-20 h-3" />
+                </div>
+                <Skeleton variant="rectangular" className="w-20 h-6 rounded-full" />
+              </div>
+            ))}
           </div>
+        ) : transactions.length === 0 ? (
+          <div className="text-center py-8">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ova-100 mx-auto mb-4">
+              <Clock size={28} strokeWidth={1.5} className="text-ova-400" />
+            </div>
+            <p className="text-body-sm text-ova-400">No transactions found</p>
+          </div>
+        ) : (
+          <>
+            <div className="divide-y divide-ova-200">
+              {transactions.map((tx) => {
+                const Icon = txTypeIcons[tx.type] || ArrowUpRight;
+                return (
+                  <div key={tx.id} className="flex items-center justify-between py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ova-100">
+                        <Icon size={16} strokeWidth={1.5} className="text-ova-500" />
+                      </div>
+                      <div>
+                        <p className="text-body-sm font-medium text-ova-900 capitalize">
+                          {tx.type.replace(/_/g, ' ')}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <span className="text-caption text-ova-400">
+                            {formatDate(tx.createdAt)}
+                          </span>
+                          {tx.referenceId && (
+                            <>
+                              <span className="text-caption text-ova-300">&middot;</span>
+                              <span className="font-mono text-caption text-ova-400">
+                                {tx.referenceId}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <StatusPill
+                      variant={
+                        tx.status === 'completed' ? 'success' :
+                        tx.status === 'pending' ? 'warning' :
+                        tx.status === 'failed' ? 'error' : 'neutral'
+                      }
+                    >
+                      {tx.status}
+                    </StatusPill>
+                  </div>
+                );
+              })}
+            </div>
+            {hasMore && (
+              <button
+                onClick={loadMore}
+                className="block w-full mt-4 text-center text-body-sm text-ova-blue hover:underline cursor-pointer py-2"
+              >
+                Load more transactions
+              </button>
+            )}
+          </>
         )}
       </Card>
     </div>

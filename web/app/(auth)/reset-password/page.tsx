@@ -3,9 +3,11 @@
 import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { Shield } from 'lucide-react';
 import api from '../../../lib/api/client';
 import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
+import Skeleton from '../../../components/ui/Skeleton';
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
@@ -54,20 +56,27 @@ function ResetPasswordForm() {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-4">
+      <div className="min-h-screen bg-ova-50 flex items-center justify-center px-4">
         <div className="w-full max-w-md">
+          {/* Logo */}
           <div className="text-center mb-10">
-            <Link href="/" className="text-4xl font-bold text-black tracking-tight">
-              Ova
+            <Link href="/" className="ova-logo text-4xl" aria-label="Ova home">
+              ova
             </Link>
           </div>
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600 mb-6">
+          <div className="p-4 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red mb-6">
             Invalid or missing reset token. Please request a new password reset link.
           </div>
           <div className="text-center">
-            <Link href="/forgot-password" className="text-sm text-black font-medium hover:underline">
+            <Link href="/forgot-password" className="text-body-sm text-ova-blue font-medium hover:underline">
               Request a new reset link
             </Link>
+          </div>
+
+          {/* Trust signal */}
+          <div className="mt-8 flex items-center justify-center gap-2 text-caption text-ova-400">
+            <Shield size={14} strokeWidth={1.5} />
+            <span>Secured with bank-grade encryption</span>
           </div>
         </div>
       </div>
@@ -75,22 +84,23 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-ova-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
+        {/* Logo */}
         <div className="text-center mb-10">
-          <Link href="/" className="text-4xl font-bold text-black tracking-tight">
-            Ova
+          <Link href="/" className="ova-logo text-4xl" aria-label="Ova home">
+            ova
           </Link>
-          <p className="mt-3 text-gray-500">Set a new password</p>
+          <p className="mt-3 text-body-sm text-ova-500">Set a new password</p>
         </div>
 
         {success ? (
           <div className="space-y-6">
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700">
+            <div className="p-4 bg-ova-green-light border border-ova-green/20 rounded-xl text-body-sm text-ova-green">
               Your password has been reset successfully. You can now sign in with your new password.
             </div>
             <div className="text-center">
-              <Link href="/login" className="text-sm text-black font-medium hover:underline">
+              <Link href="/login" className="text-body-sm text-ova-blue font-medium hover:underline">
                 Go to sign in
               </Link>
             </div>
@@ -99,7 +109,7 @@ function ResetPasswordForm() {
           <>
             <form onSubmit={handleSubmit} className="space-y-5">
               {error && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+                <div className="p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red">
                   {error}
                 </div>
               )}
@@ -122,19 +132,25 @@ function ResetPasswordForm() {
                 required
               />
 
-              <Button type="submit" className="w-full" loading={loading} disabled={loading}>
+              <Button type="submit" fullWidth loading={loading} disabled={loading}>
                 {loading ? 'Resetting...' : 'Reset password'}
               </Button>
             </form>
 
-            <p className="mt-8 text-center text-sm text-gray-500">
+            <p className="mt-8 text-center text-body-sm text-ova-500">
               Remember your password?{' '}
-              <Link href="/login" className="text-black font-medium hover:underline">
+              <Link href="/login" className="text-ova-blue font-medium hover:underline">
                 Sign in
               </Link>
             </p>
           </>
         )}
+
+        {/* Trust signal */}
+        <div className="mt-8 flex items-center justify-center gap-2 text-caption text-ova-400">
+          <Shield size={14} strokeWidth={1.5} />
+          <span>Secured with bank-grade encryption</span>
+        </div>
       </div>
     </div>
   );
@@ -144,29 +160,17 @@ export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-white flex items-center justify-center px-4">
-          <div className="flex flex-col items-center gap-3">
-            <svg
-              className="animate-spin h-8 w-8 text-black"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
-            <p className="text-sm text-gray-500">Loading...</p>
+        <div className="min-h-screen bg-ova-50 flex items-center justify-center px-4">
+          <div className="w-full max-w-md space-y-6">
+            <div className="text-center">
+              <Skeleton variant="text" className="w-16 h-10 mx-auto" />
+              <Skeleton variant="text" className="w-48 h-5 mx-auto mt-3" />
+            </div>
+            <div className="space-y-5">
+              <Skeleton variant="rectangular" className="w-full h-12 rounded-xl" />
+              <Skeleton variant="rectangular" className="w-full h-12 rounded-xl" />
+              <Skeleton variant="rectangular" className="w-full h-12 rounded-xl" />
+            </div>
           </div>
         </div>
       }
