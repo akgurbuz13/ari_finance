@@ -3,6 +3,15 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --ova-ink: #10243a;
+    --ova-navy: #0f3558;
+    --ova-sky: #1f82cd;
+    --ova-teal: #56bfa8;
+    --ova-canvas: #f5fbff;
+    --ova-line: #d2e4f1;
+  }
+
   * {
     margin: 0;
     padding: 0;
@@ -10,62 +19,213 @@
   }
 
   html {
+    scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
 
   body {
-    @apply bg-white text-black font-sans;
+    @apply font-sans;
+    min-height: 100vh;
+    color: var(--ova-ink);
+    background:
+      radial-gradient(70rem 38rem at 88% -16%, rgba(31, 130, 205, 0.18), transparent 72%),
+      radial-gradient(50rem 28rem at -8% -8%, rgba(86, 191, 168, 0.2), transparent 72%),
+      linear-gradient(180deg, #fbfeff 0%, var(--ova-canvas) 52%, #edf6fc 100%);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
   ::selection {
-    @apply bg-black text-white;
+    background: #153f66;
+    color: #f2f9ff;
   }
 
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus {
-    -webkit-text-fill-color: #000;
+    -webkit-text-fill-color: #122a44;
     -webkit-box-shadow: 0 0 0px 1000px #fff inset;
     transition: background-color 5000s ease-in-out 0s;
   }
 }
 
 @layer components {
-  .ova-wordmark {
-    @apply font-sans font-bold tracking-tight;
-    letter-spacing: -0.04em;
+  .ova-site {
+    position: relative;
   }
 
   .ova-container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
   }
 
   .ova-section {
-    @apply py-16 md:py-24;
+    @apply py-16 md:py-20;
   }
 
-  .ova-gradient-border {
-    @apply border border-gray-200;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 1));
+  .ova-wordmark {
+    @apply font-semibold tracking-tight;
+    letter-spacing: -0.04em;
+  }
+
+  .ova-logo {
+    font-family: "Avenir Next", "Manrope", "Satoshi", "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.08em;
+    color: #0f3355;
+    line-height: 1;
+    text-transform: lowercase;
+  }
+
+  .ova-chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold uppercase;
+    letter-spacing: 0.12em;
+    color: #326389;
+    border: 1px solid #bdd9eb;
+    background: rgba(236, 247, 255, 0.9);
+  }
+
+  .ova-surface-grid {
+    background-image:
+      linear-gradient(rgba(17, 72, 117, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(17, 72, 117, 0.06) 1px, transparent 1px);
+    background-size: 34px 34px;
+    background-position: -1px -1px;
+  }
+
+  .ova-hero-desk {
+    border-radius: 1.5rem;
+    border: 1px solid #c8deed;
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(236, 246, 254, 0.88));
+    padding: 1.5rem;
+    box-shadow:
+      0 28px 70px rgba(17, 63, 103, 0.16),
+      inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    transition: transform 0.25s ease;
+  }
+
+  .ova-progress-line {
+    background: linear-gradient(90deg, #58c3a8 0%, #2881c4 100%);
+    animation: ova-pulse-line 2.2s ease-in-out infinite;
+  }
+
+  .ova-capability-card {
+    border: 1px solid #c9deee;
+    border-radius: 1.25rem;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 251, 255, 0.86));
+    padding: 1.5rem;
+    box-shadow: 0 18px 42px rgba(16, 57, 93, 0.09);
+    transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+  }
+
+  .ova-capability-card:hover {
+    transform: translateY(-4px);
+    border-color: #9dc4e0;
+    box-shadow: 0 22px 48px rgba(17, 61, 99, 0.15);
+  }
+
+  .ova-flow-step {
+    border: 1px solid #c8dfee;
+    border-radius: 1.25rem;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(244, 250, 255, 0.9));
+    padding: 1.2rem 1.2rem 1.3rem;
+    box-shadow: 0 14px 34px rgba(13, 57, 92, 0.08);
+    transition: transform 0.24s ease, border-color 0.24s ease, box-shadow 0.24s ease;
+  }
+
+  .ova-flow-step-active {
+    transform: translateY(-4px);
+    border-color: #86b6da;
+    box-shadow: 0 20px 44px rgba(20, 71, 112, 0.16);
+  }
+
+  .ova-phone-shell {
+    position: relative;
+    overflow: hidden;
+    border-radius: 2rem;
+    border: 1px solid #2f5f85;
+    background: linear-gradient(180deg, #123e63 0%, #082a46 100%);
+    padding: 1rem 0.95rem 1.1rem;
+    box-shadow:
+      0 26px 64px rgba(9, 42, 70, 0.45),
+      inset 0 1px 0 rgba(167, 211, 239, 0.3);
+  }
+
+  .ova-phone-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(16rem 7rem at 70% -10%, rgba(96, 188, 235, 0.22), transparent 75%),
+      radial-gradient(16rem 7rem at 20% 112%, rgba(72, 191, 164, 0.2), transparent 72%);
+    pointer-events: none;
+  }
+
+  .ova-phone-notch {
+    position: relative;
+    z-index: 2;
+    margin: 0 auto 0.8rem;
+    height: 0.34rem;
+    width: 5.2rem;
+    border-radius: 999px;
+    background: #4f7696;
+    opacity: 0.75;
+  }
+
+  .ova-phone-scene {
+    position: relative;
+    z-index: 2;
+    border-radius: 1.4rem;
+    border: 1px solid #2f5f84;
+    background: linear-gradient(180deg, #113959 0%, #092d48 100%);
+    padding: 1rem 0.9rem 0.95rem;
+    color: #eaf6ff;
+    animation: ova-scene-in 0.45s ease;
+  }
+
+  .ova-phone-progress {
+    background: linear-gradient(90deg, #58c3a8 0%, #2f8dcc 100%);
+    animation: ova-pulse-line 2.2s ease-in-out infinite;
+  }
+
+  .ova-state-pill {
+    @apply rounded-full px-2.5 py-1 text-[11px] font-semibold;
+    line-height: 1;
+  }
+
+  .ova-state-ok {
+    color: #c8f3e4;
+    background: rgba(62, 153, 128, 0.33);
+  }
+
+  .ova-state-info {
+    color: #d6ebfb;
+    background: rgba(65, 129, 174, 0.35);
+  }
+
+  .ova-state-warn {
+    color: #ffe4c7;
+    background: rgba(170, 112, 52, 0.35);
   }
 
   .ova-card {
-    @apply bg-white border border-gray-200 rounded-lg p-6;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    @apply rounded-2xl p-6;
+    border: 1px solid var(--ova-line);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(247, 252, 255, 0.86));
+    box-shadow: 0 18px 42px rgba(16, 57, 93, 0.09);
+    transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
   }
 
   .ova-card:hover {
-    @apply border-gray-300 shadow-md;
+    transform: translateY(-3px);
+    border-color: #9dc4e0;
+    box-shadow: 0 22px 48px rgba(17, 61, 99, 0.15);
   }
 
   .ova-input {
-    @apply w-full px-4 py-3 bg-white border border-gray-300 rounded-lg
-           text-black placeholder:text-gray-400
-           focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent
-           transition-all duration-200;
+    @apply w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-black placeholder:text-gray-400
+      transition-all duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-black;
   }
 
   .ova-input-error {
@@ -73,7 +233,7 @@
   }
 
   .ova-label {
-    @apply block text-body-sm font-medium text-gray-700 mb-1.5;
+    @apply mb-1.5 block text-body-sm font-medium text-gray-700;
   }
 }
 
@@ -82,12 +242,61 @@
     text-wrap: balance;
   }
 
+  .font-display {
+    font-family: "Iowan Old Style", "Palatino", "Times New Roman", serif;
+  }
+
   .scrollbar-none {
-    scrollbar-width: none;
     -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   .scrollbar-none::-webkit-scrollbar {
     display: none;
+  }
+
+  .ova-reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .ova-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ova-pulse-line {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes ova-scene-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ova-reveal,
+  .ova-visible,
+  .ova-phone-scene,
+  .ova-progress-line,
+  .ova-phone-progress {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
   }
 }

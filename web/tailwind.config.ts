@@ -9,6 +9,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        ova: {
+          ink: "#101C2D",
+          slate: "#29415F",
+          sky: "#1E7EC8",
+          mint: "#5BC4A8",
+          frost: "#EAF4FB",
+          canvas: "#F6FAFC",
+          glow: "#CFEAFF",
+        },
         black: "#000000",
         white: "#FFFFFF",
         gray: {
@@ -26,7 +35,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+        sans: ["Avenir Next", "Manrope", "Satoshi", "Segoe UI", "sans-serif"],
+        display: ["Iowan Old Style", "Palatino", "Times New Roman", "serif"],
       },
       fontSize: {
         "display-xl": ["4.5rem", { lineHeight: "1", letterSpacing: "-0.02em" }],
