@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '../../../lib/hooks/useAuth';
 import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
+import { Shield } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [totpCode, setTotpCode] = useState('');
+  const [needs2FA, setNeeds2FA] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -25,7 +27,12 @@ export default function LoginPage() {
       await login(email, password, totpCode || undefined);
       router.push('/home');
     } catch (err: unknown) {
-      const axiosErr = err as { response?: { data?: { message?: string } } };
+      const axiosErr = err as { response?: { data?: { message?: string; requires2FA?: boolean } } };
+      if (axiosErr.response?.data?.requires2FA) {
+        setNeeds2FA(true);
+        setLoading(false);
+        return;
+      }
       setError(axiosErr.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
@@ -33,18 +40,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-ova-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
+        {/* Logo */}
         <div className="text-center mb-10">
-          <Link href="/" className="text-4xl font-bold text-black tracking-tight">
-            Ova
+          <Link href="/" className="ova-logo text-4xl" aria-label="Ova home">
+            ova
           </Link>
-          <p className="mt-3 text-gray-500">Sign in to your account</p>
+          <p className="mt-3 text-body-sm text-ova-500">Sign in to your account</p>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+            <div className="p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red">
               {error}
             </div>
           )}
@@ -67,31 +76,42 @@ export default function LoginPage() {
             required
           />
 
-          <Input
-            label="2FA Code (if enabled)"
-            type="text"
-            value={totpCode}
-            onChange={(e) => setTotpCode(e.target.value)}
-            placeholder="6-digit code"
-          />
+          {/* 2FA: only shown when server says it's required */}
+          {needs2FA && (
+            <Input
+              label="2FA Code"
+              type="text"
+              value={totpCode}
+              onChange={(e) => setTotpCode(e.target.value)}
+              placeholder="6-digit code"
+              autoFocus
+            />
+          )}
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign in'}
+          <Button type="submit" fullWidth loading={loading}>
+            {needs2FA ? 'Verify & sign in' : 'Sign in'}
           </Button>
         </form>
 
+        {/* Links */}
         <div className="mt-6 text-center">
-          <Link href="/forgot-password" className="text-sm text-gray-500 hover:text-black">
+          <Link href="/forgot-password" className="text-body-sm text-ova-blue hover:underline">
             Forgot your password?
           </Link>
         </div>
 
-        <p className="mt-4 text-center text-sm text-gray-500">
+        <p className="mt-4 text-center text-body-sm text-ova-500">
           Don&apos;t have an account?{' '}
-          <Link href="/signup" className="text-black font-medium hover:underline">
+          <Link href="/signup" className="text-ova-blue font-medium hover:underline">
             Sign up
           </Link>
         </p>
+
+        {/* Trust signal */}
+        <div className="mt-8 flex items-center justify-center gap-2 text-caption text-ova-400">
+          <Shield size={14} strokeWidth={1.5} />
+          <span>Secured with bank-grade encryption</span>
+        </div>
       </div>
     </div>
   );

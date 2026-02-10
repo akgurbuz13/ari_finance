@@ -1,10 +1,160 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Copy, Check, Wallet, ChevronRight, Plus } from 'lucide-react';
+import { clsx } from 'clsx';
 import api from '../../../lib/api/client';
 import type { Account } from '../../../lib/api/types';
 import Card from '../../../components/ui/Card';
 import Button from '../../../components/ui/Button';
+import StatusPill from '../../../components/ui/StatusPill';
+import Skeleton, { SkeletonCard } from '../../../components/ui/Skeleton';
+
+function formatCurrency(amount: string, currency: 'TRY' | 'EUR') {
+  const num = parseFloat(amount);
+  const symbol = currency === 'TRY' ? '₺' : '€';
+  const locale = currency === 'TRY' ? 'tr-TR' : 'de-DE';
+  return `${symbol}${num.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+function maskIban(accountId: string) {
+  // Generate a display IBAN from the account ID
+  const prefix = 'TR';
+  const shortId = accountId.replace(/-/g, '').slice(0, 16).toUpperCase();
+  const masked = `${prefix}** **** **** ${shortId.slice(-4)}`;
+  return masked;
+}
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard API may not be available
+    }
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="inline-flex items-center gap-1 text-caption text-ova-blue hover:underline cursor-pointer"
+    >
+      {copied ? (
+        <>
+          <Check size={12} strokeWidth={2} />
+          <span>Copied</span>
+        </>
+      ) : (
+        <>
+          <Copy size={12} strokeWidth={2} />
+          <span>Copy</span>
+        </>
+      )}
+    </button>
+  );
+}
+
+function AccountCard({ account }: { account: Account }) {
+  const [expanded, setExpanded] = useState(false);
+  const iban = maskIban(account.id);
+
+  return (
+    <div className="bg-white border border-ova-200 border-l-4 border-l-ova-navy rounded-2xl p-6 shadow-card">
+      <div className="flex items-start justify-between">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="text-caption uppercase text-ova-500 tracking-wide">
+              {account.currency} {account.accountType.replace(/_/g, ' ')}
+            </span>
+            <StatusPill
+              variant={
+                account.status === 'active' ? 'success' :
+                account.status === 'frozen' ? 'warning' : 'error'
+              }
+            >
+              {account.status}
+            </StatusPill>
+          </div>
+          <p className="amount-display text-ova-navy">
+            {formatCurrency(account.balance, account.currency)}
+          </p>
+          <span className="text-body-sm text-ova-500 block">Available balance</span>
+        </div>
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-ova-100">
+          <Wallet size={20} strokeWidth={1.5} className="text-ova-500" />
+        </div>
+      </div>
+
+      {/* IBAN section */}
+      <div className="mt-4 pt-4 border-t border-ova-100">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-caption text-ova-400">IBAN</span>
+            <span className="font-mono text-body-sm text-ova-700">{iban}</span>
+          </div>
+          <CopyButton text={account.id} />
+        </div>
+      </div>
+
+      {/* Expandable details */}
+      <div className="mt-3">
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="inline-flex items-center gap-1 text-caption text-ova-blue cursor-pointer hover:underline"
+        >
+          <ChevronRight
+            size={12}
+            strokeWidth={2}
+            className={clsx('transition-transform duration-fast', expanded && 'rotate-90')}
+          />
+          {expanded ? 'Hide details' : 'Account details'}
+        </button>
+        {expanded && (
+          <div className="mt-3 space-y-2 pl-1">
+            <div className="flex items-center gap-2">
+              <span className="text-caption text-ova-400">Account ID:</span>
+              <span className="font-mono text-caption text-ova-500">{account.id}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-caption text-ova-400">Type:</span>
+              <span className="text-caption text-ova-500 capitalize">{account.accountType.replace(/_/g, ' ')}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-caption text-ova-400">Opened:</span>
+              <span className="text-caption text-ova-500">
+                {new Date(account.createdAt).toLocaleDateString('en-GB', {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+                })}
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function AccountsSkeleton() {
+  return (
+    <div className="max-w-dashboard mx-auto space-y-6">
+      <div className="flex items-center justify-between">
+        <Skeleton variant="text" className="w-32 h-8" />
+        <div className="flex gap-2">
+          <Skeleton variant="rectangular" className="w-32 h-10" />
+          <Skeleton variant="rectangular" className="w-32 h-10" />
+        </div>
+      </div>
+      <SkeletonCard />
+      <SkeletonCard />
+    </div>
+  );
+}
 
 export default function AccountsPage() {
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -33,57 +183,43 @@ export default function AccountsPage() {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center h-64 text-gray-400">Loading...</div>;
+    return <AccountsSkeleton />;
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-black">Accounts</h1>
+    <div className="max-w-dashboard mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-h2 text-ova-900">Accounts</h1>
         <div className="flex gap-2">
           <Button variant="secondary" onClick={() => createAccount('TRY')} disabled={creating}>
-            + TRY Account
+            <Plus size={16} strokeWidth={2} className="mr-1 inline" />
+            TRY Account
           </Button>
           <Button variant="secondary" onClick={() => createAccount('EUR')} disabled={creating}>
-            + EUR Account
+            <Plus size={16} strokeWidth={2} className="mr-1 inline" />
+            EUR Account
           </Button>
         </div>
       </div>
 
+      {/* Account list */}
       {accounts.length === 0 ? (
         <Card>
-          <p className="text-center text-gray-500 py-8">
-            No accounts yet. Create one to get started.
-          </p>
+          <div className="text-center py-8 space-y-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ova-100 mx-auto">
+              <Wallet size={28} strokeWidth={1.5} className="text-ova-400" />
+            </div>
+            <p className="text-body text-ova-500">No accounts yet</p>
+            <p className="text-body-sm text-ova-400">
+              Create a TRY or EUR account to start sending and receiving money.
+            </p>
+          </div>
         </Card>
       ) : (
         <div className="space-y-4">
           {accounts.map((account) => (
-            <Card key={account.id}>
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-sm text-gray-500 uppercase tracking-wide">
-                    {account.currency} {account.accountType.replace('_', ' ')}
-                  </p>
-                  <p className="text-2xl font-bold text-black mt-1">
-                    {account.currency === 'TRY' ? '₺' : '€'}
-                    {parseFloat(account.balance).toLocaleString('en-US', {
-                      minimumFractionDigits: 2,
-                    })}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <span className={`text-xs px-2 py-1 rounded-full ${
-                    account.status === 'active'
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-red-100 text-red-700'
-                  }`}>
-                    {account.status}
-                  </span>
-                  <p className="text-xs text-gray-400 mt-2 font-mono">{account.id}</p>
-                </div>
-              </div>
-            </Card>
+            <AccountCard key={account.id} account={account} />
           ))}
         </div>
       )}

@@ -3,16 +3,16 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   display: "swap",
   variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
-  title: "Ova - Banking Without Borders",
+  title: "Ova - Cross-border transfers between Turkey and Europe",
   description:
-    "The modern fintech platform for instant transfers, multi-currency accounts, and seamless cross-border payments.",
-  keywords: ["banking", "fintech", "transfers", "multi-currency", "payments"],
+    "Move money between TRY and EUR with live rates, transparent fees, and real-time settlement tracking.",
+  keywords: ["banking", "fintech", "Turkey", "Europe", "TRY", "EUR", "cross-border", "transfers"],
 };
 
 export default function RootLayout({
