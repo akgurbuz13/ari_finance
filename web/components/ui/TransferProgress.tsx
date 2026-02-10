@@ -26,20 +26,23 @@ interface TransferProgressProps {
 function StepIndicator({ status }: { status: StepStatus }) {
   if (status === 'completed') {
     return (
-      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ova-green text-white">
-        <Check size={14} strokeWidth={2.5} />
+      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ova-green text-white">
+        <Check size={16} strokeWidth={2.5} />
       </div>
     );
   }
   if (status === 'active') {
     return (
-      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ova-blue animate-pulse">
-        <div className="h-2 w-2 rounded-full bg-white" />
+      <div className="relative">
+        <div className="absolute inset-0 rounded-full bg-ova-blue/20 animate-ping" style={{ animationDuration: '2s' }} />
+        <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-ova-blue">
+          <div className="h-2.5 w-2.5 rounded-full bg-white" />
+        </div>
       </div>
     );
   }
   return (
-    <div className="h-6 w-6 rounded-full bg-ova-300" />
+    <div className="h-8 w-8 rounded-full bg-ova-300" />
   );
 }
 
@@ -83,7 +86,7 @@ export default function TransferProgress({ steps, className }: TransferProgressP
               <StepIndicator status={step.status} />
               {!isLast && (
                 <div className={clsx(
-                  'w-0.5 flex-1 min-h-[24px]',
+                  'w-0.5 flex-1 min-h-[28px]',
                   step.status === 'completed' ? 'bg-ova-green' : 'bg-ova-200',
                 )} />
               )}

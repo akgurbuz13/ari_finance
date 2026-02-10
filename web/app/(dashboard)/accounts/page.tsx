@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Copy, Check, Wallet, ChevronRight, Plus } from 'lucide-react';
+import { Copy, Check, Wallet, ChevronRight, Plus, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { clsx } from 'clsx';
 import api from '../../../lib/api/client';
 import type { Account } from '../../../lib/api/types';
@@ -135,6 +136,12 @@ function AccountCard({ account }: { account: Account }) {
             </div>
           </div>
         )}
+        <Link
+          href="/history"
+          className="inline-flex items-center gap-1 text-caption text-ova-blue hover:underline mt-3"
+        >
+          View transactions <ArrowRight size={12} />
+        </Link>
       </div>
     </div>
   );
@@ -190,7 +197,12 @@ export default function AccountsPage() {
     <div className="max-w-dashboard mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-h2 text-ova-900">Accounts</h1>
+        <div>
+          <h1 className="text-h2 text-ova-900">Accounts</h1>
+          {accounts.length > 0 && (
+            <p className="text-body-sm text-ova-500 mt-1">{accounts.length} account{accounts.length !== 1 ? 's' : ''}</p>
+          )}
+        </div>
         <div className="flex gap-2">
           <Button variant="secondary" onClick={() => createAccount('TRY')} disabled={creating}>
             <Plus size={16} strokeWidth={2} className="mr-1 inline" />
@@ -206,14 +218,22 @@ export default function AccountsPage() {
       {/* Account list */}
       {accounts.length === 0 ? (
         <Card>
-          <div className="text-center py-8 space-y-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ova-100 mx-auto">
-              <Wallet size={28} strokeWidth={1.5} className="text-ova-400" />
+          <div className="text-center py-12 space-y-4">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-ova-100 mx-auto">
+              <Wallet size={32} strokeWidth={1.5} className="text-ova-400" />
             </div>
-            <p className="text-body text-ova-500">No accounts yet</p>
-            <p className="text-body-sm text-ova-400">
-              Create a TRY or EUR account to start sending and receiving money.
+            <h2 className="text-h3 text-ova-900">No accounts yet</h2>
+            <p className="text-body-sm text-ova-400 max-w-sm mx-auto">
+              Create a TRY or EUR account to start sending and receiving money between Turkey and Europe.
             </p>
+            <div className="flex justify-center gap-3 pt-2">
+              <Button variant="secondary" onClick={() => createAccount('TRY')}>
+                {'\u{1F1F9}\u{1F1F7}'} Create TRY Account
+              </Button>
+              <Button variant="secondary" onClick={() => createAccount('EUR')}>
+                {'\u{1F1EA}\u{1F1FA}'} Create EUR Account
+              </Button>
+            </div>
           </div>
         </Card>
       ) : (

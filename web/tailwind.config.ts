@@ -74,13 +74,48 @@ const config: Config = {
         "card-hover": "0 2px 8px rgba(0,0,0,0.06)",
         sm: "0 1px 2px 0 rgba(0,0,0,0.05)",
       },
+      backgroundImage: {
+        "gradient-card": "linear-gradient(135deg, #0D1B2A 0%, #1B2D3E 100%)",
+        "gradient-subtle": "linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)",
+      },
       animation: {
-        "hero-enter": "heroEnter 400ms ease-out",
+        "hero-enter": "heroEnter 600ms ease-out",
+        "fade-in": "fadeIn 300ms ease-out",
+        "fade-in-up": "fadeInUp 400ms ease-out",
+        "slide-in-right": "slideInRight 300ms ease-out",
+        "scale-in": "scaleIn 200ms ease-out",
+        shimmer: "shimmer 2s linear infinite",
+        float: "float 6s ease-in-out infinite",
+        "spin-slow": "spin 3s linear infinite",
       },
       keyframes: {
         heroEnter: {
+          "0%": { opacity: "0", transform: "translateY(12px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        fadeIn: {
           "0%": { opacity: "0" },
           "100%": { opacity: "1" },
+        },
+        fadeInUp: {
+          "0%": { opacity: "0", transform: "translateY(8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        slideInRight: {
+          "0%": { opacity: "0", transform: "translateX(-8px)" },
+          "100%": { opacity: "1", transform: "translateX(0)" },
+        },
+        scaleIn: {
+          "0%": { opacity: "0", transform: "scale(0.95)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-6px)" },
         },
       },
       transitionDuration: {

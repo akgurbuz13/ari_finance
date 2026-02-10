@@ -13,6 +13,12 @@ export const metadata: Metadata = {
   description:
     "Move money between TRY and EUR with live rates, transparent fees, and real-time settlement tracking.",
   keywords: ["banking", "fintech", "Turkey", "Europe", "TRY", "EUR", "cross-border", "transfers"],
+  openGraph: {
+    title: "Ova - Cross-border transfers between Turkey and Europe",
+    description:
+      "Move money between TRY and EUR with live rates, transparent fees, and real-time settlement tracking.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

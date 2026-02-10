@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Globe, CheckCircle2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import api from '../../../lib/api/client';
 import type { Account, FxQuote } from '../../../lib/api/types';
 import Input from '../../../components/ui/Input';
@@ -295,19 +296,19 @@ export default function TransferPage() {
                 : 'border-transparent text-ova-500 hover:text-ova-700'
             }`}
           >
-            {t === 'domestic' ? 'Domestic' : 'Cross-Border'}
+            {t === 'domestic' ? <><ArrowUpRight size={16} className="mr-1.5 inline" /> Domestic</> : <><Globe size={16} className="mr-1.5 inline" /> Cross-Border</>}
           </button>
         ))}
       </div>
 
       {/* Domestic success/error banners */}
       {success && (
-        <div className="p-3 bg-ova-green-light border border-ova-green/20 rounded-xl text-body-sm text-ova-green">
+        <div role="alert" className="p-3 bg-ova-green-light border border-ova-green/20 rounded-xl text-body-sm text-ova-green">
           {success}
         </div>
       )}
       {error && (
-        <div className="p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red">
+        <div role="alert" className="p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red">
           {error}
         </div>
       )}
@@ -327,7 +328,7 @@ export default function TransferPage() {
                 <option value="">Select account</option>
                 {accounts.map(a => (
                   <option key={a.id} value={a.id}>
-                    {a.currency} — {formatAmount(a.balance, a.currency)}
+                    {a.currency === 'TRY' ? '\u{1F1F9}\u{1F1F7}' : '\u{1F1EA}\u{1F1FA}'} {a.currency} — {formatAmount(a.balance, a.currency)}
                   </option>
                 ))}
               </select>
@@ -371,7 +372,7 @@ export default function TransferPage() {
       {tab === 'crossBorder' && cbStep === 'form' && (
         <Card>
           {cbError && (
-            <div className="mb-5 p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red">
+            <div role="alert" className="mb-5 p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red">
               {cbError}
             </div>
           )}
@@ -387,7 +388,7 @@ export default function TransferPage() {
                 <option value="">Select source account</option>
                 {accounts.filter(a => a.status === 'active').map(a => (
                   <option key={a.id} value={a.id}>
-                    {a.currency} — {formatAmount(a.balance, a.currency)}
+                    {a.currency === 'TRY' ? '\u{1F1F9}\u{1F1F7}' : '\u{1F1EA}\u{1F1FA}'} {a.currency} — {formatAmount(a.balance, a.currency)}
                   </option>
                 ))}
               </select>
@@ -434,6 +435,9 @@ export default function TransferPage() {
                   Available: {formatAmount(sourceAccount.balance, sourceAccount.currency)}
                 </p>
               )}
+              {cbAmount && sourceAccount && parseFloat(cbAmount) > parseFloat(sourceAccount.balance) && (
+                <p className="mt-1 text-caption text-ova-red">Insufficient balance</p>
+              )}
             </div>
 
             <Button type="submit" fullWidth loading={cbLoading}>
@@ -447,7 +451,7 @@ export default function TransferPage() {
       {tab === 'crossBorder' && cbStep === 'quote' && cbQuote && (
         <Card>
           {cbError && (
-            <div className="mb-5 p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red">
+            <div role="alert" className="mb-5 p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red">
               {cbError}
             </div>
           )}
@@ -499,6 +503,15 @@ export default function TransferPage() {
               <div className="flex justify-between text-body-sm">
                 <span className="text-ova-500">Arrives in</span>
                 <span className="text-ova-900 font-medium">~2 minutes</span>
+              </div>
+              <div className="flex justify-between text-body-sm font-medium border-t border-ova-200 pt-3 mt-3">
+                <span className="text-ova-700">Total cost</span>
+                <span className="text-ova-900">
+                  {formatAmount(
+                    parseFloat(cbQuote.sourceAmount) * (1 + parseFloat(cbQuote.spread) / 100),
+                    cbQuote.sourceCurrency
+                  )}
+                </span>
               </div>
             </div>
 
@@ -554,9 +567,14 @@ export default function TransferPage() {
       {tab === 'crossBorder' && cbStep === 'success' && (
         <Card>
           <div className="text-center py-8 space-y-4">
-            <div className="w-16 h-16 bg-ova-green-light rounded-full flex items-center justify-center mx-auto">
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
+              className="w-16 h-16 bg-ova-green-light rounded-full flex items-center justify-center mx-auto"
+            >
               <CheckCircle2 size={32} strokeWidth={1.5} className="text-ova-green" />
-            </div>
+            </motion.div>
             <h3 className="text-h2 text-ova-900">Transfer complete</h3>
             <p className="text-body-sm text-ova-500">
               {cbQuote ? `${formatAmount(cbQuote.targetAmount, cbQuote.targetCurrency)} delivered` : 'Your transfer has been completed.'}

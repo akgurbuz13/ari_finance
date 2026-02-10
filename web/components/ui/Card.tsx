@@ -6,6 +6,7 @@ interface CardProps {
   header?: string;
   className?: string;
   padding?: "standard" | "generous";
+  hover?: boolean;
 }
 
 interface BalanceCardProps {
@@ -15,11 +16,12 @@ interface BalanceCardProps {
   className?: string;
 }
 
-export default function Card({ children, header, className, padding = "standard" }: CardProps) {
+export default function Card({ children, header, className, padding = "standard", hover }: CardProps) {
   return (
     <div
       className={clsx(
         "bg-white border border-ova-200 rounded-2xl shadow-card",
+        hover && "hover:shadow-card-hover cursor-pointer transition-shadow duration-fast",
         className,
       )}
     >

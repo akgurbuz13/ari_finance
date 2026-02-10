@@ -15,7 +15,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-ova-navy text-white hover:bg-ova-navy-light hover:shadow-sm active:scale-[0.98] disabled:bg-ova-300 disabled:text-ova-500 disabled:cursor-not-allowed",
+    "bg-ova-navy text-white hover:bg-ova-navy-light hover:shadow-sm disabled:bg-ova-300 disabled:text-ova-500 disabled:cursor-not-allowed",
   secondary:
     "bg-white text-ova-900 border border-ova-300 hover:bg-ova-50 hover:border-ova-400 active:bg-ova-100 disabled:bg-ova-50 disabled:text-ova-400 disabled:border-ova-200",
   ghost:
@@ -76,7 +76,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={clsx(
-          "inline-flex items-center justify-center font-medium rounded-xl transition-all duration-base ease-out focus:outline-none focus:ring-2 focus:ring-ova-blue focus:ring-offset-2 cursor-pointer disabled:cursor-not-allowed",
+          "inline-flex items-center justify-center font-medium transition-all duration-base ease-out focus:outline-none focus:ring-2 focus:ring-ova-blue focus:ring-offset-2 cursor-pointer disabled:cursor-not-allowed active:scale-[0.98]",
+          variant === "primary" ? "rounded-full" : "rounded-xl",
           variant !== "link" && sizeStyles[size],
           variantStyles[variant],
           fullWidth && "w-full",
