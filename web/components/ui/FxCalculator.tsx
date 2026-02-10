@@ -9,7 +9,17 @@ export default function FxCalculator() {
   const [sendAmount, setSendAmount] = useState("10000");
   const [direction, setDirection] = useState<"TRY_EUR" | "EUR_TRY">("TRY_EUR");
 
-  const numericSend = parseFloat(sendAmount.replace(/,/g, "")) || 0;
+  // Normalize locale input: treat dots as thousands separators if comma is present,
+  // otherwise treat dot as decimal. E.g. "10.000,50" → 10000.50, "10000.50" → 10000.50
+  const parseLocaleNumber = (value: string): number => {
+    const hasCommaDecimal = /\d,\d{1,2}$/.test(value);
+    if (hasCommaDecimal) {
+      return parseFloat(value.replace(/\./g, "").replace(",", ".")) || 0;
+    }
+    return parseFloat(value.replace(/,/g, "")) || 0;
+  };
+
+  const numericSend = parseLocaleNumber(sendAmount);
   const fee = numericSend * FEE_RATE;
 
   const receiveAmount =

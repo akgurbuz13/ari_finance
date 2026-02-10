@@ -125,10 +125,11 @@ export default function HomePage() {
           <Card className="col-span-2">
             <div className="text-center py-8">
               <p className="text-body text-ova-500 mb-4">No accounts yet</p>
-              <Link href={"/accounts" as const}>
-                <button className="inline-flex items-center justify-center font-medium rounded-xl transition-all duration-base bg-ova-navy text-white hover:bg-ova-navy-light hover:shadow-sm px-6 h-12 text-body-sm">
-                  Create your first account
-                </button>
+              <Link
+                href={"/accounts" as const}
+                className="inline-flex items-center justify-center font-medium rounded-xl transition-all duration-base bg-ova-navy text-white hover:bg-ova-navy-light hover:shadow-sm px-6 h-12 text-body-sm"
+              >
+                Create your first account
               </Link>
             </div>
           </Card>

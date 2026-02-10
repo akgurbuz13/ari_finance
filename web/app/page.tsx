@@ -28,7 +28,7 @@ export default function LandingPage() {
       </nav>
 
       {/* ──── HERO ──── */}
-      <section className="hero-content bg-white pt-24 pb-20">
+      <section className="animate-hero-enter bg-white pt-24 pb-20">
         <div className="mx-auto grid max-w-landing items-start gap-16 px-6 lg:grid-cols-[1.1fr_0.9fr]">
           {/* Left column */}
           <div className="max-w-xl">

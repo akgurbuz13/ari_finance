@@ -21,7 +21,7 @@ const variantStyles: Record<ButtonVariant, string> = {
   ghost:
     "bg-transparent text-ova-700 hover:bg-ova-100 active:bg-ova-200 disabled:text-ova-400",
   danger:
-    "bg-ova-red text-white hover:bg-[#B91C1C] active:bg-[#991B1B] disabled:bg-ova-red/40",
+    "bg-ova-red text-white hover:bg-ova-red/90 active:bg-ova-red/80 disabled:bg-ova-red/40",
   link:
     "bg-transparent text-ova-blue hover:underline font-medium p-0 h-auto",
 };

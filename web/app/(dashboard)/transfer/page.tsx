@@ -582,10 +582,11 @@ export default function TransferPage() {
               <Button variant="secondary" className="flex-1" onClick={resetCrossBorder}>
                 Make another transfer
               </Button>
-              <Link href={"/history" as const} className="flex-1">
-                <Button variant="ghost" fullWidth>
-                  View in history
-                </Button>
+              <Link
+                href={"/history" as const}
+                className="flex-1 inline-flex items-center justify-center rounded-xl px-4 h-12 text-body-sm font-medium text-ova-700 hover:bg-ova-100 transition-all duration-base focus:outline-none focus:ring-2 focus:ring-ova-blue focus:ring-offset-2"
+              >
+                View in history
               </Link>
             </div>
           </div>
