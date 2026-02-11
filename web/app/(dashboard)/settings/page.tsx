@@ -9,6 +9,7 @@ import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
 import Card from '../../../components/ui/Card';
 import StatusPill from '../../../components/ui/StatusPill';
+import PasswordStrength from '../../../components/ui/PasswordStrength';
 
 type SettingsTab = 'profile' | 'security' | 'preferences';
 
@@ -75,7 +76,7 @@ function ProfileTab() {
       <Card>
         <form onSubmit={handleSave} className="space-y-4">
           {message && (
-            <div className={clsx(
+            <div role="alert" className={clsx(
               'p-3 rounded-xl text-body-sm border',
               message.type === 'success'
                 ? 'bg-ova-green-light border-ova-green/20 text-ova-green'
@@ -115,6 +116,10 @@ function SecurityTab() {
   const [setting2fa, setSetting2fa] = useState(false);
   const [totpData, setTotpData] = useState<{ secret: string; uri: string } | null>(null);
   const [error2fa, setError2fa] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [passwordMessage, setPasswordMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const setup2FA = async () => {
     setSetting2fa(true);
@@ -131,6 +136,20 @@ function SecurityTab() {
 
   const dismiss2FA = () => {
     setTotpData(null);
+  };
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordMessage(null);
+    try {
+      await api.post('/auth/change-password', { currentPassword, newPassword });
+      setPasswordMessage({ type: 'success', text: 'Password updated successfully' });
+      setChangingPassword(false);
+      setCurrentPassword('');
+      setNewPassword('');
+    } catch {
+      setPasswordMessage({ type: 'error', text: 'Failed to update password. Please check your current password.' });
+    }
   };
 
   return (
@@ -163,7 +182,7 @@ function SecurityTab() {
           </div>
 
           {error2fa && (
-            <div className="p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red">
+            <div role="alert" className="p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red">
               {error2fa}
             </div>
           )}
@@ -179,9 +198,11 @@ function SecurityTab() {
                   <X size={14} strokeWidth={2} className="text-ova-400" />
                 </button>
               </div>
-              <p className="text-caption text-ova-500">
-                Scan the URI below with your authenticator app (Google Authenticator, Authy, etc.), or copy the secret key manually.
-              </p>
+              <ol className="list-decimal list-inside space-y-2 text-body-sm text-ova-700">
+                <li>Open your authenticator app (Google Authenticator, Authy, etc.)</li>
+                <li>Copy the secret key below and add it as a new account</li>
+                <li>Enter the 6-digit code from the app on your next login</li>
+              </ol>
               <div className="space-y-3">
                 <CopyableSecret label="URI" value={totpData.uri} />
                 <CopyableSecret label="Secret" value={totpData.secret} />
@@ -203,8 +224,31 @@ function SecurityTab() {
               <p className="text-caption text-ova-400">Change your account password</p>
             </div>
           </div>
-          <Button variant="ghost" disabled>Change Password</Button>
+          {!changingPassword && (
+            <Button variant="secondary" onClick={() => setChangingPassword(true)}>Change Password</Button>
+          )}
         </div>
+        {passwordMessage && (
+          <div className={clsx(
+            'mt-4 p-3 rounded-xl text-body-sm border',
+            passwordMessage.type === 'success'
+              ? 'bg-ova-green-light border-ova-green/20 text-ova-green'
+              : 'bg-ova-red-light border-ova-red/20 text-ova-red',
+          )}>
+            {passwordMessage.text}
+          </div>
+        )}
+        {changingPassword && (
+          <form onSubmit={handlePasswordChange} className="mt-4 space-y-4">
+            <Input label="Current Password" type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} required />
+            <Input label="New Password" type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} required />
+            {newPassword && <PasswordStrength password={newPassword} />}
+            <div className="flex gap-2">
+              <Button type="submit">Update Password</Button>
+              <Button variant="ghost" type="button" onClick={() => { setChangingPassword(false); setCurrentPassword(''); setNewPassword(''); }}>Cancel</Button>
+            </div>
+          </form>
+        )}
       </Card>
     </div>
   );

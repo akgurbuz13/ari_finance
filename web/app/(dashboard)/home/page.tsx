@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowUpRight, ArrowDownLeft, ArrowLeftRight } from 'lucide-react';
 import api from '../../../lib/api/client';
@@ -8,6 +9,7 @@ import type { Account, Transaction } from '../../../lib/api/types';
 import { useAuth } from '../../../lib/hooks/useAuth';
 import Card from '../../../components/ui/Card';
 import { BalanceCard } from '../../../components/ui/Card';
+import Button from '../../../components/ui/Button';
 import StatusPill from '../../../components/ui/StatusPill';
 import Skeleton, { SkeletonCard } from '../../../components/ui/Skeleton';
 
@@ -62,6 +64,7 @@ function DashboardSkeleton() {
 
 export default function HomePage() {
   const { user } = useAuth();
+  const router = useRouter();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -116,21 +119,26 @@ export default function HomePage() {
         {accounts.map((account) => (
           <BalanceCard
             key={account.id}
-            currency={account.currency}
+            currency={`${account.currency === 'TRY' ? '\u{1F1F9}\u{1F1F7}' : '\u{1F1EA}\u{1F1FA}'} ${account.currency}`}
             amount={formatCurrency(account.balance, account.currency)}
           />
         ))}
 
         {accounts.length === 0 && (
-          <Card className="col-span-2">
+          <Card className="col-span-2 bg-gradient-card text-white">
             <div className="text-center py-8">
-              <p className="text-body text-ova-500 mb-4">No accounts yet</p>
-              <Link
-                href={"/accounts" as const}
-                className="inline-flex items-center justify-center font-medium rounded-xl transition-all duration-base bg-ova-navy text-white hover:bg-ova-navy-light hover:shadow-sm px-6 h-12 text-body-sm"
-              >
-                Create your first account
-              </Link>
+              <h2 className="text-h2 text-white">Welcome to Ova</h2>
+              <p className="text-body text-white/70 mt-2">
+                Create your first account to start sending money between Turkey and Europe.
+              </p>
+              <div className="mt-6 flex justify-center gap-3">
+                <Button variant="secondary" onClick={() => router.push('/accounts')}>
+                  Create TRY Account
+                </Button>
+                <Button variant="secondary" onClick={() => router.push('/accounts')}>
+                  Create EUR Account
+                </Button>
+              </div>
             </div>
           </Card>
         )}
@@ -143,7 +151,7 @@ export default function HomePage() {
             href={"/transfer" as const}
             className="flex flex-col items-center gap-2 px-6 py-4 rounded-xl hover:bg-ova-100 transition-colors duration-fast"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-ova-navy text-white">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ova-navy text-white">
               <ArrowUpRight size={20} strokeWidth={1.5} />
             </div>
             <span className="text-body-sm font-medium text-ova-700">Send</span>
@@ -152,7 +160,7 @@ export default function HomePage() {
             href={"/transfer" as const}
             className="flex flex-col items-center gap-2 px-6 py-4 rounded-xl hover:bg-ova-100 transition-colors duration-fast"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-ova-navy text-white">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ova-navy text-white">
               <ArrowDownLeft size={20} strokeWidth={1.5} />
             </div>
             <span className="text-body-sm font-medium text-ova-700">Request</span>
@@ -161,7 +169,7 @@ export default function HomePage() {
             href={"/transfer" as const}
             className="flex flex-col items-center gap-2 px-6 py-4 rounded-xl hover:bg-ova-100 transition-colors duration-fast"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-ova-navy text-white">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ova-navy text-white">
               <ArrowLeftRight size={20} strokeWidth={1.5} />
             </div>
             <span className="text-body-sm font-medium text-ova-700">Convert</span>
@@ -219,17 +227,23 @@ export default function HomePage() {
       {/* Account health */}
       <Card>
         <h3 className="text-body-sm font-medium text-ova-700 mb-4">Account Health</h3>
-        <div className="flex flex-wrap gap-6">
-          <div className="flex items-center gap-2">
-            <StatusPill variant={user?.status === 'active' ? 'success' : 'warning'}>
-              {user?.status === 'active' ? 'KYC Verified' : 'KYC Pending'}
-            </StatusPill>
-          </div>
-          <div className="flex items-center gap-2">
-            <StatusPill variant={user?.totpEnabled ? 'success' : 'warning'}>
-              {user?.totpEnabled ? '2FA Enabled' : '2FA Disabled'}
-            </StatusPill>
-          </div>
+        <div className="flex flex-wrap gap-4">
+          {user?.status !== 'active' ? (
+            <Link href="/kyc" className="flex items-center gap-2 p-3 rounded-xl bg-ova-amber-light hover:bg-ova-amber-light/80 transition-colors duration-fast">
+              <StatusPill variant="warning">KYC Pending</StatusPill>
+              <span className="text-caption text-ova-amber">Complete verification →</span>
+            </Link>
+          ) : (
+            <StatusPill variant="success">KYC Verified</StatusPill>
+          )}
+          {!user?.totpEnabled ? (
+            <Link href="/settings" className="flex items-center gap-2 p-3 rounded-xl bg-ova-amber-light hover:bg-ova-amber-light/80 transition-colors duration-fast">
+              <StatusPill variant="warning">2FA Disabled</StatusPill>
+              <span className="text-caption text-ova-amber">Enable 2FA →</span>
+            </Link>
+          ) : (
+            <StatusPill variant="success">2FA Enabled</StatusPill>
+          )}
         </div>
       </Card>
     </div>

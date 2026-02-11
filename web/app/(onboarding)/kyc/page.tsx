@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ShieldCheck, Clock, CheckCircle2, Check, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Clock, CheckCircle2, Check, AlertCircle, Globe, RefreshCw, Headphones } from 'lucide-react';
 import { clsx } from 'clsx';
 import api from '../../../lib/api/client';
 import type { KycStatus } from '../../../lib/api/types';
@@ -9,7 +9,11 @@ import Button from '../../../components/ui/Button';
 import Card from '../../../components/ui/Card';
 import Skeleton, { SkeletonCard } from '../../../components/ui/Skeleton';
 
-const steps = ['Identity', 'Documents', 'Review'];
+const steps = [
+  { name: 'Identity', description: 'Personal information' },
+  { name: 'Documents', description: 'ID verification' },
+  { name: 'Review', description: 'Final check' },
+];
 
 export default function KycPage() {
   const [kycStatus, setKycStatus] = useState<KycStatus | null>(null);
@@ -73,22 +77,25 @@ export default function KycPage() {
       {/* Horizontal stepper */}
       <div className="flex items-center gap-2">
         {steps.map((step, i) => (
-          <div key={step} className="contents">
+          <div key={step.name} className="contents">
             <div className="flex items-center gap-3">
               <div className={clsx(
-                'flex h-8 w-8 items-center justify-center rounded-full text-body-sm font-medium',
+                'flex h-10 w-10 items-center justify-center rounded-full text-body-sm font-medium',
                 i < stepperState ? 'bg-ova-green text-white' :
                 i === stepperState ? 'bg-ova-navy text-white' :
                 'bg-ova-200 text-ova-500',
               )}>
                 {i < stepperState ? <Check size={16} strokeWidth={2} /> : i + 1}
               </div>
-              <span className={clsx(
-                'text-body-sm font-medium',
-                i <= stepperState ? 'text-ova-900' : 'text-ova-400',
-              )}>
-                {step}
-              </span>
+              <div>
+                <span className={clsx(
+                  'text-body-sm font-medium block',
+                  i <= stepperState ? 'text-ova-900' : 'text-ova-400',
+                )}>
+                  {step.name}
+                </span>
+                <span className="text-caption text-ova-400">{step.description}</span>
+              </div>
             </div>
             {i < steps.length - 1 && (
               <div className={clsx(
@@ -102,7 +109,7 @@ export default function KycPage() {
 
       {/* Error banner */}
       {error && (
-        <div className="p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red">
+        <div role="alert" className="p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red">
           {error}
         </div>
       )}
@@ -116,15 +123,24 @@ export default function KycPage() {
             </div>
             <h2 className="text-h3 text-ova-900">Identity verified</h2>
             <p className="text-body-sm text-ova-500">You&apos;ve unlocked:</p>
-            <ul className="text-body-sm text-ova-700 space-y-2 text-left inline-block">
-              <li className="flex items-center gap-2">
-                <Check size={16} className="text-ova-green" /> International transfers up to EUR 50,000
+            <ul className="text-body-sm text-ova-700 space-y-3 text-left inline-block">
+              <li className="flex items-center gap-3">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ova-green-light">
+                  <Globe size={14} className="text-ova-green" />
+                </div>
+                International transfers up to EUR 50,000
               </li>
-              <li className="flex items-center gap-2">
-                <Check size={16} className="text-ova-green" /> Full FX conversion access
+              <li className="flex items-center gap-3">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ova-green-light">
+                  <RefreshCw size={14} className="text-ova-green" />
+                </div>
+                Full FX conversion access
               </li>
-              <li className="flex items-center gap-2">
-                <Check size={16} className="text-ova-green" /> Priority support
+              <li className="flex items-center gap-3">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ova-green-light">
+                  <Headphones size={14} className="text-ova-green" />
+                </div>
+                Priority support
               </li>
             </ul>
           </div>

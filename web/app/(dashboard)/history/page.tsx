@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ArrowUpRight, ArrowDownLeft, ArrowLeftRight, Clock } from 'lucide-react';
+import { clsx } from 'clsx';
 import api from '../../../lib/api/client';
 import type { Account, Transaction } from '../../../lib/api/types';
 import Card from '../../../components/ui/Card';
@@ -59,6 +60,8 @@ export default function HistoryPage() {
   const [loadingTx, setLoadingTx] = useState(false);
   const [limit, setLimit] = useState(50);
   const [hasMore, setHasMore] = useState(false);
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [expandedTx, setExpandedTx] = useState<string | null>(null);
 
   useEffect(() => {
     api.get<Account[]>('/accounts').then(({ data }) => {
@@ -112,6 +115,26 @@ export default function HistoryPage() {
         )}
       </div>
 
+      {/* Type filter chips */}
+      {transactions.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {['all', 'p2p_transfer', 'cross_border', 'fx_conversion', 'deposit', 'fee'].map((type) => (
+            <button
+              key={type}
+              onClick={() => setTypeFilter(type)}
+              className={clsx(
+                'px-3 py-1.5 rounded-full text-caption font-medium transition-colors duration-fast cursor-pointer',
+                typeFilter === type
+                  ? 'bg-ova-navy text-white'
+                  : 'bg-ova-100 text-ova-500 hover:bg-ova-200'
+              )}
+            >
+              {type === 'all' ? 'All' : type.replace(/_/g, ' ')}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Transaction list */}
       <Card>
         {loadingTx ? (
@@ -137,42 +160,63 @@ export default function HistoryPage() {
         ) : (
           <>
             <div className="divide-y divide-ova-200">
-              {transactions.map((tx) => {
+              {(typeFilter === 'all' ? transactions : transactions.filter(tx => tx.type === typeFilter)).map((tx) => {
                 const Icon = txTypeIcons[tx.type] || ArrowUpRight;
                 return (
-                  <div key={tx.id} className="flex items-center justify-between py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ova-100">
-                        <Icon size={16} strokeWidth={1.5} className="text-ova-500" />
-                      </div>
-                      <div>
-                        <p className="text-body-sm font-medium text-ova-900 capitalize">
-                          {tx.type.replace(/_/g, ' ')}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <span className="text-caption text-ova-400">
-                            {formatDate(tx.createdAt)}
-                          </span>
-                          {tx.referenceId && (
-                            <>
-                              <span className="text-caption text-ova-300">&middot;</span>
-                              <span className="font-mono text-caption text-ova-400">
-                                {tx.referenceId}
-                              </span>
-                            </>
-                          )}
+                  <div
+                    key={tx.id}
+                    className="cursor-pointer hover:bg-ova-50 transition-colors duration-fast -mx-6 px-6"
+                    onClick={() => setExpandedTx(expandedTx === tx.id ? null : tx.id)}
+                  >
+                    <div className="flex items-center justify-between py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ova-100">
+                          <Icon size={16} strokeWidth={1.5} className="text-ova-500" />
+                        </div>
+                        <div>
+                          <p className="text-body-sm font-medium text-ova-900 capitalize">
+                            {tx.type.replace(/_/g, ' ')}
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <span className="text-caption text-ova-400">
+                              {formatDate(tx.createdAt)}
+                            </span>
+                            {tx.referenceId && (
+                              <>
+                                <span className="text-caption text-ova-300">&middot;</span>
+                                <span className="font-mono text-caption text-ova-400">
+                                  {tx.referenceId}
+                                </span>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
+                      <StatusPill
+                        variant={
+                          tx.status === 'completed' ? 'success' :
+                          tx.status === 'pending' ? 'warning' :
+                          tx.status === 'failed' ? 'error' : 'neutral'
+                        }
+                      >
+                        {tx.status}
+                      </StatusPill>
                     </div>
-                    <StatusPill
-                      variant={
-                        tx.status === 'completed' ? 'success' :
-                        tx.status === 'pending' ? 'warning' :
-                        tx.status === 'failed' ? 'error' : 'neutral'
-                      }
-                    >
-                      {tx.status}
-                    </StatusPill>
+                    {expandedTx === tx.id && (
+                      <div className="mt-2 pb-3 pl-11 space-y-1">
+                        <p className="text-caption text-ova-400">
+                          Transaction ID: <span className="font-mono text-ova-500">{tx.id}</span>
+                        </p>
+                        {tx.referenceId && (
+                          <p className="text-caption text-ova-400">
+                            Reference: <span className="font-mono text-ova-500">{tx.referenceId}</span>
+                          </p>
+                        )}
+                        <p className="text-caption text-ova-400">
+                          Date: {new Date(tx.createdAt).toLocaleString('en-GB')}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 );
               })}

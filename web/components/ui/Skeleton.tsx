@@ -16,7 +16,7 @@ export default function Skeleton({
   return (
     <div
       className={clsx(
-        "animate-pulse bg-ova-200",
+        "skeleton-shimmer",
         variant === "text" && "h-4 rounded",
         variant === "circular" && "rounded-full",
         variant === "rectangular" && "rounded-xl",
