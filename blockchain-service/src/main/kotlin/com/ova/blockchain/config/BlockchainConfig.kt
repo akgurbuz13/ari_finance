@@ -17,6 +17,8 @@ class BlockchainConfig(
     @Value("\${ari.blockchain.bridge.eu-token-home-address:}") val euTokenHomeAddress: String,
     @Value("\${ari.blockchain.bridge.tr-token-remote-address:}") val trTokenRemoteAddress: String,
     @Value("\${ari.blockchain.bridge.eu-token-remote-address:}") val euTokenRemoteAddress: String,
+    @Value("\${ari.blockchain.bridge.tr-blockchain-id:}") val trBlockchainId: String,
+    @Value("\${ari.blockchain.bridge.eu-blockchain-id:}") val euBlockchainId: String,
     @Value("\${ari.blockchain.wallet.master-key}") val walletMasterKey: String,
     @Value("\${ari.core-banking.url}") val coreBankingUrl: String
 ) {
@@ -44,6 +46,18 @@ class BlockchainConfig(
         return when (chainId) {
             trL1ChainId -> trTokenRemoteAddress
             euL1ChainId -> euTokenRemoteAddress
+            else -> throw IllegalArgumentException("Unknown chain ID: $chainId")
+        }
+    }
+
+    /**
+     * Get the Avalanche blockchain ID (bytes32 hex) for a chain.
+     * Used for Teleporter cross-chain messaging.
+     */
+    fun getBlockchainId(chainId: Long): String {
+        return when (chainId) {
+            trL1ChainId -> trBlockchainId
+            euL1ChainId -> euBlockchainId
             else -> throw IllegalArgumentException("Unknown chain ID: $chainId")
         }
     }

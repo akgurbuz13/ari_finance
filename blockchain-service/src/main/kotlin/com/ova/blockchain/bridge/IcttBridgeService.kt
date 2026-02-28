@@ -21,9 +21,9 @@ import java.util.UUID
  * - TokenRemote: Deployed on remote chains (mints/burns wrapped tokens)
  * - Teleporter: Handles cross-chain message delivery with BLS signatures
  *
- * For Ova's dual-L1 setup:
- * - TR L1: TokenHome for ovaTRY, TokenRemote for wrapped ovaEUR (wEUR)
- * - EU L1: TokenHome for ovaEUR, TokenRemote for wrapped ovaTRY (wTRY)
+ * For ARI's dual-L1 setup:
+ * - TR L1: TokenHome for ariTRY, TokenRemote for wrapped ariEUR (wEUR)
+ * - EU L1: TokenHome for ariEUR, TokenRemote for wrapped ariTRY (wTRY)
  *
  * Cross-border flow (TRY -> EUR):
  * 1. User initiates on TR L1 -> TokenHome locks TRY
@@ -44,9 +44,6 @@ class IcttBridgeService(
     private val log = LoggerFactory.getLogger(javaClass)
 
     companion object {
-        // Chain identifiers (Avalanche blockchain IDs as bytes32)
-        val TR_L1_CHAIN_ID: Long = 99999
-        val EU_L1_CHAIN_ID: Long = 99998
 
         // Fee settings
         val DEFAULT_BRIDGE_FEE = BigDecimal("0.001") // 0.1% bridge fee
@@ -105,8 +102,8 @@ class IcttBridgeService(
 
         // Estimate time based on chain finality + relay
         val estimatedTime = when {
-            sourceChainId == TR_L1_CHAIN_ID && destinationChainId == EU_L1_CHAIN_ID -> 120 // 2 minutes
-            sourceChainId == EU_L1_CHAIN_ID && destinationChainId == TR_L1_CHAIN_ID -> 120
+            sourceChainId == config.trL1ChainId && destinationChainId == config.euL1ChainId -> 120 // 2 minutes
+            sourceChainId == config.euL1ChainId && destinationChainId == config.trL1ChainId -> 120
             else -> 300 // 5 minutes for unknown routes
         }
 

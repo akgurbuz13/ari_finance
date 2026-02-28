@@ -47,6 +47,9 @@ ari:
       # TR L1 has wEUR (wrapped EUR from EU), EU L1 has wTRY (wrapped TRY from TR)
       tr-token-remote-address: ${TR_TOKEN_REMOTE_ADDRESS:}
       eu-token-remote-address: ${EU_TOKEN_REMOTE_ADDRESS:}
+      # Avalanche blockchain IDs (bytes32 hex) for Teleporter cross-chain messaging
+      tr-blockchain-id: ${TR_BLOCKCHAIN_ID:}
+      eu-blockchain-id: ${EU_BLOCKCHAIN_ID:}
     wallet:
       # SECURITY: NO DEFAULT - Master key must be provided via secure secret management
       # In production, use AWS KMS or HashiCorp Vault for key management
