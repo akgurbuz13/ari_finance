@@ -1,12 +1,12 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { loadFixture, time } from "@nomicfoundation/hardhat-toolbox/network-helpers";
-import { OvaTokenHome, OvaStablecoin, MockTeleporter } from "../typechain-types";
+import { AriTokenHome, AriStablecoin, MockTeleporter } from "../typechain-types";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 
-describe("OvaTokenHome", function () {
-  let tokenHome: OvaTokenHome;
-  let stablecoin: OvaStablecoin;
+describe("AriTokenHome", function () {
+  let tokenHome: AriTokenHome;
+  let stablecoin: AriStablecoin;
   let teleporter: MockTeleporter;
   let admin: SignerWithAddress;
   let bridgeAdmin: SignerWithAddress;
@@ -20,8 +20,8 @@ describe("OvaTokenHome", function () {
     [admin, bridgeAdmin, user1, user2] = await ethers.getSigners();
 
     // Deploy mock stablecoin
-    const OvaStablecoin = await ethers.getContractFactory("OvaStablecoin");
-    const stablecoin = await OvaStablecoin.deploy("Ova Turkish Lira", "ovaTRY");
+    const AriStablecoin = await ethers.getContractFactory("AriStablecoin");
+    const stablecoin = await AriStablecoin.deploy("ARI Turkish Lira", "ariTRY");
     await stablecoin.waitForDeployment();
 
     // Deploy mock teleporter
@@ -30,8 +30,8 @@ describe("OvaTokenHome", function () {
     await teleporter.waitForDeployment();
 
     // Deploy TokenHome
-    const OvaTokenHome = await ethers.getContractFactory("OvaTokenHome");
-    const tokenHome = await OvaTokenHome.deploy(
+    const AriTokenHome = await ethers.getContractFactory("AriTokenHome");
+    const tokenHome = await AriTokenHome.deploy(
       await stablecoin.getAddress(),
       await teleporter.getAddress(),
       THIS_CHAIN_ID,

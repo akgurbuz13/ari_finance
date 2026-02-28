@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
 @Component
-@ConditionalOnProperty(name = ["ova.outbox.poller.enabled"], havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = ["ari.outbox.poller.enabled"], havingValue = "true", matchIfMissing = true)
 class OutboxPoller(
     private val jdbcTemplate: JdbcTemplate,
     private val objectMapper: ObjectMapper,

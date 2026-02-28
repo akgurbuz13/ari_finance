@@ -65,6 +65,10 @@ class AccountService(
         return accountRepository.getBalance(accountId)
     }
 
+    fun isAccountOwnedByUser(accountId: UUID, userId: UUID): Boolean {
+        return accountRepository.findById(accountId)?.userId == userId
+    }
+
     @Transactional
     fun freezeAccount(accountId: UUID, adminId: UUID) {
         accountRepository.updateStatus(accountId, AccountStatus.FROZEN)

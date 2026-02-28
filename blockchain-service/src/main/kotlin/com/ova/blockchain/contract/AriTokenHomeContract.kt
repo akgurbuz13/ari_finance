@@ -18,16 +18,16 @@ import org.web3j.tx.gas.ContractGasProvider
 import java.math.BigInteger
 
 /**
- * Type-safe wrapper for OvaTokenHome.sol contract interactions via web3j.
+ * Type-safe wrapper for AriTokenHome.sol contract interactions via web3j.
  *
- * OvaTokenHome is deployed on the "home" chain where the native token lives.
+ * AriTokenHome is deployed on the "home" chain where the native token lives.
  * It locks tokens when bridging out and releases tokens when receiving bridged-back tokens.
  *
- * For Ova:
- * - TR L1 has TokenHome for ovaTRY
- * - EU L1 has TokenHome for ovaEUR
+ * For ARI:
+ * - TR L1 has TokenHome for ariTRY
+ * - EU L1 has TokenHome for ariEUR
  */
-class OvaTokenHomeContract(
+class AriTokenHomeContract(
     private val web3j: Web3j,
     private val contractAddress: String,
     private val credentials: Credentials,

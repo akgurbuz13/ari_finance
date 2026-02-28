@@ -18,6 +18,7 @@ configMapGenerator:
       - spring.profiles.active=eu
       - ova.region=EU
       - redis.host=ova-redis.abcdef.euc1.cache.amazonaws.com
+      - cors.allowed-origins=https://app.ova.app,https://admin.ova.app
       - api.url=https://api.ova.app
 
 images:

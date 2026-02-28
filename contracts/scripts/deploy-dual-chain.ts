@@ -3,14 +3,14 @@ import * as fs from "fs";
 import * as path from "path";
 
 /**
- * Dual-Chain Deployment Orchestrator for Ova Platform
+ * Dual-Chain Deployment Orchestrator for ARI Platform
  *
  * This script orchestrates deployment to BOTH TR and EU L1 chains,
  * ensuring proper cross-chain configuration for ICTT bridge.
  *
  * DEPLOYMENT FLOW:
- * 1. Deploy to TR L1: ovaTRY stablecoin + TokenHome + TokenRemote(wEUR)
- * 2. Deploy to EU L1: ovaEUR stablecoin + TokenHome + TokenRemote(wTRY)
+ * 1. Deploy to TR L1: ariTRY stablecoin + TokenHome + TokenRemote(wEUR)
+ * 2. Deploy to EU L1: ariEUR stablecoin + TokenHome + TokenRemote(wTRY)
  * 3. Cross-register TokenHome ↔ TokenRemote between chains
  * 4. Configure BridgeAdapters with all contract addresses
  *
@@ -60,23 +60,23 @@ interface DualChainDeployment {
 
 // Chain configuration
 const TR_CONFIG = {
-  networkName: "ova-tr-testnet",
-  tokenName: "Ova Turkish Lira",
-  tokenSymbol: "ovaTRY",
-  wrappedTokenName: "Wrapped ovaEUR",
+  networkName: "ari-tr-testnet",
+  tokenName: "ARI Turkish Lira",
+  tokenSymbol: "ariTRY",
+  wrappedTokenName: "Wrapped ariEUR",
   wrappedTokenSymbol: "wEUR",
   // Avalanche blockchain ID for TR L1 (generated from subnet)
-  blockchainID: process.env.TR_BLOCKCHAIN_ID || ethers.id("ova-tr-l1").slice(0, 66),
+  blockchainID: process.env.TR_BLOCKCHAIN_ID || ethers.id("ari-tr-l1").slice(0, 66),
 };
 
 const EU_CONFIG = {
-  networkName: "ova-eu-testnet",
-  tokenName: "Ova Euro",
-  tokenSymbol: "ovaEUR",
-  wrappedTokenName: "Wrapped ovaTRY",
+  networkName: "ari-eu-testnet",
+  tokenName: "ARI Euro",
+  tokenSymbol: "ariEUR",
+  wrappedTokenName: "Wrapped ariTRY",
   wrappedTokenSymbol: "wTRY",
   // Avalanche blockchain ID for EU L1 (generated from subnet)
-  blockchainID: process.env.EU_BLOCKCHAIN_ID || ethers.id("ova-eu-l1").slice(0, 66),
+  blockchainID: process.env.EU_BLOCKCHAIN_ID || ethers.id("ari-eu-l1").slice(0, 66),
 };
 
 async function deployToChain(
@@ -98,10 +98,10 @@ async function deployToChain(
   const bridgeOperatorAddress = process.env.BRIDGE_OPERATOR_ADDRESS || deployer.address;
 
   // 1. Deploy Timelock
-  console.log("\n--- Deploying OvaTimelock ---");
+  console.log("\n--- Deploying AriTimelock ---");
   const minDelay = isProduction ? 48 * 60 * 60 : 60 * 60;
-  const OvaTimelock = await ethers.getContractFactory("OvaTimelock");
-  const timelock = await OvaTimelock.deploy(
+  const AriTimelock = await ethers.getContractFactory("AriTimelock");
+  const timelock = await AriTimelock.deploy(
     minDelay,
     [multisigAddress],
     [ethers.ZeroAddress],
@@ -109,7 +109,7 @@ async function deployToChain(
   );
   await timelock.waitForDeployment();
   const timelockAddress = await timelock.getAddress();
-  console.log("OvaTimelock:", timelockAddress);
+  console.log("AriTimelock:", timelockAddress);
 
   // 2. Deploy ValidatorManager
   console.log("\n--- Deploying ValidatorManager ---");
@@ -130,9 +130,9 @@ async function deployToChain(
   // 4. Deploy Stablecoin
   console.log("\n--- Deploying Stablecoin ---");
   const { upgrades } = require("@openzeppelin/hardhat-upgrades");
-  const OvaStablecoin = await ethers.getContractFactory("OvaStablecoinUpgradeable");
+  const AriStablecoin = await ethers.getContractFactory("AriStablecoinUpgradeable");
   const stablecoin = await upgrades.deployProxy(
-    OvaStablecoin,
+    AriStablecoin,
     [config.tokenName, config.tokenSymbol, timelockAddress, minterAddress, BigInt(0)],
     { kind: "uups", initializer: "initialize" }
   );
@@ -143,8 +143,8 @@ async function deployToChain(
 
   // 5. Deploy TokenHome
   console.log("\n--- Deploying TokenHome ---");
-  const OvaTokenHome = await ethers.getContractFactory("OvaTokenHome");
-  const tokenHome = await OvaTokenHome.deploy(
+  const AriTokenHome = await ethers.getContractFactory("AriTokenHome");
+  const tokenHome = await AriTokenHome.deploy(
     stablecoinAddress,
     teleporterAddress,
     config.blockchainID,
@@ -156,8 +156,8 @@ async function deployToChain(
 
   // 6. Deploy TokenRemote
   console.log("\n--- Deploying TokenRemote ---");
-  const OvaTokenRemote = await ethers.getContractFactory("OvaTokenRemote");
-  const tokenRemote = await OvaTokenRemote.deploy(
+  const AriTokenRemote = await ethers.getContractFactory("AriTokenRemote");
+  const tokenRemote = await AriTokenRemote.deploy(
     config.wrappedTokenName,
     config.wrappedTokenSymbol,
     teleporterAddress,
@@ -170,8 +170,8 @@ async function deployToChain(
 
   // 7. Deploy BridgeAdapter
   console.log("\n--- Deploying BridgeAdapter ---");
-  const OvaBridgeAdapter = await ethers.getContractFactory("OvaBridgeAdapter");
-  const bridgeAdapter = await OvaBridgeAdapter.deploy(stablecoinAddress, timelockAddress);
+  const AriBridgeAdapter = await ethers.getContractFactory("AriBridgeAdapter");
+  const bridgeAdapter = await AriBridgeAdapter.deploy(stablecoinAddress, timelockAddress);
   await bridgeAdapter.waitForDeployment();
   const bridgeAdapterAddress = await bridgeAdapter.getAddress();
   console.log("BridgeAdapter:", bridgeAdapterAddress);
@@ -206,7 +206,7 @@ async function deployToChain(
 
 async function main() {
   console.log("\n" + "=".repeat(60));
-  console.log("OVA DUAL-CHAIN DEPLOYMENT ORCHESTRATOR");
+  console.log("ARI DUAL-CHAIN DEPLOYMENT ORCHESTRATOR");
   console.log("=".repeat(60));
 
   const teleporterAddress = process.env.TELEPORTER_ADDRESS;
@@ -306,7 +306,7 @@ async function main() {
   console.log(`   WRAPPED_TOKEN_SYMBOL="${TR_CONFIG.wrappedTokenSymbol}" \\`);
   console.log(`   BLOCKCHAIN_ID="${TR_CONFIG.blockchainID}" \\`);
   console.log(`   TELEPORTER_ADDRESS="${finalTeleporterAddress}" \\`);
-  console.log(`   npx hardhat run scripts/deploy.ts --network ova-tr-testnet`);
+  console.log(`   npx hardhat run scripts/deploy.ts --network ari-tr-testnet`);
 
   console.log("\n2. Deploy to EU L1:");
   console.log(`   TOKEN_NAME="${EU_CONFIG.tokenName}" \\`);
@@ -315,7 +315,7 @@ async function main() {
   console.log(`   WRAPPED_TOKEN_SYMBOL="${EU_CONFIG.wrappedTokenSymbol}" \\`);
   console.log(`   BLOCKCHAIN_ID="${EU_CONFIG.blockchainID}" \\`);
   console.log(`   TELEPORTER_ADDRESS="${finalTeleporterAddress}" \\`);
-  console.log(`   npx hardhat run scripts/deploy.ts --network ova-eu-testnet`);
+  console.log(`   npx hardhat run scripts/deploy.ts --network ari-eu-testnet`);
 
   console.log("\n3. After both deployments, update dual-chain-deployment.json with actual addresses");
   console.log("   Then run: npx hardhat run scripts/configure-bridge.ts");

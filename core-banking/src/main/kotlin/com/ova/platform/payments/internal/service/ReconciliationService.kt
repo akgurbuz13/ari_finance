@@ -343,9 +343,10 @@ class ReconciliationService(
         // Get ledger entries for the same period
         val ledgerEntries = jdbcTemplate.queryForList(
             """
-            SELECT e.id, e.amount, e.entry_type, e.reference, e.created_at
-            FROM ledger.ledger_entries e
+            SELECT e.id, e.amount, e.direction, t.reference_id, e.created_at
+            FROM ledger.entries e
             JOIN ledger.accounts a ON a.id = e.account_id
+            JOIN ledger.transactions t ON t.id = e.transaction_id
             WHERE a.iban = ? AND DATE(e.created_at) = ?
             """,
             bankAccountId, java.sql.Date.valueOf(date)
@@ -359,9 +360,9 @@ class ReconciliationService(
         for (bankTx in bankTransactions) {
             val matchingLedger = unmatchedLedger.find { ledger ->
                 val ledgerAmount = ledger["amount"] as BigDecimal
-                val reference = ledger["reference"] as? String
+                val referenceId = ledger["reference_id"] as? String
                 ledgerAmount == bankTx.amount &&
-                    (reference == bankTx.reference || reference == bankTx.transactionId)
+                    (referenceId == bankTx.reference || referenceId == bankTx.transactionId)
             }
 
             if (matchingLedger != null) {

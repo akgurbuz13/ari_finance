@@ -3,7 +3,7 @@ package com.ova.blockchain.settlement
 import com.ova.blockchain.config.BlockchainConfig
 import com.ova.blockchain.config.Web3jProvider
 import com.ova.blockchain.contract.ContractFactory
-import com.ova.blockchain.contract.OvaStablecoinContract
+import com.ova.blockchain.contract.AriStablecoinContract
 import com.ova.blockchain.repository.BlockchainTransaction
 import com.ova.blockchain.repository.BlockchainTransactionRepository
 import com.ova.blockchain.wallet.CustodialWalletService
@@ -28,7 +28,7 @@ class BurnServiceTest {
     private lateinit var txRepository: BlockchainTransactionRepository
     private lateinit var burnService: BurnService
 
-    private lateinit var mockStablecoin: OvaStablecoinContract
+    private lateinit var mockStablecoin: AriStablecoinContract
     private lateinit var mockCredentials: Credentials
 
     private val TR_CHAIN_ID = 99999L

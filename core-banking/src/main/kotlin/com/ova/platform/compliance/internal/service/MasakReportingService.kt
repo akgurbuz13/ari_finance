@@ -41,9 +41,9 @@ class MasakReportingService(
     private val jdbcTemplate: JdbcTemplate,
     private val auditService: AuditService,
     private val objectMapper: ObjectMapper,
-    @Value("\${ova.compliance.masak.api-url:}") private val masakApiUrl: String,
-    @Value("\${ova.compliance.masak.institution-code:}") private val institutionCode: String,
-    @Value("\${ova.compliance.masak.enabled:false}") private val enabled: Boolean
+    @Value("\${ari.compliance.masak.api-url:}") private val masakApiUrl: String,
+    @Value("\${ari.compliance.masak.institution-code:}") private val institutionCode: String,
+    @Value("\${ari.compliance.masak.enabled:false}") private val enabled: Boolean
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -307,12 +307,14 @@ class MasakReportingService(
         val singleTxAlerts = jdbcTemplate.query(
             """
             SELECT p.id, p.amount, p.currency, p.created_at
-            FROM payments.payments p
-            WHERE (p.sender_id = ? OR p.receiver_id = ?)
+            FROM payments.payment_orders p
+            JOIN ledger.accounts sa ON sa.id = p.sender_account_id
+            JOIN ledger.accounts ra ON ra.id = p.receiver_account_id
+            WHERE (sa.user_id = ? OR ra.user_id = ?)
               AND p.currency = 'TRY'
               AND p.amount >= ?
               AND DATE(p.created_at) = ?
-              AND p.status = 'COMPLETED'
+              AND p.status = 'completed'
             """,
             { rs, _ ->
                 ThresholdAlert(
@@ -332,15 +334,17 @@ class MasakReportingService(
         val dailyTotal = jdbcTemplate.queryForObject(
             """
             SELECT COALESCE(SUM(amount), 0)
-            FROM payments.payments
-            WHERE (sender_id = ? OR receiver_id = ?)
-              AND currency = 'TRY'
-              AND DATE(created_at) = ?
-              AND status = 'COMPLETED'
+            FROM payments.payment_orders p
+            JOIN ledger.accounts sa ON sa.id = p.sender_account_id
+            JOIN ledger.accounts ra ON ra.id = p.receiver_account_id
+            WHERE (sa.user_id = ? OR ra.user_id = ?)
+              AND p.currency = 'TRY'
+              AND DATE(p.created_at) = ?
+              AND p.status = 'completed'
             """,
             BigDecimal::class.java,
             userId, userId, date
-        ) ?: BigDecimal.ZERO
+        )
 
         if (dailyTotal >= THRESHOLD_TL) {
             alerts.add(

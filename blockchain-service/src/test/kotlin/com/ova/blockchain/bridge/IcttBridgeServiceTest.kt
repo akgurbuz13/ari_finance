@@ -1,9 +1,10 @@
 package com.ova.blockchain.bridge
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ova.blockchain.config.BlockchainConfig
 import com.ova.blockchain.config.Web3jProvider
 import com.ova.blockchain.contract.ContractFactory
-import com.ova.blockchain.contract.OvaBridgeAdapterContract
+import com.ova.blockchain.contract.AriBridgeAdapterContract
 import com.ova.blockchain.repository.BlockchainTransaction
 import com.ova.blockchain.repository.BlockchainTransactionRepository
 import com.ova.blockchain.wallet.CustodialWalletService
@@ -26,9 +27,10 @@ class IcttBridgeServiceTest {
     private lateinit var contractFactory: ContractFactory
     private lateinit var walletService: CustodialWalletService
     private lateinit var txRepository: BlockchainTransactionRepository
+    private lateinit var objectMapper: ObjectMapper
     private lateinit var bridgeService: IcttBridgeService
 
-    private lateinit var mockBridgeAdapter: OvaBridgeAdapterContract
+    private lateinit var mockBridgeAdapter: AriBridgeAdapterContract
     private lateinit var mockCredentials: Credentials
 
     @BeforeEach
@@ -38,6 +40,7 @@ class IcttBridgeServiceTest {
         contractFactory = mockk(relaxed = true)
         walletService = mockk(relaxed = true)
         txRepository = mockk(relaxed = true)
+        objectMapper = ObjectMapper()
 
         mockBridgeAdapter = mockk(relaxed = true)
         mockCredentials = mockk(relaxed = true)
@@ -47,7 +50,7 @@ class IcttBridgeServiceTest {
         every { txRepository.save(any()) } answers { firstArg<BlockchainTransaction>().copy(id = 1L) }
 
         bridgeService = IcttBridgeService(
-            config, web3jProvider, contractFactory, walletService, txRepository
+            config, web3jProvider, contractFactory, walletService, txRepository, objectMapper
         )
     }
 
@@ -201,7 +204,7 @@ class IcttBridgeServiceTest {
             toAddress = "0xto",
             amount = BigDecimal("1000"),
             currency = "TRY",
-            status = "initiated"
+            status = "pending_relay"
         )
         val completeTx = BlockchainTransaction(
             txHash = "0xcomplete",
@@ -233,7 +236,7 @@ class IcttBridgeServiceTest {
             toAddress = "0xto",
             amount = BigDecimal("1000"),
             currency = "TRY",
-            status = "initiated"
+            status = "pending_relay"
         )
 
         every { txRepository.findByTransferId("test-id") } returns listOf(initTx)
@@ -297,7 +300,7 @@ class IcttBridgeServiceTest {
                 operation = "bridge_initiate",
                 amount = BigDecimal("100"),
                 currency = "TRY",
-                status = "initiated"
+                status = "pending_relay"
             )
         )
 

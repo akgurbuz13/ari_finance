@@ -23,6 +23,7 @@ class UserRepository(private val jdbcTemplate: JdbcTemplate) {
             nationality = rs.getString("nationality"),
             status = UserStatus.fromValue(rs.getString("status")),
             region = rs.getString("region"),
+            role = rs.getString("role") ?: "USER",
             totpSecret = rs.getString("totp_secret"),
             totpEnabled = rs.getBoolean("totp_enabled"),
             createdAt = rs.getTimestamp("created_at").toInstant(),
@@ -34,12 +35,12 @@ class UserRepository(private val jdbcTemplate: JdbcTemplate) {
         jdbcTemplate.update(
             """
             INSERT INTO identity.users (id, email, phone, password_hash, first_name, last_name,
-                date_of_birth, nationality, status, region, totp_secret, totp_enabled)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                date_of_birth, nationality, status, region, role, totp_secret, totp_enabled)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             user.id, user.email, user.phone, user.passwordHash,
             user.firstName, user.lastName, user.dateOfBirth, user.nationality,
-            user.status.value, user.region, user.totpSecret, user.totpEnabled
+            user.status.value, user.region, user.role, user.totpSecret, user.totpEnabled
         )
         return user
     }
@@ -50,12 +51,12 @@ class UserRepository(private val jdbcTemplate: JdbcTemplate) {
             UPDATE identity.users SET
                 email = ?, phone = ?, first_name = ?, last_name = ?,
                 date_of_birth = ?, nationality = ?, status = ?,
-                totp_secret = ?, totp_enabled = ?, updated_at = now()
+                role = ?, totp_secret = ?, totp_enabled = ?, updated_at = now()
             WHERE id = ?
             """,
             user.email, user.phone, user.firstName, user.lastName,
             user.dateOfBirth, user.nationality, user.status.value,
-            user.totpSecret, user.totpEnabled, user.id
+            user.role, user.totpSecret, user.totpEnabled, user.id
         )
         return user
     }
@@ -96,6 +97,13 @@ class UserRepository(private val jdbcTemplate: JdbcTemplate) {
         jdbcTemplate.update(
             "UPDATE identity.users SET status = ?, updated_at = now() WHERE id = ?",
             status.value, id
+        )
+    }
+
+    fun updateRole(id: UUID, role: String) {
+        jdbcTemplate.update(
+            "UPDATE identity.users SET role = ?, updated_at = now() WHERE id = ?",
+            role, id
         )
     }
 }

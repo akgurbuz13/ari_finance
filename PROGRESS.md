@@ -1,8 +1,8 @@
 # Ova Fintech — Implementation Progress
 
-> **Last Updated:** 2026-02-05
-> **Current Phase:** Post-Phase 5 (Blockchain & Cross-Border)
-> **Overall Completion:** ~85% of MVP
+> **Last Updated:** 2026-02-15
+> **Current Phase:** Post-Phase 5 (Backend Hardening)
+> **Overall Completion:** ~87% of MVP
 
 This document tracks implementation progress against the [ARCHITECTURE.md](./ARCHITECTURE.md) plan. Update this document when completing significant milestones.
 
@@ -127,6 +127,37 @@ This document tracks implementation progress against the [ARCHITECTURE.md](./ARC
 | Security audit | ⏳ | Pending external |
 | Smart contract audit | ⏳ | Pending external |
 | Production deployment | ⏳ | Awaiting validators |
+
+---
+
+## Recent Session Work (2026-02-15)
+
+### Context
+A security review identified 22 findings across the backend. Another AI agent attempted fixes for ~12 of them, but 3 were incorrect/incomplete. This session corrects those mistakes, adds RBAC support, fixes infrastructure gaps, and updates documentation.
+
+### Work Completed
+
+#### Phase 1: Fix Incorrect AI Agent Changes
+- **ReconciliationService**: Fixed wrong table name (`ledger.ledger_entries` -> `ledger.entries`), wrong columns (`entry_type` -> `direction`, `reference` -> `reference_id`), added missing JOIN to `ledger.transactions`
+- **MasakReportingService**: Changed `LEFT JOIN` to `JOIN` for account lookups (4 places) — completed payment orders always have sender/receiver accounts
+- **InternalSettlementController**: Fixed metadata type fragility — store `"true"` (String) instead of `true` (Boolean), use `?.toString() == "true"` for JSONB round-trip safety
+
+#### Phase 2: RBAC / Admin Role System
+- New migration `V016__add_user_role.sql` — adds `role` column with `DEFAULT 'USER'` and CHECK constraint
+- Updated `User` model with `role` field
+- Updated `UserRepository`: role in rowMapper, save(), update(), new `updateRole()` method
+- Updated `AuthService.generateTokens()`: uses `user.role` instead of hardcoded `"USER"` for JWT roles
+
+#### Phase 3: Infrastructure & K8s Fixes
+- Activated `external-secrets.yaml` in kustomization base
+- Added managed service `ipBlock` egress rules (PostgreSQL + Redis) to both core-banking and blockchain-service network policies
+- Removed mutable `:latest` tag from deploy workflow (only immutable `${{ github.ref_name }}` remains)
+- Added single-replica rationale comment to blockchain-service deployment
+
+#### Phase 4: Documentation Cleanup
+- Fixed ARCHITECTURE.md: Kong -> nginx ingress, updated rate limiting description (Bucket4j in-app)
+- Annotated V008 sanctions seed data as test fixtures only
+- Updated PROGRESS.md with this session's work
 
 ---
 

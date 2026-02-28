@@ -63,9 +63,23 @@ class LedgerService(
             )
         )
 
+        // Acquire account locks in deterministic order to prevent balance races and deadlocks.
+        val postingAccountIds = postings.map { it.accountId }.distinct().sortedBy { it.toString() }
+        for (accountId in postingAccountIds) {
+            val locked = accountRepository.lockAccount(accountId)
+            if (!locked) {
+                throw BadRequestException("Account not found: $accountId")
+            }
+        }
+
+        val accountById = postingAccountIds.associateWith { accountId ->
+            accountRepository.findById(accountId)
+                ?: throw BadRequestException("Account not found: $accountId")
+        }
+
         // Post entries with balance snapshots
         for (posting in postings) {
-            val account = accountRepository.findById(posting.accountId)
+            val account = accountById[posting.accountId]
                 ?: throw BadRequestException("Account not found: ${posting.accountId}")
 
             if (account.status != AccountStatus.ACTIVE) {

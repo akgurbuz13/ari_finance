@@ -1,5 +1,6 @@
 package com.ova.blockchain.bridge
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ova.blockchain.config.BlockchainConfig
 import com.ova.blockchain.config.Web3jProvider
 import com.ova.blockchain.contract.ContractFactory
@@ -8,9 +9,7 @@ import com.ova.blockchain.repository.BlockchainTransactionRepository
 import com.ova.blockchain.wallet.CustodialWalletService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import org.web3j.utils.Numeric
 import java.math.BigDecimal
-import java.math.BigInteger
 import java.time.Instant
 import java.util.UUID
 
@@ -39,7 +38,8 @@ class IcttBridgeService(
     private val web3jProvider: Web3jProvider,
     private val contractFactory: ContractFactory,
     private val walletService: CustodialWalletService,
-    private val txRepository: BlockchainTransactionRepository
+    private val txRepository: BlockchainTransactionRepository,
+    private val objectMapper: ObjectMapper
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -148,9 +148,6 @@ class IcttBridgeService(
             // Get the bridge adapter for the source chain
             val bridgeAdapter = contractFactory.getBridgeAdapter(sourceChainId, credentials)
 
-            // Convert destination chain ID to bytes32
-            val destChainIdBytes32 = chainIdToBytes32(destinationChainId)
-
             // Call bridgeNativeTokens on the adapter
             // This will:
             // 1. Transfer tokens from user to adapter
@@ -174,16 +171,18 @@ class IcttBridgeService(
                     toAddress = toAddress,
                     amount = amount,
                     currency = currency,
-                    status = "initiated",
+                    status = "pending_relay",
                     blockNumber = receipt.blockNumber.toLong(),
                     gasUsed = receipt.gasUsed.toLong(),
                     confirmedAt = Instant.now(),
-                    metadata = mapOf(
+                    metadata = toJsonMetadata(
+                        mapOf(
                         "transferId" to transferId,
                         "destinationChainId" to destinationChainId.toString(),
                         "bridgeFee" to quote.bridgeFee.toPlainString(),
                         "relayerFee" to quote.relayerFee.toPlainString()
-                    ).toString()
+                        )
+                    )
                 )
             )
 
@@ -283,7 +282,7 @@ class IcttBridgeService(
                     toAddress = toAddress,
                     amount = amount,
                     currency = currency,
-                    status = "initiated",
+                    status = "pending_relay",
                     blockNumber = receipt.blockNumber.toLong(),
                     gasUsed = receipt.gasUsed.toLong(),
                     confirmedAt = Instant.now()
@@ -337,7 +336,7 @@ class IcttBridgeService(
         val status = when {
             completeTx?.status == "confirmed" -> BridgeStatus.COMPLETED
             initTx?.status == "failed" -> BridgeStatus.FAILED
-            initTx?.status == "initiated" -> BridgeStatus.PENDING_RELAY
+            initTx?.status in setOf("pending_relay", "submitted", "pending") -> BridgeStatus.PENDING_RELAY
             else -> BridgeStatus.INITIATED
         }
 
@@ -381,7 +380,7 @@ class IcttBridgeService(
                 currency = "", // Derived from transfer
                 status = "confirmed",
                 confirmedAt = Instant.now(),
-                metadata = mapOf("transferId" to transferId).toString()
+                metadata = toJsonMetadata(mapOf("transferId" to transferId))
             )
         )
     }
@@ -405,10 +404,7 @@ class IcttBridgeService(
         return UUID.nameUUIDFromBytes(data.toByteArray()).toString()
     }
 
-    private fun chainIdToBytes32(chainId: Long): ByteArray {
-        val bytes = ByteArray(32)
-        val chainIdBytes = BigInteger.valueOf(chainId).toByteArray()
-        System.arraycopy(chainIdBytes, 0, bytes, 32 - chainIdBytes.size, chainIdBytes.size)
-        return bytes
+    private fun toJsonMetadata(metadata: Map<String, String>): String {
+        return objectMapper.writeValueAsString(metadata)
     }
 }

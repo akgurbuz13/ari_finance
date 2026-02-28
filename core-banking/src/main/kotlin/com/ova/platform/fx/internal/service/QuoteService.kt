@@ -84,17 +84,24 @@ class QuoteService(
             """
             INSERT INTO payments.fx_quotes
                 (id, source_currency, target_currency, source_amount, target_amount,
-                 mid_market_rate, customer_rate, spread, expires_at, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
+                 rate, inverse_rate, exchange_rate, mid_market_rate, customer_rate,
+                 spread, fee_amount, fee_currency, expires_at, status, used)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', false)
             """,
             quoteId,
             sourceCurrency,
             targetCurrency,
             sourceAmount,
             targetAmount,
+            customerRate,
+            if (customerRate.signum() == 0) BigDecimal.ZERO
+            else BigDecimal.ONE.divide(customerRate, 10, RoundingMode.HALF_UP),
+            customerRate,
             midMarketRate.rate,
             customerRate,
             spread,
+            BigDecimal.ZERO,
+            targetCurrency,
             java.sql.Timestamp.from(expiresAt)
         )
 
@@ -163,7 +170,7 @@ class QuoteService(
     @Transactional
     fun consumeQuote(quoteId: UUID) {
         jdbcTemplate.update(
-            "UPDATE payments.fx_quotes SET status = 'consumed', consumed_at = NOW() WHERE id = ?",
+            "UPDATE payments.fx_quotes SET status = 'consumed', consumed_at = NOW(), used = true WHERE id = ?",
             quoteId
         )
         log.info("Quote consumed quoteId={}", quoteId)
@@ -173,7 +180,7 @@ class QuoteService(
         val results = jdbcTemplate.query(
             """
             SELECT id, source_currency, target_currency, source_amount, target_amount,
-                   mid_market_rate, customer_rate, spread, expires_at, status, created_at
+                   rate, mid_market_rate, customer_rate, spread, expires_at, status, used, created_at
             FROM payments.fx_quotes WHERE id = ?
             """,
             { rs: ResultSet, _: Int -> mapQuote(rs) },
@@ -183,17 +190,36 @@ class QuoteService(
     }
 
     private fun mapQuote(rs: ResultSet): FxQuote {
+        val customerRate = rs.getBigDecimal("customer_rate")
+            ?: rs.getBigDecimal("rate")
+            ?: throw IllegalStateException("Quote ${rs.getString("id")} has no customer rate")
+        val spread = rs.getBigDecimal("spread") ?: BigDecimal.ZERO
+        val midMarketRate = rs.getBigDecimal("mid_market_rate")
+            ?: if (BigDecimal.ONE.subtract(spread).compareTo(BigDecimal.ZERO) == 0) customerRate
+            else customerRate.divide(BigDecimal.ONE.subtract(spread), 8, RoundingMode.HALF_UP)
+
+        val statusValue = rs.getString("status")
+        val status = if (!statusValue.isNullOrBlank()) {
+            QuoteStatus.fromValue(statusValue)
+        } else if (rs.getBoolean("used")) {
+            QuoteStatus.CONSUMED
+        } else if (rs.getTimestamp("expires_at").toInstant().isBefore(Instant.now())) {
+            QuoteStatus.EXPIRED
+        } else {
+            QuoteStatus.ACTIVE
+        }
+
         return FxQuote(
             id = UUID.fromString(rs.getString("id")),
             sourceCurrency = rs.getString("source_currency"),
             targetCurrency = rs.getString("target_currency"),
             sourceAmount = rs.getBigDecimal("source_amount"),
             targetAmount = rs.getBigDecimal("target_amount"),
-            midMarketRate = rs.getBigDecimal("mid_market_rate"),
-            customerRate = rs.getBigDecimal("customer_rate"),
-            spread = rs.getBigDecimal("spread"),
+            midMarketRate = midMarketRate,
+            customerRate = customerRate,
+            spread = spread,
             expiresAt = rs.getTimestamp("expires_at").toInstant(),
-            status = QuoteStatus.fromValue(rs.getString("status")),
+            status = status,
             createdAt = rs.getTimestamp("created_at").toInstant()
         )
     }

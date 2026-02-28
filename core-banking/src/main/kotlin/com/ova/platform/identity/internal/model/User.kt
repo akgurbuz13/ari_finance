@@ -15,6 +15,7 @@ data class User(
     val nationality: String? = null,
     val status: UserStatus = UserStatus.PENDING_KYC,
     val region: String,
+    val role: String = "USER",
     val totpSecret: String? = null,
     val totpEnabled: Boolean = false,
     val createdAt: Instant = Instant.now(),

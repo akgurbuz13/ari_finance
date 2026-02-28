@@ -42,9 +42,9 @@ Build a regulated fintech platform (Ova) launching in Turkey + EU simultaneously
                         │ HTTPS                     │ HTTPS
                         └───────────┬───────────────┘
                           ┌─────────▼────────────┐
-                          │   API Gateway (Kong)  │
-                          │   Auth, Rate Limit,   │
-                          │   TLS Termination     │
+                          │  Ingress (nginx)      │
+                          │   TLS Termination,    │
+                          │   Routing             │
                           └─────────┬────────────┘
                                     │
               ┌─────────────────────┼────────────────────┐
@@ -884,7 +884,7 @@ The system is designed from day 1 to support machine-to-machine payments:
 |-------|---------------|
 | **Authentication** | JWT (access token 15min + refresh token 7d), 2FA via TOTP |
 | **Authorization** | RBAC for admin, attribute-based for user operations |
-| **API Security** | Rate limiting (Kong), request signing, CORS, CSRF protection |
+| **API Security** | Rate limiting (Bucket4j in-app, needs Redis for multi-instance), request signing, CORS, CSRF protection |
 | **Encryption at rest** | AES-256 via KMS (AWS KMS / Azure Key Vault) |
 | **Encryption in transit** | TLS 1.3 everywhere, mTLS for internal service communication |
 | **Secrets** | AWS Secrets Manager / Azure Key Vault, never in code or env vars |

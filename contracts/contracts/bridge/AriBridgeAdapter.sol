@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-interface IOvaTokenHome {
+interface IAriTokenHome {
     function bridgeTokens(
         bytes32 destinationChainID,
         address recipient,
@@ -15,7 +15,7 @@ interface IOvaTokenHome {
     ) external returns (bytes32 messageID);
 }
 
-interface IOvaTokenRemote {
+interface IAriTokenRemote {
     function bridgeBack(
         address recipient,
         uint256 amount,
@@ -24,8 +24,8 @@ interface IOvaTokenRemote {
 }
 
 /**
- * @title OvaBridgeAdapter
- * @notice High-level adapter for Ova cross-chain transfers using ICTT.
+ * @title AriBridgeAdapter
+ * @notice High-level adapter for ARI cross-chain transfers using ICTT.
  *         Provides a simplified interface for the blockchain-service to interact with.
  *         Handles both outbound (to other L1) and inbound (from other L1) transfers.
  *
@@ -42,22 +42,22 @@ interface IOvaTokenRemote {
  *   - Outbound EUR: Use TokenHome to lock and bridge
  *   - Inbound wTRY: Already have wrapped tokens, use TokenRemote to burn and bridge back
  */
-contract OvaBridgeAdapter is AccessControl, ReentrancyGuard {
+contract AriBridgeAdapter is AccessControl, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     bytes32 public constant BRIDGE_OPERATOR_ROLE = keccak256("BRIDGE_OPERATOR_ROLE");
 
-    /// @notice Native token on this chain (ovaTRY on TR L1, ovaEUR on EU L1)
+    /// @notice Native token on this chain (ariTRY on TR L1, ariEUR on EU L1)
     IERC20 public nativeToken;
 
     /// @notice Wrapped token on this chain (wEUR on TR L1, wTRY on EU L1)
     IERC20 public wrappedToken;
 
     /// @notice TokenHome contract for bridging native tokens out
-    IOvaTokenHome public tokenHome;
+    IAriTokenHome public tokenHome;
 
     /// @notice TokenRemote contract for bridging wrapped tokens back
-    IOvaTokenRemote public tokenRemote;
+    IAriTokenRemote public tokenRemote;
 
     /// @notice This chain's blockchain ID
     bytes32 public blockchainID;
@@ -145,8 +145,8 @@ contract OvaBridgeAdapter is AccessControl, ReentrancyGuard {
         bytes32 partnerChainID_
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         wrappedToken = IERC20(wrappedToken_);
-        tokenHome = IOvaTokenHome(tokenHome_);
-        tokenRemote = IOvaTokenRemote(tokenRemote_);
+        tokenHome = IAriTokenHome(tokenHome_);
+        tokenRemote = IAriTokenRemote(tokenRemote_);
         blockchainID = blockchainID_;
         partnerChainID = partnerChainID_;
 

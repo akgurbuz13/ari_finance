@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title ValidatorManager
- * @notice Manages the validator set for Ova's Proof-of-Authority L1 chains.
+ * @notice Manages the validator set for ARI's Proof-of-Authority L1 chains.
  *         This contract handles validator registration, rotation, and removal.
  *
  * AVALANCHE POST-ETNA (Dec 2024):

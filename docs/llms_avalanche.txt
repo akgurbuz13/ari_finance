@@ -1,0 +1,129 @@
+# Avalanche Builder Hub
+
+> Build your fast and interoperable Layer 1 blockchain with Avalanche. The Builder Hub provides comprehensive documentation, interactive tutorials, and developer tools.
+
+Avalanche is a high-performance blockchain platform for decentralized applications, new financial primitives, and interoperable blockchains. The Builder Hub helps developers create custom Layer 1 blockchains (Avalanche L1s), build cross-chain applications using Interchain Messaging (ICM), and leverage the Avalanche ecosystem.
+
+## Raw Markdown Access
+
+All documentation links below end with `.md` and return raw markdown content for easy AI consumption. You can append `.md` to any documentation, academy, blog, or integration URL on this site to get the raw markdown source.
+
+## Full Documentation
+
+- [Full Documentation (llms-full.txt)](https://build.avax.network/llms-full.txt): Complete documentation content for AI context loading
+
+## Documentation
+
+Core technical documentation for building on Avalanche:
+
+### Primary Network
+- [Snowman Consensus](https://build.avax.network/docs/primary-network/avalanche-consensus.md): Learn about the Snowman Consensus protocol.
+- [AVAX Token](https://build.avax.network/docs/primary-network/avax-token.md): Learn about the native token of Avalanche Primary Network.
+- [Coreth Architecture](https://build.avax.network/docs/primary-network/coreth-architecture.md): How the C-Chain EVM (Coreth) runs inside AvalancheGo, including consensus, execution, and cross-chain transfers.
+- [Exchange Integration](https://build.avax.network/docs/primary-network/exchange-integration.md): Learn how to integrate your exchange with the EVM-Compatible Avalanche C-Chain.
+- [Primary Network](https://build.avax.network/docs/primary-network.md): Learn about the Avalanche Primary Network and its three blockchains.
+
+### Avalanche L1s
+- [Avalanche L1s](https://build.avax.network/docs/avalanche-l1s.md): Explore the multi-chain architecture of Avalanche ecosystem.
+- [Simple VM in Any Language](https://build.avax.network/docs/avalanche-l1s/simple-vm-any-language.md): Learn how to implement a simple virtual machine in any language.
+- [Introduction](https://build.avax.network/docs/avalanche-l1s/virtual-machines-index.md): Learn about the execution layer of a blockchain network.
+- [WAGMI Avalanche L1](https://build.avax.network/docs/avalanche-l1s/wagmi-avalanche-l1.md): Learn about the WAGMI Avalanche L1 in this detailed case study.
+- [Deploy a Smart Contract](https://build.avax.network/docs/avalanche-l1s/add-utility/deploy-smart-contract.md): Deploy a smart contract on your Avalanche L1.
+
+### Cross Chain
+- [Introduction](https://build.avax.network/docs/cross-chain.md): Learn about different interoperability protocols in the Avalanche ecosystem.
+- [Avalanche Interchain Token Transfer (ICTT)](https://build.avax.network/docs/cross-chain/interchain-token-transfer/overview.md): This page describes the Avalanche Interchain Token Transfer (ICTT)
+- [Deep Dive into ICM](https://build.avax.network/docs/cross-chain/avalanche-warp-messaging/deep-dive.md): Learn about Avalanche Warp Messaging, a cross-Avalanche L1 communication protocol on Avalanche.
+- [Integration with EVM](https://build.avax.network/docs/cross-chain/avalanche-warp-messaging/evm-integration.md): Avalanche Warp Messaging provides a basic primitive for signing and verifying messages between Avalanche L1s.
+- [What is ICM?](https://build.avax.network/docs/cross-chain/avalanche-warp-messaging/overview.md): Learn about Avalanche Interchain Messaging, a protocol for cross-chain communication.
+
+### Nodes
+- [Introduction](https://build.avax.network/docs/nodes.md): A brief introduction to the concepts of nodes and validators within the Avalanche ecosystem.
+- [AvalancheGo Releases](https://build.avax.network/docs/nodes/releases.md): Track AvalancheGo releases, network upgrades, and version compatibility for your node.
+- [System Requirements](https://build.avax.network/docs/nodes/system-requirements.md): Hardware, storage, and networking requirements for running Avalanche nodes on the Primary Network and Avalanche L1s.
+- [Consensus Protocols](https://build.avax.network/docs/nodes/architecture/consensus.md): Deep dive into Avalanche's Snow* family of consensus protocols including Snowball, Snowman, and Avalanche consensus.
+- [Core Components](https://build.avax.network/docs/nodes/architecture/core-components.md): Deep dive into AvalancheGo's package structure, startup flow, and how components interact.
+
+## Academy
+
+Structured learning paths and interactive tutorials:
+
+### Avalanche L1
+- [Advanced Topics Certificate](https://build.avax.network/academy/avalanche-l1/access-restriction/certificate-advanced.md): Complete the quiz to earn your Access Restriction Advanced certificate
+- [Fundamentals Certificate](https://build.avax.network/academy/avalanche-l1/access-restriction/certificate-fundamentals.md): Complete the quiz to earn your Access Restriction Fundamentals certificate
+- [Welcome to the Course](https://build.avax.network/academy/avalanche-l1/access-restriction.md): Master access control patterns using transaction and contract deployer allowlists with hands-on precompile implementation
+
+## Integrations
+
+Third-party tools and services for the Avalanche ecosystem:
+
+- [All Integrations](https://build.avax.network/integrations): Browse all integration partners and tools
+- [0xGasless](https://build.avax.network/integrations/0xgasless.md): 0xGasless offers x402 facilitator for the AVALANCHE Chain open payment standard, AgentKit SDK for on-chain agent execution for developers to build user friendly blockchain applications
+- [3Sigma](https://build.avax.network/integrations/3sigma.md): 3Sigma provides good-quality security audits with additional expertise in economic modeling for tokenomics and protocol design.
+- [Publish your integration](https://build.avax.network/integrations/README.md): README guide for adding yourself to the integrations page
+- [Aave](https://build.avax.network/integrations/aave.md): Aave is a leading decentralized lending protocol deployed on Avalanche, offering a robust platform for lending and borrowing with unique features like flash loans and stable rate borrowing.
+- [Agora](https://build.avax.network/integrations/agora.md): Agora provides AUSD, an institutional-grade digital dollar designed for seamless integration across blockchain ecosystems.
+- [Alchemy](https://build.avax.network/integrations/alchemy.md): Alchemy is a blockchain developer platform that provides a suite of APIs and tools for building and scaling blockchain applications.
+- [Allbridge Core](https://build.avax.network/integrations/allbridge-core.md): Allbridge Core enables native stablecoin transfers across blockchains without wrapping — powering frictionless DeFi and multi-chain liquidity.
+- [Allnodes](https://build.avax.network/integrations/allnodes.md): Allnodes is a non-custodial platform for hosting nodes and staking, providing reliable validator infrastructure for Avalanche networks.
+- [Anchorage Digital](https://build.avax.network/integrations/anchorage.md): Anchorage Digital is a federally chartered digital asset bank providing institutional-grade custody and stablecoin infrastructure services.
+- [Angle](https://build.avax.network/integrations/angle.md): Angle Protocol provides decentralized stablecoins including EURA, offering over-collateralized and capital-efficient stable assets on blockchain.
+
+## Blog
+
+Latest announcements, tutorials, and ecosystem updates:
+
+- [ACP-226 Dynamic Minimum Block Times for Sub-Second Blocks](https://build.avax.network/blog/226-min-block-times.md): ACP-226 replaces per-block gas cost with a dynamic minimum block delay to enable sub-second blocks, align with validator preferences, and prepare the network for higher gas targets.
+- [ACP-267: Primary Network Uptime Requirement Increases to 90%](https://build.avax.network/blog/acp-267-validator-uptime-requirement.md): ACP-267 raises the Avalanche Primary Network validator uptime requirement from 80% to 90%. Learn what's changing, why it matters, and how to prepare your node with monitoring and alerting.
+- [Scaling Web3 Distribution to 169M+ Telco Users with Avalanche](https://build.avax.network/blog/binary-holdings-avalanche-l1.md): Learn how Binary Holdings deployed as an Avalanche L1, bringing more than 169 million users into the Avalanche ecosystem through telco partnerships.
+- [Native Safe Multisig Support for Avalanche L1s in Builder Console](https://build.avax.network/blog/builder-console-safe-support.md): Learn how Builder Console now supports Safe, the leading account abstraction and smart wallet platform.
+- [Cortina: X-Chain Linearization](https://build.avax.network/blog/cortina-x-chain-linearization.md): Paving the way for broader X-Chain adoption, improving the UX of staking on the P-Chain, and allowing for more complex transactions on the C-Chain.
+
+## Console Tools
+
+Interactive developer tools for building and managing Avalanche L1s:
+
+- [Create L1](https://build.avax.network/console/layer-1/create): Launch custom Layer 1 blockchains
+- [Faucet](https://build.avax.network/console/primary-network/faucet): Get testnet AVAX for development
+- [ICM Setup](https://build.avax.network/console/icm/setup): Configure Interchain Messaging
+- [ICTT Setup](https://build.avax.network/console/ictt/setup): Configure token bridges
+- [Validator Management](https://build.avax.network/console/layer-1/validator-set): Manage L1 validators
+
+## Optional
+
+Additional resources and reference documentation:
+
+### API Reference
+- [Getting Started](https://build.avax.network/docs/api-reference/metrics-api/getting-started.md)
+- [Metrics API](https://build.avax.network/docs/api-reference/metrics-api.md)
+- [Rate Limits](https://build.avax.network/docs/api-reference/metrics-api/rate-limits.md)
+- [Usage Guide](https://build.avax.network/docs/api-reference/metrics-api/usage-guide.md)
+- [Webhooks API](https://build.avax.network/docs/api-reference/webhook-api.md)
+
+### RPC Methods
+- [RPC APIs](https://build.avax.network/docs/rpcs.md)
+- [Subnet-EVM Configs](https://build.avax.network/docs/rpcs/subnet-evm/config.md)
+- [Subnet-EVM RPC](https://build.avax.network/docs/rpcs/subnet-evm.md)
+- [Health RPC](https://build.avax.network/docs/rpcs/other/health-rpc.md)
+- [Index RPC](https://build.avax.network/docs/rpcs/other/index-rpc.md)
+
+### Tooling & SDKs
+- [CLI Commands](https://build.avax.network/docs/tooling/cli-commands.md)
+- [Data Visualization](https://build.avax.network/docs/tooling/avalanche-postman/data-visualization.md)
+- [Installing Postman Collection](https://build.avax.network/docs/tooling/avalanche-postman.md)
+- [Making API Calls](https://build.avax.network/docs/tooling/avalanche-postman/making-api-calls.md)
+- [Variable Types](https://build.avax.network/docs/tooling/avalanche-postman/variables.md)
+
+### Avalanche Community Proposals (ACPs)
+- [ACP-103: Dynamic Fees](https://build.avax.network/docs/acps/103-dynamic-fees.md)
+- [ACP-108: Evm Event Importing](https://build.avax.network/docs/acps/108-evm-event-importing.md)
+- [ACP-113: Provable Randomness](https://build.avax.network/docs/acps/113-provable-randomness.md)
+- [ACP-118: Warp Signature Request](https://build.avax.network/docs/acps/118-warp-signature-request.md)
+- [ACP-125: Basefee Reduction](https://build.avax.network/docs/acps/125-basefee-reduction.md)
+
+## External Resources
+
+- [GitHub](https://github.com/ava-labs): Official Avalanche Labs repositories
+- [Discord](https://discord.gg/avalanche): Developer community
+- [Forum](https://forum.avax.network): Technical discussions
+- [Explorer](https://subnets.avax.network): Avalanche network explorer

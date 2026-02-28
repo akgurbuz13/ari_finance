@@ -24,7 +24,7 @@ class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
     private val internalApiKeyFilter: InternalApiKeyFilter,
     private val environment: Environment,
-    @Value("\${ova.cors.allowed-origins:}") private val allowedOrigins: String
+    @Value("\${ari.cors.allowed-origins:}") private val allowedOrigins: String
 ) {
 
     @Bean
@@ -36,7 +36,11 @@ class SecurityConfig(
             .authorizeHttpRequests { auth ->
                 auth
                     // Public endpoints
-                    .requestMatchers("/api/v1/auth/**").permitAll()
+                    .requestMatchers(
+                        "/api/v1/auth/signup",
+                        "/api/v1/auth/login",
+                        "/api/v1/auth/refresh"
+                    ).permitAll()
                     .requestMatchers("/api/v1/webhooks/**").permitAll()
                     .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()

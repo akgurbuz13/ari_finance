@@ -2,14 +2,20 @@ package com.ova.platform.identity.internal.provider
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 import java.util.UUID
+import java.security.MessageDigest
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 
 @Service
-@ConditionalOnProperty(name = ["ova.kyc.provider"], havingValue = "simulated", matchIfMissing = true)
+@ConditionalOnProperty(name = ["ari.kyc.provider"], havingValue = "simulated", matchIfMissing = true)
 class SimulatedKycProvider(
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    @Value("\${ari.kyc.webhook.allow-unsigned:true}") private val allowUnsignedWebhooks: Boolean,
+    @Value("\${ari.kyc.webhook.secret:}") private val webhookSecret: String
 ) : KycProviderAdapter {
 
     private val log = LoggerFactory.getLogger(SimulatedKycProvider::class.java)
@@ -42,6 +48,19 @@ class SimulatedKycProvider(
 
     @Suppress("UNCHECKED_CAST")
     override fun parseWebhook(payload: String, signature: String?): WebhookEvent {
+        if (!allowUnsignedWebhooks) {
+            if (webhookSecret.isBlank()) {
+                throw IllegalArgumentException("KYC webhook secret is not configured")
+            }
+
+            val provided = signature?.removePrefix("sha256=")?.lowercase()
+                ?: throw IllegalArgumentException("Missing webhook signature")
+            val expected = hmacSha256Hex(webhookSecret, payload)
+            if (!constantTimeEquals(provided, expected)) {
+                throw IllegalArgumentException("Invalid webhook signature")
+            }
+        }
+
         val data = objectMapper.readValue(payload, Map::class.java) as Map<String, Any>
 
         val providerRef = data["providerRef"] as? String
@@ -71,5 +90,16 @@ class SimulatedKycProvider(
             rejectionReason = reason,
             metadata = metadata
         )
+    }
+
+    private fun hmacSha256Hex(secret: String, payload: String): String {
+        val mac = Mac.getInstance("HmacSHA256")
+        mac.init(SecretKeySpec(secret.toByteArray(Charsets.UTF_8), "HmacSHA256"))
+        val digest = mac.doFinal(payload.toByteArray(Charsets.UTF_8))
+        return digest.joinToString("") { "%02x".format(it) }
+    }
+
+    private fun constantTimeEquals(a: String, b: String): Boolean {
+        return MessageDigest.isEqual(a.toByteArray(Charsets.UTF_8), b.toByteArray(Charsets.UTF_8))
     }
 }

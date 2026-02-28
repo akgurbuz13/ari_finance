@@ -132,6 +132,18 @@ class PaymentOrderRepository(
         )
     }
 
+    fun updateMetadata(id: UUID, metadata: Map<String, Any>) {
+        jdbcTemplate.update(
+            """
+            UPDATE payments.payment_orders
+            SET metadata = ?::jsonb, updated_at = now()
+            WHERE id = ?
+            """,
+            objectMapper.writeValueAsString(metadata),
+            id
+        )
+    }
+
     fun updateRail(id: UUID, rail: String) {
         jdbcTemplate.update(
             """

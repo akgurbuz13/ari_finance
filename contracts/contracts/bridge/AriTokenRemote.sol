@@ -7,12 +7,12 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./IcttInterfaces.sol";
 
 /**
- * @title OvaTokenRemote
+ * @title AriTokenRemote
  * @notice Token Remote contract for Avalanche ICTT bridge integration.
  *         This contract is deployed on "remote" chains where wrapped tokens are minted.
  *         It mints wrapped tokens when receiving from home chain and burns when sending back.
  *
- * For Ova:
+ * For ARI:
  * - On TR L1: This wraps EUR tokens from EU L1 as "wEUR"
  * - On EU L1: This wraps TRY tokens from TR L1 as "wTRY"
  *
@@ -22,7 +22,7 @@ import "./IcttInterfaces.sol";
  * - Burning sends tokens back to home chain
  * - Inherits KYC requirements from the platform
  */
-contract OvaTokenRemote is ERC20, AccessControl, ReentrancyGuard, ITeleporterReceiver {
+contract AriTokenRemote is ERC20, AccessControl, ReentrancyGuard, ITeleporterReceiver {
     bytes32 public constant BRIDGE_ADMIN_ROLE = keccak256("BRIDGE_ADMIN_ROLE");
     bytes32 public constant PAUSE_ROLE = keccak256("PAUSE_ROLE");
     bytes32 public constant FREEZER_ROLE = keccak256("FREEZER_ROLE");

@@ -6,12 +6,12 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 
 /**
- * @title OvaStablecoin
+ * @title AriStablecoin
  * @notice ERC-20 stablecoin with mint/burn/freeze/allowlist capabilities.
  *         Deployed per L1 chain (TR L1 for TRY, EU L1 for EUR).
  *         Only KYC-verified addresses can hold or transfer tokens.
  */
-contract OvaStablecoin is ERC20, AccessControl, Pausable {
+contract AriStablecoin is ERC20, AccessControl, Pausable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant FREEZER_ROLE = keccak256("FREEZER_ROLE");
 
@@ -39,14 +39,14 @@ contract OvaStablecoin is ERC20, AccessControl, Pausable {
     }
 
     function mint(address to, uint256 amount) external onlyRole(MINTER_ROLE) whenNotPaused {
-        require(allowlisted[to], "OvaStablecoin: recipient not KYC verified");
-        require(!frozen[to], "OvaStablecoin: recipient account frozen");
+        require(allowlisted[to], "AriStablecoin: recipient not KYC verified");
+        require(!frozen[to], "AriStablecoin: recipient account frozen");
         _mint(to, amount);
         emit TokensMinted(to, amount);
     }
 
     function burn(address from, uint256 amount) external onlyRole(MINTER_ROLE) whenNotPaused {
-        require(allowlisted[from], "OvaStablecoin: holder not KYC verified");
+        require(allowlisted[from], "AriStablecoin: holder not KYC verified");
         _burn(from, amount);
         emit TokensBurned(from, amount);
     }
@@ -93,12 +93,12 @@ contract OvaStablecoin is ERC20, AccessControl, Pausable {
     ) internal override whenNotPaused {
         // Skip checks for mint (from == 0) and burn (to == 0)
         if (from != address(0)) {
-            require(allowlisted[from], "OvaStablecoin: sender not KYC verified");
-            require(!frozen[from], "OvaStablecoin: sender account frozen");
+            require(allowlisted[from], "AriStablecoin: sender not KYC verified");
+            require(!frozen[from], "AriStablecoin: sender account frozen");
         }
         if (to != address(0)) {
-            require(allowlisted[to], "OvaStablecoin: recipient not KYC verified");
-            require(!frozen[to], "OvaStablecoin: recipient account frozen");
+            require(allowlisted[to], "AriStablecoin: recipient not KYC verified");
+            require(!frozen[to], "AriStablecoin: recipient account frozen");
         }
         super._update(from, to, value);
     }

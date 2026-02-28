@@ -23,9 +23,9 @@ import javax.crypto.SecretKey
  */
 @Component
 class JwtTokenProvider(
-    @Value("\${ova.jwt.secret}") private val secret: String,
-    @Value("\${ova.jwt.access-token-expiry}") private val accessTokenExpiry: Long,
-    @Value("\${ova.jwt.refresh-token-expiry}") private val refreshTokenExpiry: Long,
+    @Value("\${ari.jwt.secret}") private val secret: String,
+    @Value("\${ari.jwt.access-token-expiry}") private val accessTokenExpiry: Long,
+    @Value("\${ari.jwt.refresh-token-expiry}") private val refreshTokenExpiry: Long,
     private val redisTemplate: StringRedisTemplate
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
@@ -42,7 +42,7 @@ class JwtTokenProvider(
         // Validate secret is configured and meets minimum length
         if (secret.isBlank()) {
             throw IllegalStateException(
-                "JWT secret is not configured. Set OVA_JWT_SECRET environment variable or ova.jwt.secret property."
+                "JWT secret is not configured. Set ARI_JWT_SECRET environment variable or ari.jwt.secret property."
             )
         }
 

@@ -64,7 +64,7 @@ spec:
   policyTypes:
     - Egress
   egress:
-    # To PostgreSQL database
+    # To PostgreSQL database (in-cluster for dev)
     - to:
         - podSelector:
             matchLabels:
@@ -72,11 +72,25 @@ spec:
       ports:
         - protocol: TCP
           port: 5432
-    # To Redis
+    # To managed PostgreSQL (RDS/Azure DB) — set actual CIDR per environment overlay
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/8
+      ports:
+        - protocol: TCP
+          port: 5432
+    # To Redis (in-cluster for dev)
     - to:
         - podSelector:
             matchLabels:
               app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # To managed Redis (ElastiCache/Azure Cache) — set actual CIDR per environment overlay
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/8
       ports:
         - protocol: TCP
           port: 6379
@@ -159,7 +173,7 @@ spec:
       ports:
         - protocol: TCP
           port: 8080
-    # To PostgreSQL
+    # To PostgreSQL (in-cluster for dev)
     - to:
         - podSelector:
             matchLabels:
@@ -167,11 +181,25 @@ spec:
       ports:
         - protocol: TCP
           port: 5432
-    # To Redis
+    # To managed PostgreSQL (RDS/Azure DB) — set actual CIDR per environment overlay
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/8
+      ports:
+        - protocol: TCP
+          port: 5432
+    # To Redis (in-cluster for dev)
     - to:
         - podSelector:
             matchLabels:
               app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # To managed Redis (ElastiCache/Azure Cache) — set actual CIDR per environment overlay
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/8
       ports:
         - protocol: TCP
           port: 6379

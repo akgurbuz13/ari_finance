@@ -94,26 +94,62 @@ spec:
                 configMapKeyRef:
                   name: ova-config
                   key: redis.host
-            - name: OVA_JWT_SECRET
+            - name: ARI_JWT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: ova-jwt-secret
                   key: secret
-            - name: OVA_INTERNAL_API_KEY
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ova-jwt-secret
+                  key: secret
+            - name: ARI_INTERNAL_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: ova-internal-api-key
                   key: api-key
-            - name: OVA_REGION
+            - name: INTERNAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ova-internal-api-key
+                  key: api-key
+            - name: BLOCKCHAIN_SERVICE_URL
+              value: http://blockchain-service:8081
+            - name: ARI_REGION
               valueFrom:
                 configMapKeyRef:
                   name: ova-config
-                  key: ova.region
-            - name: OVA_CORS_ALLOWED_ORIGINS
+                  key: ari.region
+            - name: ARI_CORS_ALLOWED_ORIGINS
               valueFrom:
                 configMapKeyRef:
                   name: ova-config
                   key: cors.allowed-origins
+            - name: RAILS_WEBHOOK_FAST_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ova-rails-webhook-secrets
+                  key: fast-secret
+                  optional: true
+            - name: RAILS_WEBHOOK_EFT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ova-rails-webhook-secrets
+                  key: eft-secret
+                  optional: true
+            - name: RAILS_WEBHOOK_SEPA_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ova-rails-webhook-secrets
+                  key: sepa-secret
+                  optional: true
+            - name: KYC_WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ova-kyc-webhook-secret
+                  key: secret
+                  optional: true
           resources:
             requests:
               cpu: 500m

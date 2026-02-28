@@ -2,7 +2,7 @@
 # NEVER use these values in production
 # Activate with: --spring.profiles.active=dev
 
-ova:
+ari:
   jwt:
     # Development-only secret - NEVER use in production
     secret: dev-secret-key-for-local-development-only-change-in-production-must-be-at-least-256-bits
@@ -18,6 +18,12 @@ ova:
       requests-per-hour: 1000
     general:
       requests-per-minute: 300
+  rails:
+    webhook:
+      allow-unsigned: true
+  kyc:
+    webhook:
+      allow-unsigned: true
 
 # Enable Swagger in dev
 springdoc:

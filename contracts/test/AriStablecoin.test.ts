@@ -1,10 +1,10 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { OvaStablecoin } from "../typechain-types";
+import { AriStablecoin } from "../typechain-types";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 
-describe("OvaStablecoin", function () {
-  let stablecoin: OvaStablecoin;
+describe("AriStablecoin", function () {
+  let stablecoin: AriStablecoin;
   let owner: SignerWithAddress;
   let minter: SignerWithAddress;
   let user1: SignerWithAddress;
@@ -14,8 +14,8 @@ describe("OvaStablecoin", function () {
   beforeEach(async function () {
     [owner, minter, user1, user2, nonKycUser] = await ethers.getSigners();
 
-    const OvaStablecoin = await ethers.getContractFactory("OvaStablecoin");
-    stablecoin = await OvaStablecoin.deploy("Ova Turkish Lira", "ovaTRY");
+    const AriStablecoin = await ethers.getContractFactory("AriStablecoin");
+    stablecoin = await AriStablecoin.deploy("ARI Turkish Lira", "ariTRY");
     await stablecoin.waitForDeployment();
 
     // Grant minter role
@@ -38,7 +38,7 @@ describe("OvaStablecoin", function () {
       const amount = ethers.parseEther("1000");
       await expect(
         stablecoin.connect(minter).mint(nonKycUser.address, amount)
-      ).to.be.revertedWith("OvaStablecoin: recipient not KYC verified");
+      ).to.be.revertedWith("AriStablecoin: recipient not KYC verified");
     });
 
     it("should reject mint from non-minter", async function () {
@@ -81,7 +81,7 @@ describe("OvaStablecoin", function () {
 
       await expect(
         stablecoin.connect(user1).transfer(nonKycUser.address, amount)
-      ).to.be.revertedWith("OvaStablecoin: recipient not KYC verified");
+      ).to.be.revertedWith("AriStablecoin: recipient not KYC verified");
     });
 
     it("should reject transfer from non-allowlisted address", async function () {
@@ -92,7 +92,7 @@ describe("OvaStablecoin", function () {
 
       await expect(
         stablecoin.connect(user1).transfer(user2.address, amount)
-      ).to.be.revertedWith("OvaStablecoin: sender not KYC verified");
+      ).to.be.revertedWith("AriStablecoin: sender not KYC verified");
     });
   });
 
@@ -106,7 +106,7 @@ describe("OvaStablecoin", function () {
 
       await expect(
         stablecoin.connect(user1).transfer(user2.address, amount)
-      ).to.be.revertedWith("OvaStablecoin: sender account frozen");
+      ).to.be.revertedWith("AriStablecoin: sender account frozen");
     });
 
     it("should unfreeze an account", async function () {
@@ -127,7 +127,7 @@ describe("OvaStablecoin", function () {
       const amount = ethers.parseEther("1000");
       await expect(
         stablecoin.connect(minter).mint(user1.address, amount)
-      ).to.be.revertedWith("OvaStablecoin: recipient account frozen");
+      ).to.be.revertedWith("AriStablecoin: recipient account frozen");
     });
   });
 

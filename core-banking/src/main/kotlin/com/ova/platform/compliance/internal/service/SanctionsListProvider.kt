@@ -32,11 +32,11 @@ import java.util.concurrent.atomic.AtomicReference
 class SanctionsListProvider(
     private val jdbcTemplate: JdbcTemplate,
     private val objectMapper: ObjectMapper,
-    @Value("\${ova.compliance.sanctions.masak-url:}") private val masakUrl: String,
-    @Value("\${ova.compliance.sanctions.un-url:https://scsanctions.un.org/resources/xml/en/consolidated.xml}") private val unUrl: String,
-    @Value("\${ova.compliance.sanctions.eu-url:https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content}") private val euUrl: String,
-    @Value("\${ova.compliance.sanctions.ofac-url:https://www.treasury.gov/ofac/downloads/sdn.xml}") private val ofacUrl: String,
-    @Value("\${ova.compliance.sanctions.enabled:true}") private val enabled: Boolean
+    @Value("\${ari.compliance.sanctions.masak-url:}") private val masakUrl: String,
+    @Value("\${ari.compliance.sanctions.un-url:https://scsanctions.un.org/resources/xml/en/consolidated.xml}") private val unUrl: String,
+    @Value("\${ari.compliance.sanctions.eu-url:https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content}") private val euUrl: String,
+    @Value("\${ari.compliance.sanctions.ofac-url:https://www.treasury.gov/ofac/downloads/sdn.xml}") private val ofacUrl: String,
+    @Value("\${ari.compliance.sanctions.enabled:true}") private val enabled: Boolean
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
     private val restTemplate = RestTemplate()

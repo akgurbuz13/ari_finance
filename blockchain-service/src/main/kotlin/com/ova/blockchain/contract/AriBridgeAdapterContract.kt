@@ -18,9 +18,9 @@ import org.web3j.tx.gas.ContractGasProvider
 import java.math.BigInteger
 
 /**
- * Type-safe wrapper for OvaBridgeAdapter.sol contract interactions via web3j.
+ * Type-safe wrapper for AriBridgeAdapter.sol contract interactions via web3j.
  */
-class OvaBridgeAdapterContract(
+class AriBridgeAdapterContract(
     private val web3j: Web3j,
     private val contractAddress: String,
     private val credentials: Credentials,

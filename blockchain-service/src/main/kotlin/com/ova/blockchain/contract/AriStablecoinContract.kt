@@ -17,9 +17,9 @@ import org.web3j.tx.gas.ContractGasProvider
 import java.math.BigInteger
 
 /**
- * Type-safe wrapper for OvaStablecoin.sol contract interactions via web3j.
+ * Type-safe wrapper for AriStablecoin.sol contract interactions via web3j.
  */
-class OvaStablecoinContract(
+class AriStablecoinContract(
     private val web3j: Web3j,
     private val contractAddress: String,
     private val credentials: Credentials,

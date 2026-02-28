@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 /**
  * @title KycAllowList
  * @notice Standalone KYC allowlist registry that can be shared across multiple contracts.
- *         The OvaStablecoin contract can reference this for KYC status checks.
+ *         The AriStablecoin contract can reference this for KYC status checks.
  */
 contract KycAllowList is AccessControl {
     bytes32 public constant KYC_OPERATOR_ROLE = keccak256("KYC_OPERATOR_ROLE");

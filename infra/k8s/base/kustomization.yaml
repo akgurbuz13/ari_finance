@@ -13,9 +13,8 @@ resources:
   # Security hardening
   - network-policies.yaml
   - pod-disruption-budgets.yaml
-  # External secrets (requires external-secrets-operator)
-  # Uncomment when operator is installed:
-  # - external-secrets.yaml
+  # External secrets (requires external-secrets-operator installed in cluster)
+  - external-secrets.yaml
 
 commonLabels:
   app.kubernetes.io/part-of: ova-platform

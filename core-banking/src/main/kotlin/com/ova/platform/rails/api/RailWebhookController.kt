@@ -10,11 +10,15 @@ import com.ova.platform.rails.internal.service.RailService
 import com.ova.platform.shared.exception.BadRequestException
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import java.util.UUID
+import java.security.MessageDigest
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 
 @RestController
 @RequestMapping("/api/v1/webhooks/rails")
@@ -22,7 +26,11 @@ class RailWebhookController(
     private val adapters: List<RailAdapter>,
     private val railService: RailService,
     private val railReferenceRepository: RailReferenceRepository,
-    private val webhookEventRepository: WebhookEventRepository
+    private val webhookEventRepository: WebhookEventRepository,
+    @Value("\${ari.rails.webhook.allow-unsigned:false}") private val allowUnsignedWebhooks: Boolean,
+    @Value("\${ari.rails.webhook.fast-secret:}") private val fastWebhookSecret: String,
+    @Value("\${ari.rails.webhook.eft-secret:}") private val eftWebhookSecret: String,
+    @Value("\${ari.rails.webhook.sepa-secret:}") private val sepaWebhookSecret: String
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -139,11 +147,43 @@ class RailWebhookController(
     private fun validateSignature(provider: String, payload: String, headers: Map<String, String>): Boolean {
         log.debug("Validating webhook signature for provider={}", provider)
 
-        // Stub: always returns true. In production:
-        // - FAST: verify TCMB certificate-based signature
-        // - EFT: verify TCMB HMAC signature
-        // - SEPA: verify bank gateway X-Signature header
-        return true
+        if (allowUnsignedWebhooks) {
+            return true
+        }
+
+        val secret = when (provider) {
+            "fast" -> fastWebhookSecret
+            "eft" -> eftWebhookSecret
+            "sepa", "sepa_instant" -> sepaWebhookSecret
+            else -> ""
+        }
+
+        if (secret.isBlank()) {
+            log.warn("Webhook secret is not configured for provider={}", provider)
+            return false
+        }
+
+        val providedSignature = when (provider) {
+            "fast" -> headers["x-fast-signature"] ?: headers["x-signature"]
+            "eft" -> headers["x-eft-signature"] ?: headers["x-signature"]
+            "sepa", "sepa_instant" -> headers["x-sepa-signature"] ?: headers["x-signature"]
+            else -> headers["x-signature"]
+        } ?: return false
+
+        val expectedSignature = hmacSha256Hex(secret, payload)
+        val normalizedProvided = providedSignature.removePrefix("sha256=").lowercase()
+        return constantTimeEquals(normalizedProvided, expectedSignature)
+    }
+
+    private fun hmacSha256Hex(secret: String, payload: String): String {
+        val mac = Mac.getInstance("HmacSHA256")
+        mac.init(SecretKeySpec(secret.toByteArray(Charsets.UTF_8), "HmacSHA256"))
+        val digest = mac.doFinal(payload.toByteArray(Charsets.UTF_8))
+        return digest.joinToString("") { "%02x".format(it) }
+    }
+
+    private fun constantTimeEquals(a: String, b: String): Boolean {
+        return MessageDigest.isEqual(a.toByteArray(Charsets.UTF_8), b.toByteArray(Charsets.UTF_8))
     }
 
     /**
