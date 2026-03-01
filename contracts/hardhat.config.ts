@@ -17,27 +17,27 @@ const config: HardhatUserConfig = {
     hardhat: {
       chainId: 31337,
     },
-    // ARI TR L1 (Turkey)
+    // ARI TR L1 (Turkey) - Fuji Chain ID 1279
     "ari-tr-testnet": {
-      url: process.env.TR_L1_RPC_URL || "http://localhost:9650/ext/bc/tr/rpc",
+      url: process.env.TR_L1_RPC_URL || "http://127.0.0.1:9650/ext/bc/9x7zHB85vsWaX2BiVPGRWVWh4KHWcroZWGBWbzR958JYRQZWP/rpc",
       accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
-      chainId: Number(process.env.TR_L1_CHAIN_ID) || 99999,
+      chainId: Number(process.env.TR_L1_CHAIN_ID) || 1279,
     },
     "ari-tr-mainnet": {
       url: process.env.TR_L1_MAINNET_RPC_URL || "",
       accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
-      chainId: Number(process.env.TR_L1_MAINNET_CHAIN_ID) || 99999,
+      chainId: Number(process.env.TR_L1_MAINNET_CHAIN_ID) || 1279,
     },
-    // ARI EU L1 (Europe)
+    // ARI EU L1 (Europe) - Fuji Chain ID 1832
     "ari-eu-testnet": {
-      url: process.env.EU_L1_RPC_URL || "http://localhost:9651/ext/bc/eu/rpc",
+      url: process.env.EU_L1_RPC_URL || "http://127.0.0.1:9652/ext/bc/21Euii5No2ut9NyF7VWkkWhkeiDk2fcZkE1GkfMjNtTtgL3DWE/rpc",
       accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
-      chainId: Number(process.env.EU_L1_CHAIN_ID) || 99998,
+      chainId: Number(process.env.EU_L1_CHAIN_ID) || 1832,
     },
     "ari-eu-mainnet": {
       url: process.env.EU_L1_MAINNET_RPC_URL || "",
       accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
-      chainId: Number(process.env.EU_L1_MAINNET_CHAIN_ID) || 99998,
+      chainId: Number(process.env.EU_L1_MAINNET_CHAIN_ID) || 1832,
     },
     // Legacy testnet/mainnet for backwards compatibility
     testnet: {

@@ -26,15 +26,15 @@ ari:
     internal-api-key: ${INTERNAL_API_KEY:${ARI_INTERNAL_API_KEY:}}  # No default - must be configured
   blockchain:
     tr-l1:
-      rpc-url: ${TR_L1_RPC_URL:${ARI_BLOCKCHAIN_TR_L1_RPC_URL:http://localhost:9650/ext/bc/tr/rpc}}
-      chain-id: ${TR_L1_CHAIN_ID:99999}
+      rpc-url: ${TR_L1_RPC_URL:${ARI_BLOCKCHAIN_TR_L1_RPC_URL:http://127.0.0.1:9650/ext/bc/9x7zHB85vsWaX2BiVPGRWVWh4KHWcroZWGBWbzR958JYRQZWP/rpc}}
+      chain-id: ${TR_L1_CHAIN_ID:1279}
       stablecoin-address: ${TR_STABLECOIN_ADDRESS:}
       # Multisig governance addresses
       multisig-address: ${TR_MULTISIG_ADDRESS:}
       timelock-address: ${TR_TIMELOCK_ADDRESS:}
     eu-l1:
-      rpc-url: ${EU_L1_RPC_URL:${ARI_BLOCKCHAIN_EU_L1_RPC_URL:http://localhost:9651/ext/bc/eu/rpc}}
-      chain-id: ${EU_L1_CHAIN_ID:99998}
+      rpc-url: ${EU_L1_RPC_URL:${ARI_BLOCKCHAIN_EU_L1_RPC_URL:http://127.0.0.1:9652/ext/bc/21Euii5No2ut9NyF7VWkkWhkeiDk2fcZkE1GkfMjNtTtgL3DWE/rpc}}
+      chain-id: ${EU_L1_CHAIN_ID:1832}
       stablecoin-address: ${EU_STABLECOIN_ADDRESS:}
       multisig-address: ${EU_MULTISIG_ADDRESS:}
       timelock-address: ${EU_TIMELOCK_ADDRESS:}
