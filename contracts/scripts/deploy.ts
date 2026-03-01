@@ -44,6 +44,9 @@ async function main() {
   const multisigAddress = process.env.MULTISIG_ADDRESS || deployer.address;
   const minterAddress = process.env.MINTER_ADDRESS || deployer.address;
   const bridgeOperatorAddress = process.env.BRIDGE_OPERATOR_ADDRESS || deployer.address;
+  // In dev/testnet, deployer keeps admin for easy role management.
+  // In production, timelock is admin (requires proposals + delay for changes).
+  const adminAddress = isProduction ? "TIMELOCK" : deployer.address; // resolved after timelock deploy
   const tokenName = process.env.TOKEN_NAME || "ARI Turkish Lira";
   const tokenSymbol = process.env.TOKEN_SYMBOL || "ariTRY";
   const wrappedTokenName = process.env.WRAPPED_TOKEN_NAME || "Wrapped ariEUR";
@@ -78,6 +81,10 @@ async function main() {
   console.log("AriTimelock deployed to:", timelockAddress);
   console.log("  Min delay:", minDelay / 3600, "hours");
 
+  // Resolve admin: deployer for testnet (immediate role management), timelock for production
+  const contractAdmin = isProduction ? timelockAddress : deployer.address;
+  console.log("Contract admin:", contractAdmin, isProduction ? "(timelock)" : "(deployer - testnet)");
+
   // ===== 2. Deploy ValidatorManager =====
   console.log("\n--- Deploying ValidatorManager ---");
   const ValidatorManager = await ethers.getContractFactory("ValidatorManager");
@@ -99,7 +106,7 @@ async function main() {
   const AriStablecoinUpgradeable = await ethers.getContractFactory("AriStablecoinUpgradeable");
   const stablecoin = await upgrades.deployProxy(
     AriStablecoinUpgradeable,
-    [tokenName, tokenSymbol, timelockAddress, minterAddress, BigInt(supplyCap)],
+    [tokenName, tokenSymbol, contractAdmin, minterAddress, BigInt(supplyCap)],
     {
       kind: "uups",
       initializer: "initialize",
@@ -118,7 +125,7 @@ async function main() {
     stablecoinAddress,      // Native token
     teleporterAddress,      // Teleporter messenger
     blockchainID,           // This chain's blockchain ID
-    timelockAddress         // Admin (timelock)
+    contractAdmin           // Admin
   );
   await tokenHome.waitForDeployment();
   const tokenHomeAddress = await tokenHome.getAddress();
@@ -132,7 +139,7 @@ async function main() {
     wrappedTokenSymbol,     // Symbol of wrapped token
     teleporterAddress,      // Teleporter messenger
     blockchainID,           // This chain's blockchain ID
-    timelockAddress         // Admin
+    contractAdmin           // Admin
   );
   await tokenRemote.waitForDeployment();
   const tokenRemoteAddress = await tokenRemote.getAddress();
@@ -141,7 +148,7 @@ async function main() {
   // ===== 7. Deploy Bridge Adapter =====
   console.log("\n--- Deploying AriBridgeAdapter ---");
   const AriBridgeAdapter = await ethers.getContractFactory("AriBridgeAdapter");
-  const bridgeAdapter = await AriBridgeAdapter.deploy(stablecoinAddress, timelockAddress);
+  const bridgeAdapter = await AriBridgeAdapter.deploy(stablecoinAddress, contractAdmin);
   await bridgeAdapter.waitForDeployment();
   const bridgeAdapterAddress = await bridgeAdapter.getAddress();
   console.log("AriBridgeAdapter deployed to:", bridgeAdapterAddress);
@@ -154,25 +161,24 @@ async function main() {
   await bridgeAdapter.grantRole(BRIDGE_OPERATOR_ROLE, bridgeOperatorAddress);
   console.log("Granted BRIDGE_OPERATOR_ROLE to:", bridgeOperatorAddress);
 
-  // Transfer bridge adapter admin to timelock
-  const BRIDGE_ADMIN_ROLE = await bridgeAdapter.DEFAULT_ADMIN_ROLE();
-  await bridgeAdapter.grantRole(BRIDGE_ADMIN_ROLE, timelockAddress);
-  console.log("Granted DEFAULT_ADMIN_ROLE on BridgeAdapter to timelock");
-
-  // Grant TokenHome admin roles
+  // Grant bridge admin roles to deployer (for testnet) or timelock (for prod)
   const TOKEN_HOME_BRIDGE_ADMIN = await tokenHome.BRIDGE_ADMIN_ROLE();
-  await tokenHome.grantRole(TOKEN_HOME_BRIDGE_ADMIN, timelockAddress);
-  console.log("Granted BRIDGE_ADMIN_ROLE on TokenHome to timelock");
-
-  // Grant TokenRemote admin roles
   const TOKEN_REMOTE_BRIDGE_ADMIN = await tokenRemote.BRIDGE_ADMIN_ROLE();
-  await tokenRemote.grantRole(TOKEN_REMOTE_BRIDGE_ADMIN, timelockAddress);
-  console.log("Granted BRIDGE_ADMIN_ROLE on TokenRemote to timelock");
 
   if (isProduction) {
-    // Renounce deployer's admin role on bridge adapter
+    // Transfer admin to timelock in production
+    const BRIDGE_ADMIN_ROLE = await bridgeAdapter.DEFAULT_ADMIN_ROLE();
+    await bridgeAdapter.grantRole(BRIDGE_ADMIN_ROLE, timelockAddress);
+    console.log("Granted DEFAULT_ADMIN_ROLE on BridgeAdapter to timelock");
+    await tokenHome.grantRole(TOKEN_HOME_BRIDGE_ADMIN, timelockAddress);
+    console.log("Granted BRIDGE_ADMIN_ROLE on TokenHome to timelock");
+    await tokenRemote.grantRole(TOKEN_REMOTE_BRIDGE_ADMIN, timelockAddress);
+    console.log("Granted BRIDGE_ADMIN_ROLE on TokenRemote to timelock");
+    // Renounce deployer's admin role
     await bridgeAdapter.renounceRole(BRIDGE_ADMIN_ROLE, deployer.address);
     console.log("Renounced deployer's admin role on BridgeAdapter");
+  } else {
+    console.log("Testnet mode: deployer retains admin roles for easy configuration");
   }
 
   // ===== Summary =====
