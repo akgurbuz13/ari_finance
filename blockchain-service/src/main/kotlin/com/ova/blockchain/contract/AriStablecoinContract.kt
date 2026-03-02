@@ -135,10 +135,21 @@ class AriStablecoinContract(
             throw RuntimeException("Transaction failed: ${response.error.message}")
         }
 
-        val receipt = web3j.ethGetTransactionReceipt(response.transactionHash)
-            .send()
-            .transactionReceipt
-            .orElseThrow { RuntimeException("No receipt for tx: ${response.transactionHash}") }
+        // Poll for receipt with retries (Avalanche L1s may need a moment to mine)
+        val txHash = response.transactionHash
+        var receipt: TransactionReceipt? = null
+        for (i in 1..30) {
+            receipt = web3j.ethGetTransactionReceipt(txHash)
+                .send()
+                .transactionReceipt
+                .orElse(null)
+            if (receipt != null) break
+            Thread.sleep(1000)
+        }
+
+        if (receipt == null) {
+            throw RuntimeException("No receipt for tx after 30s: $txHash")
+        }
 
         if (!receipt.isStatusOK) {
             throw RuntimeException("Transaction reverted: ${receipt.transactionHash}")

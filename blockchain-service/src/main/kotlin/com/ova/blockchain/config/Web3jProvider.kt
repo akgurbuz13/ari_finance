@@ -4,7 +4,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.http.HttpService
-import org.web3j.tx.gas.DefaultGasProvider
+import org.web3j.tx.gas.StaticGasProvider
+import java.math.BigInteger
 import java.util.concurrent.ConcurrentHashMap
 
 @Component
@@ -53,5 +54,8 @@ class Web3jProvider(
         }
     }
 
-    fun getGasProvider() = DefaultGasProvider()
+    fun getGasProvider() = StaticGasProvider(
+        BigInteger.valueOf(25_000_000_000L), // 25 gwei gas price
+        BigInteger.valueOf(5_000_000L)       // 5M gas limit (under 8M block limit)
+    )
 }

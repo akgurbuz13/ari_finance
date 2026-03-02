@@ -46,9 +46,11 @@ class ContractFactory(
 
     fun getBridgeAdapter(chainId: Long, credentials: Credentials): AriBridgeAdapterContract {
         return bridgeContracts.computeIfAbsent(chainId) {
+            val address = config.getBridgeAdapterAddress(chainId)
+            require(address.isNotBlank()) { "BridgeAdapter address not configured for chain $chainId" }
             AriBridgeAdapterContract(
                 web3j = web3jProvider.getWeb3j(chainId),
-                contractAddress = config.bridgeContractAddress,
+                contractAddress = address,
                 credentials = credentials,
                 gasProvider = web3jProvider.getGasProvider(),
                 chainId = chainId

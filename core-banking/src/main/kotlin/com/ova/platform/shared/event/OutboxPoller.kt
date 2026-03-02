@@ -26,6 +26,7 @@ class OutboxPoller(
             SELECT id, aggregate_type, aggregate_id, event_type, payload
             FROM shared.outbox_events
             WHERE NOT published
+              AND event_type NOT IN ('MintRequested', 'BurnRequested', 'CrossChainTransferRequested')
             ORDER BY created_at
             LIMIT 100
             FOR UPDATE SKIP LOCKED

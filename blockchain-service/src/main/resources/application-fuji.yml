@@ -1,0 +1,36 @@
+# Fuji testnet profile for blockchain-service
+# Activate with: --spring.profiles.active=fuji
+# Requires Avalanche L1 nodes running locally (avalanche blockchain deploy --fuji)
+
+ari:
+  core-banking:
+    internal-api-key: dev-internal-api-key-never-use-in-production
+  blockchain:
+    tr-l1:
+      rpc-url: http://127.0.0.1:9650/ext/bc/9x7zHB85vsWaX2BiVPGRWVWh4KHWcroZWGBWbzR958JYRQZWP/rpc
+      chain-id: 1279
+      stablecoin-address: "0x44F26f6812694184FC29D7b14FB91523948542a7"
+      timelock-address: "0x17E33D877b93bbBe3b2246f57D5aAB01E75BE1e1"
+    eu-l1:
+      rpc-url: http://127.0.0.1:9652/ext/bc/21Euii5No2ut9NyF7VWkkWhkeiDk2fcZkE1GkfMjNtTtgL3DWE/rpc
+      chain-id: 1832
+      stablecoin-address: "0x053c8E2872434cE438281b75010B6051D2577B77"
+      timelock-address: "0xb1b15b4f25cE23637f81B1C0db2DDEBb8b477a8A"
+    bridge:
+      tr-bridge-adapter-address: "0x6DD482b76Eb446E6fB3cE57e711ec021b8114f0e"
+      eu-bridge-adapter-address: "0x5b7bA996f044FE43CD9e2e84649dCa725570ac82"
+      tr-token-home-address: "0x48Bfa2eC3F2756631C2B3851e6F4BF74a8838D95"
+      eu-token-home-address: "0x3CC7e983d7CAA5923Ab99655b6305cA04DB10a5F"
+      tr-token-remote-address: "0x9490CA23a24EDeFc8Dc1841b25534DA2B8cB8D5b"
+      eu-token-remote-address: "0x91d314bbb8f998ae28a488DF0548Ea5ee5dbe0D5"
+      tr-blockchain-id: "0x1452a7b43d17b718f3d0452e8076427013cfd6b64f3224d28182a3c8915668a6"
+      eu-blockchain-id: "0x843d98c0f9851ffcf09c3549e8f929e344fc75f3ad5177f08851cf5a42c03e1a"
+    wallet:
+      # Deployer key - has MINTER_ROLE, BRIDGE_OPERATOR_ROLE on all Fuji contracts
+      master-key: "0x7a1a2d2e45ad354f5420d8d609801cc99096ccbc0fbb9a6a8ea77a0448b189b3"
+    relayer:
+      private-key: "0x7a1a2d2e45ad354f5420d8d609801cc99096ccbc0fbb9a6a8ea77a0448b189b3"
+    keys:
+      minter: "0x7a1a2d2e45ad354f5420d8d609801cc99096ccbc0fbb9a6a8ea77a0448b189b3"
+      admin: "0x7a1a2d2e45ad354f5420d8d609801cc99096ccbc0fbb9a6a8ea77a0448b189b3"
+      bridge-operator: "0x7a1a2d2e45ad354f5420d8d609801cc99096ccbc0fbb9a6a8ea77a0448b189b3"

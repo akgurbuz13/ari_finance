@@ -12,7 +12,8 @@ class BlockchainConfig(
     @Value("\${ari.blockchain.eu-l1.rpc-url}") val euL1RpcUrl: String,
     @Value("\${ari.blockchain.eu-l1.chain-id}") val euL1ChainId: Long,
     @Value("\${ari.blockchain.eu-l1.stablecoin-address}") val euStablecoinAddress: String,
-    @Value("\${ari.blockchain.bridge.contract-address}") val bridgeContractAddress: String,
+    @Value("\${ari.blockchain.bridge.tr-bridge-adapter-address:}") val trBridgeAdapterAddress: String,
+    @Value("\${ari.blockchain.bridge.eu-bridge-adapter-address:}") val euBridgeAdapterAddress: String,
     @Value("\${ari.blockchain.bridge.tr-token-home-address:}") val trTokenHomeAddress: String,
     @Value("\${ari.blockchain.bridge.eu-token-home-address:}") val euTokenHomeAddress: String,
     @Value("\${ari.blockchain.bridge.tr-token-remote-address:}") val trTokenRemoteAddress: String,
@@ -25,6 +26,17 @@ class BlockchainConfig(
     fun getRpcUrl(): String = if (region == "TR") trL1RpcUrl else euL1RpcUrl
     fun getChainId(): Long = if (region == "TR") trL1ChainId else euL1ChainId
     fun getStablecoinAddress(): String = if (region == "TR") trStablecoinAddress else euStablecoinAddress
+
+    /**
+     * Get BridgeAdapter address for a chain.
+     */
+    fun getBridgeAdapterAddress(chainId: Long): String {
+        return when (chainId) {
+            trL1ChainId -> trBridgeAdapterAddress
+            euL1ChainId -> euBridgeAdapterAddress
+            else -> throw IllegalArgumentException("Unknown chain ID: $chainId")
+        }
+    }
 
     /**
      * Get TokenHome address for a chain.

@@ -36,19 +36,20 @@ class CustodialWalletService(
 
         val derivationIndex = walletRepository.getNextDerivationIndex()
         val credentials = deriveCredentials(userId, derivationIndex)
-        val address = credentials.address
+        val rawAddress = credentials.address
+        val address = if (rawAddress.startsWith("0x")) rawAddress else "0x$rawAddress"
 
         val record = walletRepository.save(
             CustodialWalletRecord(
                 userId = userId,
                 chainId = chainId,
-                address = "0x$address",
+                address = address,
                 derivationIndex = derivationIndex,
                 encryptedKeyRef = "kms:derive:$derivationIndex"
             )
         )
 
-        log.info("Created custodial wallet for user={} on chain={}: 0x{}", userId, chainId, address)
+        log.info("Created custodial wallet for user={} on chain={}: {}", userId, chainId, address)
         return CustodialWallet(record.userId, record.address, record.chainId)
     }
 

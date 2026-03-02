@@ -39,7 +39,9 @@ ari:
       multisig-address: ${EU_MULTISIG_ADDRESS:}
       timelock-address: ${EU_TIMELOCK_ADDRESS:}
     bridge:
-      contract-address: ${BRIDGE_CONTRACT_ADDRESS:}
+      # ICTT bridge contracts - BridgeAdapter (high-level bridge orchestration)
+      tr-bridge-adapter-address: ${TR_BRIDGE_ADAPTER_ADDRESS:}
+      eu-bridge-adapter-address: ${EU_BRIDGE_ADAPTER_ADDRESS:}
       # ICTT bridge contracts - TokenHome (locks native tokens when bridging out)
       tr-token-home-address: ${TR_TOKEN_HOME_ADDRESS:}
       eu-token-home-address: ${EU_TOKEN_HOME_ADDRESS:}
