@@ -203,10 +203,10 @@ class SanctionsScreeningService(
         // Direct name matching using pg_trgm similarity
         val directMatches = jdbcTemplate.query(
             """
-            SELECT full_name, list_type, source, country, similarity(full_name, ?) as score
+            SELECT full_name, list_type, source, country, public.similarity(full_name, ?) as score
             FROM shared.sanctions_list
             WHERE active = true
-              AND similarity(full_name, ?) > ?
+              AND public.similarity(full_name, ?) > ?
             ORDER BY score DESC
             LIMIT 5
             """,
@@ -229,7 +229,7 @@ class SanctionsScreeningService(
             SELECT full_name, list_type, source, country, alias_score as score
             FROM (
                 SELECT full_name, list_type, source, country,
-                       (SELECT MAX(similarity(a, ?)) FROM unnest(aliases) a) as alias_score
+                       (SELECT MAX(public.similarity(a, ?)) FROM unnest(aliases) a) as alias_score
                 FROM shared.sanctions_list
                 WHERE active = true
                   AND aliases IS NOT NULL
