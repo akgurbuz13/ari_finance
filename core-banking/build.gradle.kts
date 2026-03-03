@@ -64,6 +64,11 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:1.19.3")
 }
 
+tasks.test {
+    useJUnitPlatform()
+    maxHeapSize = "1536m"
+}
+
 dependencyManagement {
     imports {
         mavenBom("org.springframework.modulith:spring-modulith-bom:1.1.1")
