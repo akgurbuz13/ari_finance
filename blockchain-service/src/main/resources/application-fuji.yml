@@ -27,10 +27,11 @@ ari:
       eu-blockchain-id: "0x843d98c0f9851ffcf09c3549e8f929e344fc75f3ad5177f08851cf5a42c03e1a"
     wallet:
       # Deployer key - has MINTER_ROLE, BRIDGE_OPERATOR_ROLE on all Fuji contracts
-      master-key: "0x7a1a2d2e45ad354f5420d8d609801cc99096ccbc0fbb9a6a8ea77a0448b189b3"
+      # Set via DEPLOYER_PRIVATE_KEY env var or .env.fuji
+      master-key: ${DEPLOYER_PRIVATE_KEY:}
     relayer:
-      private-key: "0x7a1a2d2e45ad354f5420d8d609801cc99096ccbc0fbb9a6a8ea77a0448b189b3"
+      private-key: ${DEPLOYER_PRIVATE_KEY:}
     keys:
-      minter: "0x7a1a2d2e45ad354f5420d8d609801cc99096ccbc0fbb9a6a8ea77a0448b189b3"
-      admin: "0x7a1a2d2e45ad354f5420d8d609801cc99096ccbc0fbb9a6a8ea77a0448b189b3"
-      bridge-operator: "0x7a1a2d2e45ad354f5420d8d609801cc99096ccbc0fbb9a6a8ea77a0448b189b3"
+      minter: ${DEPLOYER_PRIVATE_KEY:}
+      admin: ${DEPLOYER_PRIVATE_KEY:}
+      bridge-operator: ${DEPLOYER_PRIVATE_KEY:}
