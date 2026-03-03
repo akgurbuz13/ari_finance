@@ -349,7 +349,7 @@ Before considering a phase complete, verify:
 ## Next Steps (Recommended Order)
 
 1. **Deploy validators to AWS** — Run `./scripts/bootstrap-validators.sh`
-2. **Create L1 chains** — Manual avalanche-cli commands
+2. **Create L1 chains** — Platform CLI (`platform subnet create` + `platform chain create`)
 3. **Deploy contracts** — Run `./scripts/deploy-contracts.sh both`
 4. **Run E2E test** — Verify TR→EU transfer completes
 5. **Schedule security audit** — External firm for backend + contracts

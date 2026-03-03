@@ -1,6 +1,6 @@
 # Fuji testnet profile for blockchain-service
 # Activate with: --spring.profiles.active=fuji
-# Requires Avalanche L1 nodes running locally (avalanche blockchain deploy --fuji)
+# Requires Avalanche L1 nodes running on Fuji (managed via Platform CLI + Builder Console)
 
 ari:
   core-banking:

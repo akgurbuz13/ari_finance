@@ -1,6 +1,6 @@
-# Ova Testing Scripts
+# ARI Testing Scripts
 
-This directory contains scripts for deploying and testing the Ova platform, particularly the cross-border transfer functionality using Avalanche ICTT bridges.
+This directory contains scripts for deploying and testing the ARI platform, particularly the cross-border transfer functionality using Avalanche ICTT bridges.
 
 ## Overview
 
@@ -21,7 +21,8 @@ This directory contains scripts for deploying and testing the Ova platform, part
 - curl
 
 ### Optional (for full L1 creation)
-- avalanche-cli (`avalanche subnet create`)
+- Platform CLI (`platform subnet create`) — Install: `curl -sSfL https://build.avax.network/install/platform-cli | sh`
+- Builder Console access (https://build.avax.network/console) — for ICM/Teleporter setup
 
 ## AWS 2-Validator Testing Setup (P5)
 
@@ -45,27 +46,38 @@ This will:
 
 ### Step 2: Create L1 Chains (Manual)
 
-After validators are running, create the L1 chains:
+After validators are running, create the L1 chains using Platform CLI and Builder Console:
 
 ```bash
-# Install avalanche-cli if not present
-curl -sSfL https://raw.githubusercontent.com/ava-labs/avalanche-cli/main/scripts/install.sh | sh
+# Install Platform CLI if not present
+curl -sSfL https://build.avax.network/install/platform-cli | sh
 
-# Create TR L1
-avalanche subnet create ova-tr-l1 --vm subnet-evm --evm-chain-id 99999
+# Import or generate deployer key
+platform keys generate --name ari-deployer
+# Fund with testnet AVAX via Fuji faucet, then transfer to P-Chain:
+platform transfer c-to-p --amount 5 --key-name ari-deployer
 
-# Deploy to TR validators
-avalanche subnet deploy ova-tr-l1 --cluster ova-dev-tr
+# Create TR L1 subnet + chain
+platform subnet create --key-name ari-deployer --network fuji
+# Note the Subnet ID from output, then:
+platform chain create --subnet-id <TR_SUBNET_ID> \
+  --genesis genesis-tr.json --name ari-tr --key-name ari-deployer
 
-# Create EU L1
-avalanche subnet create ova-eu-l1 --vm subnet-evm --evm-chain-id 99998
+# Convert subnet to L1 with validators
+platform subnet convert-l1 --subnet-id <TR_SUBNET_ID> \
+  --chain-id <TR_CHAIN_ID> --manager <VALIDATOR_MANAGER_ADDR> \
+  --validators <VALIDATOR_IP>:9650 --key-name ari-deployer
 
-# Deploy to EU validators
-avalanche subnet deploy ova-eu-l1 --cluster ova-dev-eu
+# Repeat for EU L1
+platform subnet create --key-name ari-deployer --network fuji
+platform chain create --subnet-id <EU_SUBNET_ID> \
+  --genesis genesis-eu.json --name ari-eu --key-name ari-deployer
+platform subnet convert-l1 --subnet-id <EU_SUBNET_ID> \
+  --chain-id <EU_CHAIN_ID> --manager <VALIDATOR_MANAGER_ADDR> \
+  --validators <VALIDATOR_IP>:9652 --key-name ari-deployer
 
-# Enable Teleporter messaging
-avalanche teleporter enable --chain ova-tr-l1
-avalanche teleporter enable --chain ova-eu-l1
+# Enable Teleporter messaging via Builder Console
+# Go to https://build.avax.network/console and enable ICM for both L1s
 ```
 
 ### Step 3: Configure Environment

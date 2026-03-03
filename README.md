@@ -229,7 +229,7 @@ cd contracts && npx hardhat coverage
 | Backend | Kotlin, Spring Boot 3.2, JdbcTemplate, PostgreSQL 16 |
 | Blockchain Integration | Web3j 4.10, outbox pattern, receipt polling |
 | Frontend | Next.js 14, React 18, Tailwind CSS, Framer Motion |
-| Infrastructure | Docker Compose, Avalanche CLI, Fuji testnet |
+| Infrastructure | Docker Compose, Platform CLI, Builder Console, Fuji testnet |
 | Cross-Chain | ICTT (Teleporter/ICM), AWM Relayer |
 
 ---
@@ -238,7 +238,7 @@ cd contracts && npx hardhat coverage
 
 ### Prerequisites
 - Docker, JDK 21, Node.js 20
-- Avalanche CLI (`avalanche network start` for local L1s)
+- Platform CLI (`platform` command for P-Chain ops) — Install: `curl -sSfL https://build.avax.network/install/platform-cli | sh`
 
 ### Quick Start
 ```bash

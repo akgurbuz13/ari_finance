@@ -1,13 +1,15 @@
 #!/bin/bash
 # ==============================================================================
-# Ova Avalanche L1 Validator Bootstrap Script
+# ARI Avalanche L1 Validator Bootstrap Script
 # ==============================================================================
-# This script bootstraps the Avalanche L1 validators for the Ova platform.
+# This script bootstraps the Avalanche L1 validators for the ARI platform.
 #
 # Prerequisites:
 # - AWS CLI configured with appropriate credentials
 # - Terraform installed
-# - avalanche-cli installed (for L1 creation)
+# - Platform CLI installed (for P-Chain operations: keys, subnets, chains)
+#   Install: curl -sSfL https://build.avax.network/install/platform-cli | sh
+# - Builder Console access (for ICM/Teleporter setup): https://build.avax.network/console
 # - jq installed
 #
 # Usage:
@@ -72,11 +74,13 @@ generate_staking_keys() {
                 -out "$keys_dir/${key_name}.crt" \
                 -subj "/CN=ova-${chain}-validator-${i}"
 
-            # Generate BLS key (using avalanche-cli)
-            if command -v avalanche &> /dev/null; then
-                avalanche key create --file "$keys_dir/${key_name}-bls" --type bls
+            # Generate BLS key (using Platform CLI)
+            if command -v platform &> /dev/null; then
+                platform keys generate --name "${key_name}-bls" --encrypt=false
+                platform keys export --name "${key_name}-bls" --format hex --output-file "$keys_dir/${key_name}-bls.key"
             else
-                log_warn "avalanche-cli not found, skipping BLS key generation"
+                log_warn "Platform CLI not found, skipping BLS key generation"
+                log_warn "Install: curl -sSfL https://build.avax.network/install/platform-cli | sh"
                 echo "placeholder-bls-key" > "$keys_dir/${key_name}-bls.key"
             fi
 
@@ -190,29 +194,41 @@ create_l1_chains() {
     fi
 
     log_info "Creating TR L1 (chain ID: $TR_CHAIN_ID)..."
-    # In production, this would use avalanche-cli or P-Chain API
-    # For now, we document the manual steps
+    # Uses Platform CLI for P-Chain operations (subnets, chains, validators)
+    # Uses Builder Console for ICM/Teleporter setup
     cat << EOF
 
     ========================================
     MANUAL STEPS REQUIRED FOR L1 CREATION:
     ========================================
 
+    Using Platform CLI (P-Chain operations):
+
     1. Create TR L1 Subnet:
-       avalanche subnet create ova-tr-l1 --vm subnet-evm --evm-chain-id $TR_CHAIN_ID
+       platform subnet create --key-name ari-deployer --network fuji
 
-    2. Deploy TR L1 to validators:
-       avalanche subnet deploy ova-tr-l1 --cluster ova-dev-tr
+    2. Create TR L1 Chain (use SubnetID from step 1):
+       platform chain create --subnet-id <TR_SUBNET_ID> \\
+         --genesis genesis-tr.json --name ari-tr --key-name ari-deployer
 
-    3. Create EU L1 Subnet:
-       avalanche subnet create ova-eu-l1 --vm subnet-evm --evm-chain-id $EU_CHAIN_ID
+    3. Convert TR subnet to L1 (with validator):
+       platform subnet convert-l1 --subnet-id <TR_SUBNET_ID> \\
+         --chain-id <TR_CHAIN_ID> --manager <VALIDATOR_MANAGER_ADDR> \\
+         --validators <VALIDATOR_IP>:9650 --key-name ari-deployer
 
-    4. Deploy EU L1 to validators:
-       avalanche subnet deploy ova-eu-l1 --cluster ova-dev-eu
+    4. Repeat steps 1-3 for EU L1:
+       platform subnet create --key-name ari-deployer --network fuji
+       platform chain create --subnet-id <EU_SUBNET_ID> \\
+         --genesis genesis-eu.json --name ari-eu --key-name ari-deployer
+       platform subnet convert-l1 --subnet-id <EU_SUBNET_ID> \\
+         --chain-id <EU_CHAIN_ID> --manager <VALIDATOR_MANAGER_ADDR> \\
+         --validators <VALIDATOR_IP>:9652 --key-name ari-deployer
+
+    Using Builder Console (ICM/Teleporter setup):
 
     5. Enable Teleporter on both L1s:
-       avalanche teleporter enable --chain ova-tr-l1
-       avalanche teleporter enable --chain ova-eu-l1
+       Go to https://build.avax.network/console
+       - Select each L1 and enable ICM/Teleporter messaging
 
     6. Update .env.aws-test with the blockchain IDs
 
@@ -247,7 +263,7 @@ verify_health() {
 # Main
 # ==============================================================================
 main() {
-    log_info "Starting Ova Avalanche validator bootstrap..."
+    log_info "Starting ARI Avalanche validator bootstrap..."
     log_info "Environment: $ENVIRONMENT"
     log_info "AWS Region: $AWS_REGION"
 

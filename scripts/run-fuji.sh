@@ -2,7 +2,7 @@
 # Run ARI Platform services against Fuji testnet L1s
 # Prerequisites:
 #   1. Docker: docker compose up -d (PostgreSQL + Redis)
-#   2. Avalanche L1s running: avalanche network start (if stopped)
+#   2. Avalanche L1s running on Fuji (managed via Builder Console)
 #   3. .env.fuji populated with deployment values
 
 set -e
@@ -40,7 +40,7 @@ if curl -s --max-time 3 -X POST -H "Content-Type: application/json" \
     "$TR_RPC" > /dev/null 2>&1; then
     echo -e "${GREEN}  TR L1 (ariTR): Connected${NC}"
 else
-    echo -e "${RED}  TR L1 (ariTR): NOT REACHABLE - run 'avalanche network start' first${NC}"
+    echo -e "${RED}  TR L1 (ariTR): NOT REACHABLE - check Fuji L1 status in Builder Console (https://build.avax.network/console)${NC}"
     exit 1
 fi
 
@@ -49,7 +49,7 @@ if curl -s --max-time 3 -X POST -H "Content-Type: application/json" \
     "$EU_RPC" > /dev/null 2>&1; then
     echo -e "${GREEN}  EU L1 (ariEU): Connected${NC}"
 else
-    echo -e "${RED}  EU L1 (ariEU): NOT REACHABLE - run 'avalanche network start' first${NC}"
+    echo -e "${RED}  EU L1 (ariEU): NOT REACHABLE - check Fuji L1 status in Builder Console (https://build.avax.network/console)${NC}"
     exit 1
 fi
 

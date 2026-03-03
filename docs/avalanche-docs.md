@@ -1,10 +1,10 @@
-# Avalanche L1 Architecture Documentation for Ova
+# Avalanche L1 Architecture Documentation for ARI
 
 ## Overview
 
-Ova uses two permissioned Avalanche L1 blockchains for stablecoin settlement:
-- **TR L1** (Chain ID: 99999) - Turkish Lira (TRY) stablecoin operations
-- **EU L1** (Chain ID: 99998) - Euro (EUR) stablecoin operations
+ARI uses two permissioned Avalanche L1 blockchains for stablecoin settlement:
+- **TR L1** (Chain ID: configurable, 1279 on Fuji) - Turkish Lira (TRY) stablecoin operations
+- **EU L1** (Chain ID: configurable, 1832 on Fuji) - Euro (EUR) stablecoin operations
 
 This document covers the architecture, deployment, and operational procedures for self-hosted Avalanche validators.
 
@@ -14,7 +14,7 @@ This document covers the architecture, deployment, and operational procedures fo
 
 ### Why Avalanche L1 for Fintech?
 
-| Feature | Benefit for Ova |
+| Feature | Benefit for ARI |
 |---------|-----------------|
 | Sub-second finality | Instant settlement confirmation |
 | Permissioned validators | KYC'd validators only (regulatory compliance) |
@@ -103,29 +103,38 @@ aws ec2 authorize-security-group-ingress \
 ### Prerequisites
 
 ```bash
-# Install avalanche-cli
-curl -sSfL https://raw.githubusercontent.com/ava-labs/avalanche-cli/main/scripts/install.sh | sh -s
+# Install Platform CLI (replaces deprecated avalanche-cli)
+curl -sSfL https://build.avax.network/install/platform-cli | sh
 
 # Verify installation
-avalanche --version
+platform --help
+
+# Also need Builder Console access for ICM/Teleporter setup:
+# https://build.avax.network/console
 ```
 
 ### Create L1 Configuration
 
 ```bash
-# Create TR L1
-avalanche blockchain create ova-tr \
-  --evm \
-  --genesis-file genesis-tr.json \
-  --chain-id 99999 \
-  --token-symbol OVA-TR
+# Generate or import deployer key
+platform keys generate --name ari-deployer
 
-# Create EU L1
-avalanche blockchain create ova-eu \
-  --evm \
-  --genesis-file genesis-eu.json \
-  --chain-id 99998 \
-  --token-symbol OVA-EU
+# Fund with testnet AVAX, then transfer to P-Chain
+platform transfer c-to-p --amount 5 --key-name ari-deployer
+
+# Create TR L1 subnet
+platform subnet create --key-name ari-deployer --network fuji
+
+# Create TR L1 chain (use SubnetID from above)
+platform chain create --subnet-id <TR_SUBNET_ID> \
+  --genesis genesis-tr.json --name ari-tr --key-name ari-deployer
+
+# Create EU L1 subnet
+platform subnet create --key-name ari-deployer --network fuji
+
+# Create EU L1 chain (use SubnetID from above)
+platform chain create --subnet-id <EU_SUBNET_ID> \
+  --genesis genesis-eu.json --name ari-eu --key-name ari-deployer
 ```
 
 ### Genesis Configuration
@@ -167,31 +176,37 @@ avalanche blockchain create ova-eu \
 
 ### Deploy to AWS
 
-```bash
-# One-command deployment
-avalanche node create ova-validator-1 \
-  --aws \
-  --aws-profile ova-prod \
-  --region eu-central-1 \
-  --num-validators 3 \
-  --node-type c5.2xlarge
+Validators are provisioned via Terraform (see `infra/terraform/`) or managed through Builder Console.
 
-# Check status
-avalanche node status ova-validator-1
+```bash
+# Bootstrap validators via Terraform
+./scripts/bootstrap-validators.sh
+
+# Get BLS credentials from running validators
+platform node info --ip <VALIDATOR_IP>:9650
 ```
 
 ### Deploy Blockchain to Validators
 
 ```bash
-# Deploy TR L1
-avalanche blockchain deploy ova-tr \
-  --cluster ova-validator-1 \
-  --endpoint https://api.avax.network
+# Convert subnet to L1 with validators (auto-discovery mode)
+platform subnet convert-l1 \
+  --subnet-id <TR_SUBNET_ID> \
+  --chain-id <TR_CHAIN_ID> \
+  --manager <VALIDATOR_MANAGER_ADDR> \
+  --validators <VALIDATOR_1_IP>:9650,<VALIDATOR_2_IP>:9650 \
+  --key-name ari-deployer --network fuji
 
-# Deploy EU L1
-avalanche blockchain deploy ova-eu \
-  --cluster ova-validator-2 \
-  --endpoint https://api.avax.network
+# Repeat for EU L1
+platform subnet convert-l1 \
+  --subnet-id <EU_SUBNET_ID> \
+  --chain-id <EU_CHAIN_ID> \
+  --manager <VALIDATOR_MANAGER_ADDR> \
+  --validators <VALIDATOR_3_IP>:9650,<VALIDATOR_4_IP>:9650 \
+  --key-name ari-deployer --network fuji
+
+# Enable Teleporter/ICM via Builder Console:
+# https://build.avax.network/console
 ```
 
 ---
@@ -426,13 +441,13 @@ In genesis file, enable `allowFeeRecipients`:
 
 ### Fee Recipient Configuration
 
-Validators can set a fee recipient that pays for gas:
+Validators set fee recipients in their AvalancheGo node config or via Builder Console:
 
-```bash
-# Validator config
-avalanche node config set \
-  --fee-recipient 0xOVA_GAS_SPONSOR_ADDRESS \
-  --node ova-validator-1
+```json
+// Node config (chain-specific config file)
+{
+  "feeRecipient": "0xARI_GAS_SPONSOR_ADDRESS"
+}
 ```
 
 ### Transaction Allowlist
