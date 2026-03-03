@@ -90,12 +90,27 @@ cd contracts && npx hardhat test         # 115 tests
 cd contracts && npx hardhat coverage     # Coverage report
 ```
 
-### AWS Testing (New!)
+### AWS Testing
 ```bash
 ./scripts/bootstrap-validators.sh --dry-run  # Preview infrastructure
 ./scripts/deploy-contracts.sh both           # Deploy to TR + EU L1
 ./scripts/e2e-bridge-test.sh 1000           # Test 1000 TRY transfer
 ```
+
+### Avalanche Tooling (IMPORTANT)
+**Avalanche-CLI (`avalanche` command) is DEPRECATED.** Use these replacements:
+- **P-Chain operations** (keys, transfers, staking, subnets, L1 validators): **Platform CLI** (`platform` command)
+- **ICM/Teleporter, node setup, L1 management**: **Builder Console** (https://build.avax.network/console)
+
+```bash
+# Platform CLI (replaces avalanche-cli for P-Chain ops)
+platform keys generate --name mykey           # Was: avalanche key create
+platform subnet create --key-name mykey       # Was: avalanche subnet create
+platform chain create --subnet-id <id> --genesis genesis.json  # Was: avalanche blockchain create
+platform transfer c-to-p --amount 5 --key-name mykey           # Was: avalanche key transfer
+```
+
+> **Note**: Scripts in `scripts/` still reference deprecated `avalanche` commands. Our Fuji L1s are already deployed and working — the old CLI was used one-time. Future re-deployments should use Platform CLI + Builder Console.
 
 ---
 
