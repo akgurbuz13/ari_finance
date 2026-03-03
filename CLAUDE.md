@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Ova is a regulated fintech platform (Turkey + EU) with a Kotlin/Spring Boot modular monolith backend, a separate blockchain settlement service, customer web app, admin console, Flutter mobile app, and Solidity smart contracts on Avalanche L1.
+ARI is a regulated fintech platform (Turkey + EU) with a Kotlin/Spring Boot modular monolith backend, a separate blockchain settlement service, customer web app, admin console, Flutter mobile app, and Solidity smart contracts on Avalanche L1. (Codebase still uses `Ova` prefix in class/file names from before the Phase 0 rebrand.)
 
 **Repository**: https://github.com/akgurbuz13/ova_finance
 
@@ -22,7 +22,7 @@ This prevents duplicate effort and ensures you build on existing work rather tha
 
 ---
 
-## Implementation Status (as of 2026-02-05)
+## Implementation Status (as of 2026-03-03)
 
 > **Full details in [PROGRESS.md](./PROGRESS.md)**
 
@@ -30,24 +30,18 @@ This prevents duplicate effort and ensures you build on existing work rather tha
 |-----------|------------|--------|
 | Core Banking Backend | 90% | ✅ Production-Ready |
 | Blockchain Service | 95% | ✅ Production-Ready |
-| Smart Contracts | 90% | ✅ Tested (115 tests) |
+| Smart Contracts | 90% | ✅ Tested (115 tests), deployed on Fuji |
 | Web App | 95% | ✅ Production-Ready |
 | Admin Console | 90% | ✅ Production-Ready |
 | Mobile App | 70% | 🔶 Needs Review |
 | AWS Infrastructure | 85% | ✅ 2-Validator Ready |
 | Payment Rails | 30% | ⚠️ Stubs Only |
 
-### Recently Completed (2026-02-05)
-- **ICTT Bridge**: TokenHome ↔ TokenRemote full implementation
-- **Test Suites**: 115 Solidity + 12 Kotlin tests passing
-- **AWS Testing**: Terraform + bootstrap scripts for 2-validator setup
-- **Bug Fixes**: Method naming, migrations, repository methods
-
-### Known Issues (DO NOT Re-fix)
-These issues have been **already fixed** in recent commits:
-- ~~`initiateCrossChainTransfer` vs `initiateBridgeTransfer`~~ ✅ Fixed
-- ~~Missing `metadata` column~~ ✅ Fixed in V013 migration
-- ~~Missing repository methods~~ ✅ Added `findByTransferId`, `findPendingBridgeTransfers`
+### Avalanche Hackathon MVP: All 6 phases complete (Phases 0-5)
+- Rebrand Ova → ARI, Fuji L1 deployment, contract deployment, backend integration, demo readiness
+- E2E mint verified on Fuji TR L1
+- CI fixes: Redis port, config prefix, JVM memory (2026-03-03)
+- Cross-border region logic fix: `regionForCurrency()` helper (2026-03-03)
 
 ### Remaining Issues
 - Password reset endpoints missing in AuthController
@@ -238,7 +232,7 @@ Blockchain Service communicates via:
 - **Currencies**: TRY and EUR only
 - **Amounts**: `BigDecimal` / `NUMERIC(20,8)`
 - **Migrations**: `V{NNN}__{description}.sql`
-- **Chain IDs**: TR L1 = 99999, EU L1 = 99998
+- **Chain IDs**: Configurable via `ari.blockchain.tr-l1-chain-id` / `ari.blockchain.eu-l1-chain-id` (defaults: 99999/99998 for local)
 
 ---
 
@@ -252,6 +246,8 @@ Blockchain Service communicates via:
 | `scripts/README.md` | AWS testing infrastructure |
 | `docs/avalanche-docs.md` | Avalanche L1 deployment guide |
 | `docs/compliance.md` | TR/EU regulatory requirements |
+| `docs/LOCAL_TESTING_GUIDE.md` | Step-by-step local testing guide |
+| `docs/adr/001-multi-region-data-residency.md` | Production multi-region architecture (BDDK/GDPR) |
 
 ---
 
