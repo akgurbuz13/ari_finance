@@ -5,9 +5,9 @@
 -- installs it into 'public'. But the application's search_path (controlled by
 -- Flyway schemas config) doesn't include 'public', so similarity() calls fail
 -- with "function similarity(text, text) does not exist".
+--
+-- ALTER EXTENSION SET SCHEMA relocates the extension and all its objects
+-- (functions, operators, operator classes) without dropping dependent objects
+-- like the GIN index on sanctions_list.
 
--- Drop from public if it exists there
-DROP EXTENSION IF EXISTS pg_trgm;
-
--- Recreate in shared schema (which is in the search_path)
-CREATE EXTENSION IF NOT EXISTS pg_trgm SCHEMA shared;
+ALTER EXTENSION pg_trgm SET SCHEMA shared;
