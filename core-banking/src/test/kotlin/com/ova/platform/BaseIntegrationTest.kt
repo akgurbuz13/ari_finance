@@ -31,6 +31,9 @@ abstract class BaseIntegrationTest {
             // Disable Redis in tests unless explicitly needed
             registry.add("spring.data.redis.host") { "localhost" }
             registry.add("spring.data.redis.port") { "16379" }
+            // Provide test secrets
+            registry.add("ari.jwt.secret") { "test-jwt-secret-must-be-at-least-32-characters-long-for-validation" }
+            registry.add("ari.internal.api-key") { "test-internal-api-key" }
         }
     }
 }
