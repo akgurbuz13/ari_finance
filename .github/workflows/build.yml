@@ -9,7 +9,7 @@ on:
 env:
   JAVA_VERSION: '21'
   NODE_VERSION: '20'
-  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Xmx1536m'
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Xmx2g'
 
 jobs:
   # Kotlin backend - lint, test, build
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16-alpine
+        image: postgres:16
         env:
           POSTGRES_DB: ova_test
           POSTGRES_USER: ova

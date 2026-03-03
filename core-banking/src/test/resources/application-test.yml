@@ -38,6 +38,9 @@ ari:
     url: http://localhost:8081
   internal:
     api-key: test-internal-api-key
+  kyc:
+    webhook:
+      allow-unsigned: true
   outbox:
     poller:
       enabled: false

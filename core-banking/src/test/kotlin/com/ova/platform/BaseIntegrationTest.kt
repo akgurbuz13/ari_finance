@@ -14,7 +14,7 @@ abstract class BaseIntegrationTest {
         private val useTestcontainers = System.getenv("SPRING_DATASOURCE_URL").isNullOrBlank()
 
         private val postgres: PostgreSQLContainer<*>? = if (useTestcontainers) {
-            PostgreSQLContainer("postgres:16-alpine").apply {
+            PostgreSQLContainer("postgres:16").apply {
                 withDatabaseName("ova")
                 withUsername("ova")
                 withPassword("ova_test")
