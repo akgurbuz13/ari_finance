@@ -60,6 +60,8 @@ jobs:
           SPRING_DATASOURCE_USERNAME: ova
           SPRING_DATASOURCE_PASSWORD: test_password
           SPRING_DATA_REDIS_HOST: localhost
+          ARI_JWT_SECRET: ci-test-jwt-secret-must-be-at-least-32-characters-long
+          ARI_INTERNAL_API_KEY: ci-test-internal-api-key
 
       - name: Test blockchain-service
         run: ./gradlew :blockchain-service:test
