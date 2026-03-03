@@ -1,9 +1,10 @@
 package com.ova.blockchain.bridge
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ova.blockchain.config.BlockchainConfig
 import com.ova.blockchain.config.Web3jProvider
 import com.ova.blockchain.contract.ContractFactory
-import com.ova.blockchain.contract.OvaBridgeAdapterContract
+import com.ova.blockchain.contract.AriBridgeAdapterContract
 import com.ova.blockchain.repository.BlockchainTransaction
 import com.ova.blockchain.repository.BlockchainTransactionRepository
 import com.ova.blockchain.wallet.CustodialWalletService
@@ -21,14 +22,20 @@ import java.math.BigInteger
 
 class IcttBridgeServiceTest {
 
+    companion object {
+        const val TR_L1_CHAIN_ID = 1279L
+        const val EU_L1_CHAIN_ID = 1832L
+    }
+
     private lateinit var config: BlockchainConfig
     private lateinit var web3jProvider: Web3jProvider
     private lateinit var contractFactory: ContractFactory
     private lateinit var walletService: CustodialWalletService
     private lateinit var txRepository: BlockchainTransactionRepository
+    private lateinit var objectMapper: ObjectMapper
     private lateinit var bridgeService: IcttBridgeService
 
-    private lateinit var mockBridgeAdapter: OvaBridgeAdapterContract
+    private lateinit var mockBridgeAdapter: AriBridgeAdapterContract
     private lateinit var mockCredentials: Credentials
 
     @BeforeEach
@@ -38,24 +45,29 @@ class IcttBridgeServiceTest {
         contractFactory = mockk(relaxed = true)
         walletService = mockk(relaxed = true)
         txRepository = mockk(relaxed = true)
+        objectMapper = ObjectMapper()
 
         mockBridgeAdapter = mockk(relaxed = true)
         mockCredentials = mockk(relaxed = true)
+
+        // Configure chain IDs on the mocked config
+        every { config.trL1ChainId } returns TR_L1_CHAIN_ID
+        every { config.euL1ChainId } returns EU_L1_CHAIN_ID
 
         every { walletService.getBridgeOperatorCredentials() } returns mockCredentials
         every { contractFactory.getBridgeAdapter(any(), any()) } returns mockBridgeAdapter
         every { txRepository.save(any()) } answers { firstArg<BlockchainTransaction>().copy(id = 1L) }
 
         bridgeService = IcttBridgeService(
-            config, web3jProvider, contractFactory, walletService, txRepository
+            config, web3jProvider, contractFactory, walletService, txRepository, objectMapper
         )
     }
 
     @Test
     fun `getBridgeQuote should calculate fees correctly`() {
         val quote = bridgeService.getBridgeQuote(
-            sourceChainId = IcttBridgeService.TR_L1_CHAIN_ID,
-            destinationChainId = IcttBridgeService.EU_L1_CHAIN_ID,
+            sourceChainId = TR_L1_CHAIN_ID,
+            destinationChainId = EU_L1_CHAIN_ID,
             amount = BigDecimal("1000"),
             currency = "TRY"
         )
@@ -64,16 +76,16 @@ class IcttBridgeServiceTest {
         quote.bridgeFee shouldBe BigDecimal("1.000") // 0.1%
         quote.relayerFee shouldBe BigDecimal("0.01")
         quote.outputAmount shouldBe BigDecimal("998.990") // 1000 - 1.0 - 0.01
-        quote.sourceChainId shouldBe IcttBridgeService.TR_L1_CHAIN_ID
-        quote.destinationChainId shouldBe IcttBridgeService.EU_L1_CHAIN_ID
+        quote.sourceChainId shouldBe TR_L1_CHAIN_ID
+        quote.destinationChainId shouldBe EU_L1_CHAIN_ID
     }
 
     @Test
     fun `getBridgeQuote should reject amount below minimum`() {
         assertThrows<IllegalArgumentException> {
             bridgeService.getBridgeQuote(
-                sourceChainId = IcttBridgeService.TR_L1_CHAIN_ID,
-                destinationChainId = IcttBridgeService.EU_L1_CHAIN_ID,
+                sourceChainId = TR_L1_CHAIN_ID,
+                destinationChainId = EU_L1_CHAIN_ID,
                 amount = BigDecimal("0.5"),
                 currency = "TRY"
             )
@@ -84,8 +96,8 @@ class IcttBridgeServiceTest {
     fun `getBridgeQuote should reject amount above maximum`() {
         assertThrows<IllegalArgumentException> {
             bridgeService.getBridgeQuote(
-                sourceChainId = IcttBridgeService.TR_L1_CHAIN_ID,
-                destinationChainId = IcttBridgeService.EU_L1_CHAIN_ID,
+                sourceChainId = TR_L1_CHAIN_ID,
+                destinationChainId = EU_L1_CHAIN_ID,
                 amount = BigDecimal("2000000"),
                 currency = "TRY"
             )
@@ -95,8 +107,8 @@ class IcttBridgeServiceTest {
     @Test
     fun `getBridgeQuote should estimate time for TR to EU route`() {
         val quote = bridgeService.getBridgeQuote(
-            sourceChainId = IcttBridgeService.TR_L1_CHAIN_ID,
-            destinationChainId = IcttBridgeService.EU_L1_CHAIN_ID,
+            sourceChainId = TR_L1_CHAIN_ID,
+            destinationChainId = EU_L1_CHAIN_ID,
             amount = BigDecimal("100"),
             currency = "TRY"
         )
@@ -115,8 +127,8 @@ class IcttBridgeServiceTest {
         every { mockBridgeAdapter.bridgeNativeTokens(any(), any(), any()) } returns mockReceipt
 
         val result = bridgeService.initiateBridgeTransfer(
-            sourceChainId = IcttBridgeService.TR_L1_CHAIN_ID,
-            destinationChainId = IcttBridgeService.EU_L1_CHAIN_ID,
+            sourceChainId = TR_L1_CHAIN_ID,
+            destinationChainId = EU_L1_CHAIN_ID,
             fromAddress = "0xfrom",
             toAddress = "0xto",
             amount = BigDecimal("1000"),
@@ -125,13 +137,13 @@ class IcttBridgeServiceTest {
 
         result.status shouldBe IcttBridgeService.BridgeStatus.INITIATED
         result.sourceTxHash shouldBe "0xabc123"
-        result.sourceChainId shouldBe IcttBridgeService.TR_L1_CHAIN_ID
-        result.destinationChainId shouldBe IcttBridgeService.EU_L1_CHAIN_ID
+        result.sourceChainId shouldBe TR_L1_CHAIN_ID
+        result.destinationChainId shouldBe EU_L1_CHAIN_ID
         result.amount shouldBe BigDecimal("1000")
         result.transferId.shouldNotBeEmpty()
 
         verify { walletService.getBridgeOperatorCredentials() }
-        verify { contractFactory.getBridgeAdapter(IcttBridgeService.TR_L1_CHAIN_ID, mockCredentials) }
+        verify { contractFactory.getBridgeAdapter(TR_L1_CHAIN_ID, mockCredentials) }
         verify { mockBridgeAdapter.bridgeNativeTokens(eq("0xto"), any(), any()) }
         verify { txRepository.save(any()) }
     }
@@ -141,8 +153,8 @@ class IcttBridgeServiceTest {
         every { mockBridgeAdapter.bridgeNativeTokens(any(), any(), any()) } throws RuntimeException("RPC error")
 
         val result = bridgeService.initiateBridgeTransfer(
-            sourceChainId = IcttBridgeService.TR_L1_CHAIN_ID,
-            destinationChainId = IcttBridgeService.EU_L1_CHAIN_ID,
+            sourceChainId = TR_L1_CHAIN_ID,
+            destinationChainId = EU_L1_CHAIN_ID,
             fromAddress = "0xfrom",
             toAddress = "0xto",
             amount = BigDecimal("1000"),
@@ -168,8 +180,8 @@ class IcttBridgeServiceTest {
         every { mockBridgeAdapter.bridgeWrappedTokensBack(any(), any(), any()) } returns mockReceipt
 
         val result = bridgeService.bridgeWrappedTokensBack(
-            sourceChainId = IcttBridgeService.EU_L1_CHAIN_ID,
-            destinationChainId = IcttBridgeService.TR_L1_CHAIN_ID,
+            sourceChainId = EU_L1_CHAIN_ID,
+            destinationChainId = TR_L1_CHAIN_ID,
             fromAddress = "0xfrom",
             toAddress = "0xto",
             amount = BigDecimal("500"),
@@ -195,17 +207,17 @@ class IcttBridgeServiceTest {
     fun `getBridgeTransferStatus should return COMPLETED when complete transaction exists`() {
         val initTx = BlockchainTransaction(
             txHash = "0xinit",
-            chainId = IcttBridgeService.TR_L1_CHAIN_ID,
+            chainId = TR_L1_CHAIN_ID,
             operation = "bridge_initiate",
             fromAddress = "0xfrom",
             toAddress = "0xto",
             amount = BigDecimal("1000"),
             currency = "TRY",
-            status = "initiated"
+            status = "pending_relay"
         )
         val completeTx = BlockchainTransaction(
             txHash = "0xcomplete",
-            chainId = IcttBridgeService.EU_L1_CHAIN_ID,
+            chainId = EU_L1_CHAIN_ID,
             operation = "bridge_complete",
             toAddress = "0xto",
             amount = BigDecimal("1000"),
@@ -227,13 +239,13 @@ class IcttBridgeServiceTest {
     fun `getBridgeTransferStatus should return PENDING_RELAY when only init exists`() {
         val initTx = BlockchainTransaction(
             txHash = "0xinit",
-            chainId = IcttBridgeService.TR_L1_CHAIN_ID,
+            chainId = TR_L1_CHAIN_ID,
             operation = "bridge_initiate",
             fromAddress = "0xfrom",
             toAddress = "0xto",
             amount = BigDecimal("1000"),
             currency = "TRY",
-            status = "initiated"
+            status = "pending_relay"
         )
 
         every { txRepository.findByTransferId("test-id") } returns listOf(initTx)
@@ -248,7 +260,7 @@ class IcttBridgeServiceTest {
     fun `getBridgeTransferStatus should return FAILED for failed init`() {
         val initTx = BlockchainTransaction(
             txHash = "0xfailed",
-            chainId = IcttBridgeService.TR_L1_CHAIN_ID,
+            chainId = TR_L1_CHAIN_ID,
             operation = "bridge_initiate",
             fromAddress = "0xfrom",
             toAddress = "0xto",
@@ -274,14 +286,14 @@ class IcttBridgeServiceTest {
 
         bridgeService.markBridgeTransferCompleted(
             transferId = "transfer-123",
-            destinationChainId = IcttBridgeService.EU_L1_CHAIN_ID,
+            destinationChainId = EU_L1_CHAIN_ID,
             destinationTxHash = "0xcompletehash",
             recipient = "0xrecipient",
             amount = BigDecimal("1000")
         )
 
         capturedTx.captured.txHash shouldBe "0xcompletehash"
-        capturedTx.captured.chainId shouldBe IcttBridgeService.EU_L1_CHAIN_ID
+        capturedTx.captured.chainId shouldBe EU_L1_CHAIN_ID
         capturedTx.captured.operation shouldBe "bridge_complete"
         capturedTx.captured.status shouldBe "confirmed"
         capturedTx.captured.toAddress shouldBe "0xrecipient"
@@ -293,20 +305,20 @@ class IcttBridgeServiceTest {
         val pendingTxs = listOf(
             BlockchainTransaction(
                 txHash = "0xpending1",
-                chainId = IcttBridgeService.TR_L1_CHAIN_ID,
+                chainId = TR_L1_CHAIN_ID,
                 operation = "bridge_initiate",
                 amount = BigDecimal("100"),
                 currency = "TRY",
-                status = "initiated"
+                status = "pending_relay"
             )
         )
 
-        every { txRepository.findPendingBridgeTransfers(IcttBridgeService.TR_L1_CHAIN_ID) } returns pendingTxs
+        every { txRepository.findPendingBridgeTransfers(TR_L1_CHAIN_ID) } returns pendingTxs
 
-        val result = bridgeService.getPendingBridgeTransfers(IcttBridgeService.TR_L1_CHAIN_ID)
+        val result = bridgeService.getPendingBridgeTransfers(TR_L1_CHAIN_ID)
 
         result shouldBe pendingTxs
-        verify { txRepository.findPendingBridgeTransfers(IcttBridgeService.TR_L1_CHAIN_ID) }
+        verify { txRepository.findPendingBridgeTransfers(TR_L1_CHAIN_ID) }
     }
 
     @Test
@@ -321,8 +333,8 @@ class IcttBridgeServiceTest {
         every { mockBridgeAdapter.bridgeNativeTokens(any(), capture(amountCaptor), any()) } returns mockReceipt
 
         bridgeService.initiateBridgeTransfer(
-            sourceChainId = IcttBridgeService.TR_L1_CHAIN_ID,
-            destinationChainId = IcttBridgeService.EU_L1_CHAIN_ID,
+            sourceChainId = TR_L1_CHAIN_ID,
+            destinationChainId = EU_L1_CHAIN_ID,
             fromAddress = "0xfrom",
             toAddress = "0xto",
             amount = BigDecimal("123.456"),

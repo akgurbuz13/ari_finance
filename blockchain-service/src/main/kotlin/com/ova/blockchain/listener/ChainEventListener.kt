@@ -26,7 +26,7 @@ class ChainEventListener(
     private val config: BlockchainConfig,
     private val web3jProvider: Web3jProvider,
     private val chainEventRepository: ChainEventRepository,
-    @Value("\${ova.core-banking.url}") private val coreBankingUrl: String
+    @Value("\${ari.core-banking.url}") private val coreBankingUrl: String
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
     private val restTemplate = RestTemplate()

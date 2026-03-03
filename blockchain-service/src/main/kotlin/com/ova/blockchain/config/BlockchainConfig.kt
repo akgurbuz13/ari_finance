@@ -5,24 +5,38 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class BlockchainConfig(
-    @Value("\${ova.region}") val region: String,
-    @Value("\${ova.blockchain.tr-l1.rpc-url}") val trL1RpcUrl: String,
-    @Value("\${ova.blockchain.tr-l1.chain-id}") val trL1ChainId: Long,
-    @Value("\${ova.blockchain.tr-l1.stablecoin-address}") val trStablecoinAddress: String,
-    @Value("\${ova.blockchain.eu-l1.rpc-url}") val euL1RpcUrl: String,
-    @Value("\${ova.blockchain.eu-l1.chain-id}") val euL1ChainId: Long,
-    @Value("\${ova.blockchain.eu-l1.stablecoin-address}") val euStablecoinAddress: String,
-    @Value("\${ova.blockchain.bridge.contract-address}") val bridgeContractAddress: String,
-    @Value("\${ova.blockchain.bridge.tr-token-home-address:}") val trTokenHomeAddress: String,
-    @Value("\${ova.blockchain.bridge.eu-token-home-address:}") val euTokenHomeAddress: String,
-    @Value("\${ova.blockchain.bridge.tr-token-remote-address:}") val trTokenRemoteAddress: String,
-    @Value("\${ova.blockchain.bridge.eu-token-remote-address:}") val euTokenRemoteAddress: String,
-    @Value("\${ova.blockchain.wallet.master-key}") val walletMasterKey: String,
-    @Value("\${ova.core-banking.url}") val coreBankingUrl: String
+    @Value("\${ari.region}") val region: String,
+    @Value("\${ari.blockchain.tr-l1.rpc-url}") val trL1RpcUrl: String,
+    @Value("\${ari.blockchain.tr-l1.chain-id}") val trL1ChainId: Long,
+    @Value("\${ari.blockchain.tr-l1.stablecoin-address}") val trStablecoinAddress: String,
+    @Value("\${ari.blockchain.eu-l1.rpc-url}") val euL1RpcUrl: String,
+    @Value("\${ari.blockchain.eu-l1.chain-id}") val euL1ChainId: Long,
+    @Value("\${ari.blockchain.eu-l1.stablecoin-address}") val euStablecoinAddress: String,
+    @Value("\${ari.blockchain.bridge.tr-bridge-adapter-address:}") val trBridgeAdapterAddress: String,
+    @Value("\${ari.blockchain.bridge.eu-bridge-adapter-address:}") val euBridgeAdapterAddress: String,
+    @Value("\${ari.blockchain.bridge.tr-token-home-address:}") val trTokenHomeAddress: String,
+    @Value("\${ari.blockchain.bridge.eu-token-home-address:}") val euTokenHomeAddress: String,
+    @Value("\${ari.blockchain.bridge.tr-token-remote-address:}") val trTokenRemoteAddress: String,
+    @Value("\${ari.blockchain.bridge.eu-token-remote-address:}") val euTokenRemoteAddress: String,
+    @Value("\${ari.blockchain.bridge.tr-blockchain-id:}") val trBlockchainId: String,
+    @Value("\${ari.blockchain.bridge.eu-blockchain-id:}") val euBlockchainId: String,
+    @Value("\${ari.blockchain.wallet.master-key}") val walletMasterKey: String,
+    @Value("\${ari.core-banking.url}") val coreBankingUrl: String
 ) {
     fun getRpcUrl(): String = if (region == "TR") trL1RpcUrl else euL1RpcUrl
     fun getChainId(): Long = if (region == "TR") trL1ChainId else euL1ChainId
     fun getStablecoinAddress(): String = if (region == "TR") trStablecoinAddress else euStablecoinAddress
+
+    /**
+     * Get BridgeAdapter address for a chain.
+     */
+    fun getBridgeAdapterAddress(chainId: Long): String {
+        return when (chainId) {
+            trL1ChainId -> trBridgeAdapterAddress
+            euL1ChainId -> euBridgeAdapterAddress
+            else -> throw IllegalArgumentException("Unknown chain ID: $chainId")
+        }
+    }
 
     /**
      * Get TokenHome address for a chain.
@@ -44,6 +58,18 @@ class BlockchainConfig(
         return when (chainId) {
             trL1ChainId -> trTokenRemoteAddress
             euL1ChainId -> euTokenRemoteAddress
+            else -> throw IllegalArgumentException("Unknown chain ID: $chainId")
+        }
+    }
+
+    /**
+     * Get the Avalanche blockchain ID (bytes32 hex) for a chain.
+     * Used for Teleporter cross-chain messaging.
+     */
+    fun getBlockchainId(chainId: Long): String {
+        return when (chainId) {
+            trL1ChainId -> trBlockchainId
+            euL1ChainId -> euBlockchainId
             else -> throw IllegalArgumentException("Unknown chain ID: $chainId")
         }
     }

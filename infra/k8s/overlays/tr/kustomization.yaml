@@ -17,7 +17,9 @@ configMapGenerator:
     literals:
       - spring.profiles.active=tr
       - ova.region=TR
+      - ari.region=TR
       - redis.host=ova-redis.redis.cache.windows.net
+      - cors.allowed-origins=https://app.ova.com.tr,https://admin.ova.com.tr
       - api.url=https://api.ova.com.tr
 
 images:

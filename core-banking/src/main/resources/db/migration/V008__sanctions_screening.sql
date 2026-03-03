@@ -21,7 +21,9 @@ CREATE INDEX idx_sanctions_list_trgm ON shared.sanctions_list USING gin(full_nam
 CREATE INDEX idx_sanctions_list_type ON shared.sanctions_list(list_type);
 CREATE INDEX idx_sanctions_list_active ON shared.sanctions_list(active) WHERE active;
 
--- Seed fictional entries for testing
+-- TEST FIXTURES: Fictional names for development/testing only.
+-- Production sanctions data is loaded from OFAC/UN/EU/MASAK feeds
+-- via SanctionsListProvider. Do not use for actual compliance screening.
 INSERT INTO shared.sanctions_list (full_name, list_type, source, country, aliases) VALUES
     ('Darkov Malenko', 'sanctions', 'ofac', 'RU', ARRAY['D. Malenko', 'Darkov M.']),
     ('Viktor Petroshenko', 'sanctions', 'eu_consolidated', 'UA', ARRAY['V. Petroshenko', 'Petroshenko Viktor']),

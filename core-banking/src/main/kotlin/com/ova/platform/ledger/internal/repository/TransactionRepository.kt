@@ -54,6 +54,22 @@ class TransactionRepository(
         ).firstOrNull()
     }
 
+    fun userHasAccessToTransaction(transactionId: UUID, userId: UUID): Boolean {
+        val count = jdbcTemplate.queryForObject(
+            """
+            SELECT COUNT(DISTINCT t.id)
+            FROM ledger.transactions t
+            JOIN ledger.entries e ON e.transaction_id = t.id
+            JOIN ledger.accounts a ON a.id = e.account_id
+            WHERE t.id = ? AND a.user_id = ?
+            """,
+            Long::class.java,
+            transactionId,
+            userId
+        )
+        return count > 0
+    }
+
     fun findByIdempotencyKey(key: String): Transaction? {
         return jdbcTemplate.query(
             "SELECT * FROM ledger.transactions WHERE idempotency_key = ?", rowMapper, key

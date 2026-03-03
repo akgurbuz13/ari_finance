@@ -19,7 +19,7 @@ import java.security.MessageDigest
  */
 @Component
 class InternalApiKeyFilter(
-    @Value("\${ova.internal.api-key:}") private val configuredApiKey: String
+    @Value("\${ari.internal.api-key:}") private val configuredApiKey: String
 ) : OncePerRequestFilter() {
 
     companion object {

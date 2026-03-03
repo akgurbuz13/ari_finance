@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./IcttInterfaces.sol";
 
 /**
- * @title OvaTokenHome
+ * @title AriTokenHome
  * @notice Token Home contract for Avalanche ICTT bridge integration.
  *         This contract is deployed on the "home" chain where the native token lives.
  *         It locks tokens when bridging out and releases tokens when bridging in.
@@ -18,11 +18,11 @@ import "./IcttInterfaces.sol";
  * - TokenRemote: Deployed on destination chains, mints/burns wrapped representations
  * - Uses Teleporter for cross-chain messaging with BLS signature verification
  *
- * For Ova:
- * - TR L1 has TokenHome for ovaTRY, TokenRemote for wrapped EUR
- * - EU L1 has TokenHome for ovaEUR, TokenRemote for wrapped TRY
+ * For ARI:
+ * - TR L1 has TokenHome for ariTRY, TokenRemote for wrapped EUR
+ * - EU L1 has TokenHome for ariEUR, TokenRemote for wrapped TRY
  */
-contract OvaTokenHome is AccessControl, ReentrancyGuard, ITeleporterReceiver {
+contract AriTokenHome is AccessControl, ReentrancyGuard, ITeleporterReceiver {
     using SafeERC20 for IERC20;
 
     bytes32 public constant BRIDGE_ADMIN_ROLE = keccak256("BRIDGE_ADMIN_ROLE");

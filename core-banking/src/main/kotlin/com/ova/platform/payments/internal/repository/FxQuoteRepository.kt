@@ -11,15 +11,22 @@ import java.util.UUID
 class FxQuoteRepository(private val jdbcTemplate: JdbcTemplate) {
 
     private val rowMapper = RowMapper { rs: ResultSet, _: Int ->
+        val exchangeRate = rs.getBigDecimal("exchange_rate")
+            ?: rs.getBigDecimal("customer_rate")
+            ?: rs.getBigDecimal("rate")
+            ?: throw IllegalStateException("FX quote ${rs.getString("id")} has no exchange rate")
+        val feeAmount = rs.getBigDecimal("fee_amount") ?: java.math.BigDecimal.ZERO
+        val feeCurrency = rs.getString("fee_currency") ?: rs.getString("target_currency")
+
         FxQuote(
             id = UUID.fromString(rs.getString("id")),
             sourceCurrency = rs.getString("source_currency"),
             targetCurrency = rs.getString("target_currency"),
-            exchangeRate = rs.getBigDecimal("exchange_rate"),
+            exchangeRate = exchangeRate,
             sourceAmount = rs.getBigDecimal("source_amount"),
             targetAmount = rs.getBigDecimal("target_amount"),
-            feeAmount = rs.getBigDecimal("fee_amount"),
-            feeCurrency = rs.getString("fee_currency"),
+            feeAmount = feeAmount,
+            feeCurrency = feeCurrency,
             expiresAt = rs.getTimestamp("expires_at").toInstant(),
             used = rs.getBoolean("used"),
             createdAt = rs.getTimestamp("created_at").toInstant()
@@ -30,20 +37,28 @@ class FxQuoteRepository(private val jdbcTemplate: JdbcTemplate) {
         jdbcTemplate.update(
             """
             INSERT INTO payments.fx_quotes
-                (id, source_currency, target_currency, exchange_rate,
-                 source_amount, target_amount, fee_amount, fee_currency, expires_at, used)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (id, source_currency, target_currency, rate, inverse_rate, spread,
+                 source_amount, target_amount, exchange_rate, fee_amount, fee_currency,
+                 mid_market_rate, customer_rate, expires_at, used, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             quote.id,
             quote.sourceCurrency,
             quote.targetCurrency,
             quote.exchangeRate,
+            if (quote.exchangeRate.signum() == 0) java.math.BigDecimal.ZERO
+            else java.math.BigDecimal.ONE.divide(quote.exchangeRate, 10, java.math.RoundingMode.HALF_UP),
+            java.math.BigDecimal.ZERO,
+            quote.exchangeRate,
             quote.sourceAmount,
             quote.targetAmount,
             quote.feeAmount,
             quote.feeCurrency,
+            quote.exchangeRate,
+            quote.exchangeRate,
             java.sql.Timestamp.from(quote.expiresAt),
-            quote.used
+            quote.used,
+            if (quote.used) "consumed" else "active"
         )
         return quote
     }
@@ -56,7 +71,8 @@ class FxQuoteRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun markAsUsed(id: UUID) {
         jdbcTemplate.update(
-            "UPDATE payments.fx_quotes SET used = true WHERE id = ?", id
+            "UPDATE payments.fx_quotes SET used = true, status = 'consumed', consumed_at = NOW() WHERE id = ?",
+            id
         )
     }
 }

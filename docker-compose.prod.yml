@@ -16,9 +16,12 @@ services:
       SPRING_DATASOURCE_USERNAME: ova
       SPRING_DATASOURCE_PASSWORD: ova_secret
       SPRING_DATA_REDIS_HOST: redis
-      OVA_JWT_SECRET: dev-jwt-secret-change-in-production
-      OVA_REGION: TR
-      OVA_BLOCKCHAIN_SERVICE_URL: http://blockchain-service:8081
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env or environment}
+      ARI_JWT_SECRET: ${ARI_JWT_SECRET:?Set ARI_JWT_SECRET in .env or environment}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:?Set INTERNAL_API_KEY in .env or environment}
+      ARI_REGION: TR
+      BLOCKCHAIN_SERVICE_URL: http://blockchain-service:8081
+      ARI_BLOCKCHAIN_SERVICE_URL: http://blockchain-service:8081
     depends_on:
       postgres:
         condition: service_healthy
@@ -41,7 +44,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ova
       SPRING_DATASOURCE_USERNAME: ova
       SPRING_DATASOURCE_PASSWORD: ova_secret
-      OVA_BLOCKCHAIN_CORE_BANKING_URL: http://core-banking:8080
+      CORE_BANKING_URL: http://core-banking:8080
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:?Set INTERNAL_API_KEY in .env or environment}
+      ARI_BLOCKCHAIN_CORE_BANKING_URL: http://core-banking:8080
     depends_on:
       postgres:
         condition: service_healthy

@@ -77,6 +77,10 @@ class TransactionService(
             ?: throw NotFoundException("Transaction", transactionId.toString())
     }
 
+    fun userCanAccessTransaction(transactionId: UUID, userId: UUID): Boolean {
+        return transactionRepository.userHasAccessToTransaction(transactionId, userId)
+    }
+
     fun getStatement(
         accountId: UUID,
         from: Instant,

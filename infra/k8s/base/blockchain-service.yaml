@@ -6,6 +6,9 @@ metadata:
   labels:
     app: blockchain-service
 spec:
+  # Single replica required: outbox poller uses SELECT FOR UPDATE with
+  # single-consumer semantics. Multiple replicas would cause duplicate
+  # processing. Implement leader election before scaling beyond 1.
   replicas: 1
   selector:
     matchLabels:
@@ -42,12 +45,19 @@ spec:
                 secretKeyRef:
                   name: ova-db-credentials
                   key: password
-            - name: OVA_BLOCKCHAIN_TR_L1_RPC_URL
+            - name: CORE_BANKING_URL
+              value: http://core-banking:8080
+            - name: INTERNAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ova-internal-api-key
+                  key: api-key
+            - name: ARI_BLOCKCHAIN_TR_L1_RPC_URL
               valueFrom:
                 secretKeyRef:
                   name: ova-blockchain-config
                   key: tr-l1-rpc-url
-            - name: OVA_BLOCKCHAIN_EU_L1_RPC_URL
+            - name: ARI_BLOCKCHAIN_EU_L1_RPC_URL
               valueFrom:
                 secretKeyRef:
                   name: ova-blockchain-config

@@ -33,8 +33,8 @@ class SanctionsScreeningService(
     private val userRepository: UserRepository,
     private val auditService: AuditService,
     private val sanctionsListProvider: SanctionsListProvider,
-    @Value("\${ova.compliance.sanctions.enabled:true}") private val enabled: Boolean,
-    @Value("\${ova.region:TR}") private val region: String
+    @Value("\${ari.compliance.sanctions.enabled:true}") private val enabled: Boolean,
+    @Value("\${ari.region:TR}") private val region: String
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 

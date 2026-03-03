@@ -9,6 +9,9 @@ import com.ova.blockchain.wallet.CustodialWalletService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
@@ -23,7 +26,8 @@ class OutboxPollerService(
     private val walletService: CustodialWalletService,
     private val objectMapper: ObjectMapper,
     private val jdbcTemplate: JdbcTemplate,
-    @Value("\${ova.core-banking.url}") private val coreBankingUrl: String
+    @Value("\${ari.core-banking.url}") private val coreBankingUrl: String,
+    @Value("\${ari.core-banking.internal-api-key:}") private val internalApiKey: String
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
     private val restTemplate = RestTemplate()
@@ -137,10 +141,10 @@ class OutboxPollerService(
     private fun resolveWalletAddress(accountId: String, currency: String): String {
         // Look up the user ID for this ledger account from the shared DB
         val userId = jdbcTemplate.queryForObject(
-            "SELECT owner_id FROM ledger.accounts WHERE id = ?",
+            "SELECT user_id FROM ledger.accounts WHERE id = ?",
             UUID::class.java,
             UUID.fromString(accountId)
-        ) ?: throw RuntimeException("No owner found for account $accountId")
+        )
 
         val wallet = walletService.getOrCreateWalletForCurrency(userId, currency)
         return wallet.address
@@ -154,9 +158,19 @@ class OutboxPollerService(
                 "txHash" to txHash,
                 "success" to success
             )
+
+            if (internalApiKey.isBlank()) {
+                throw IllegalStateException("Core banking internal API key is not configured")
+            }
+
+            val headers = HttpHeaders().apply {
+                contentType = MediaType.APPLICATION_JSON
+                set("X-Internal-Api-Key", internalApiKey)
+            }
+
             restTemplate.postForEntity(
                 "$coreBankingUrl/api/internal/settlement-confirmed",
-                callback,
+                HttpEntity(callback, headers),
                 Void::class.java
             )
             log.info("Core-banking notified: paymentOrderId={}, operation={}, success={}",

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: ova-blockchain-service
+    name: ari-blockchain-service
 
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:ova}
@@ -18,28 +18,30 @@ spring:
 server:
   port: ${SERVER_PORT:8081}
 
-ova:
-  region: ${OVA_REGION:TR}
+ari:
+  region: ${ARI_REGION:TR}
   core-banking:
-    url: ${CORE_BANKING_URL:http://localhost:8080}
+    url: ${CORE_BANKING_URL:${ARI_CORE_BANKING_URL:${ARI_BLOCKCHAIN_CORE_BANKING_URL:http://localhost:8080}}}
     # SECURITY: API key for calling core-banking internal endpoints
-    internal-api-key: ${INTERNAL_API_KEY:}  # No default - must be configured
+    internal-api-key: ${INTERNAL_API_KEY:${ARI_INTERNAL_API_KEY:}}  # No default - must be configured
   blockchain:
     tr-l1:
-      rpc-url: ${TR_L1_RPC_URL:http://localhost:9650/ext/bc/tr/rpc}
-      chain-id: ${TR_L1_CHAIN_ID:99999}
+      rpc-url: ${TR_L1_RPC_URL:${ARI_BLOCKCHAIN_TR_L1_RPC_URL:http://127.0.0.1:9650/ext/bc/9x7zHB85vsWaX2BiVPGRWVWh4KHWcroZWGBWbzR958JYRQZWP/rpc}}
+      chain-id: ${TR_L1_CHAIN_ID:1279}
       stablecoin-address: ${TR_STABLECOIN_ADDRESS:}
       # Multisig governance addresses
       multisig-address: ${TR_MULTISIG_ADDRESS:}
       timelock-address: ${TR_TIMELOCK_ADDRESS:}
     eu-l1:
-      rpc-url: ${EU_L1_RPC_URL:http://localhost:9651/ext/bc/eu/rpc}
-      chain-id: ${EU_L1_CHAIN_ID:99998}
+      rpc-url: ${EU_L1_RPC_URL:${ARI_BLOCKCHAIN_EU_L1_RPC_URL:http://127.0.0.1:9652/ext/bc/21Euii5No2ut9NyF7VWkkWhkeiDk2fcZkE1GkfMjNtTtgL3DWE/rpc}}
+      chain-id: ${EU_L1_CHAIN_ID:1832}
       stablecoin-address: ${EU_STABLECOIN_ADDRESS:}
       multisig-address: ${EU_MULTISIG_ADDRESS:}
       timelock-address: ${EU_TIMELOCK_ADDRESS:}
     bridge:
-      contract-address: ${BRIDGE_CONTRACT_ADDRESS:}
+      # ICTT bridge contracts - BridgeAdapter (high-level bridge orchestration)
+      tr-bridge-adapter-address: ${TR_BRIDGE_ADAPTER_ADDRESS:}
+      eu-bridge-adapter-address: ${EU_BRIDGE_ADAPTER_ADDRESS:}
       # ICTT bridge contracts - TokenHome (locks native tokens when bridging out)
       tr-token-home-address: ${TR_TOKEN_HOME_ADDRESS:}
       eu-token-home-address: ${EU_TOKEN_HOME_ADDRESS:}
@@ -47,6 +49,9 @@ ova:
       # TR L1 has wEUR (wrapped EUR from EU), EU L1 has wTRY (wrapped TRY from TR)
       tr-token-remote-address: ${TR_TOKEN_REMOTE_ADDRESS:}
       eu-token-remote-address: ${EU_TOKEN_REMOTE_ADDRESS:}
+      # Avalanche blockchain IDs (bytes32 hex) for Teleporter cross-chain messaging
+      tr-blockchain-id: ${TR_BLOCKCHAIN_ID:}
+      eu-blockchain-id: ${EU_BLOCKCHAIN_ID:}
     wallet:
       # SECURITY: NO DEFAULT - Master key must be provided via secure secret management
       # In production, use AWS KMS or HashiCorp Vault for key management

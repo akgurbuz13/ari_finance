@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class RegionConfig(
-    @Value("\${ova.region}") private val regionCode: String
+    @Value("\${ari.region}") private val regionCode: String
 ) {
     val region: Region = Region.fromCode(regionCode)
 

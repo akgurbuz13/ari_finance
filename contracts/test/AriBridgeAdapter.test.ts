@@ -1,14 +1,14 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
-import { OvaBridgeAdapter, OvaTokenHome, OvaTokenRemote, OvaStablecoin, MockTeleporter } from "../typechain-types";
+import { AriBridgeAdapter, AriTokenHome, AriTokenRemote, AriStablecoin, MockTeleporter } from "../typechain-types";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 
-describe("OvaBridgeAdapter", function () {
-  let bridgeAdapter: OvaBridgeAdapter;
-  let tokenHome: OvaTokenHome;
-  let tokenRemote: OvaTokenRemote;
-  let nativeToken: OvaStablecoin;
+describe("AriBridgeAdapter", function () {
+  let bridgeAdapter: AriBridgeAdapter;
+  let tokenHome: AriTokenHome;
+  let tokenRemote: AriTokenRemote;
+  let nativeToken: AriStablecoin;
   let teleporter: MockTeleporter;
   let admin: SignerWithAddress;
   let bridgeOperator: SignerWithAddress;
@@ -26,9 +26,9 @@ describe("OvaBridgeAdapter", function () {
     const teleporter = await MockTeleporter.deploy();
     await teleporter.waitForDeployment();
 
-    // Deploy native token (ovaTRY)
-    const OvaStablecoin = await ethers.getContractFactory("OvaStablecoin");
-    const nativeToken = await OvaStablecoin.deploy("Ova Turkish Lira", "ovaTRY");
+    // Deploy native token (ariTRY)
+    const AriStablecoin = await ethers.getContractFactory("AriStablecoin");
+    const nativeToken = await AriStablecoin.deploy("ARI Turkish Lira", "ariTRY");
     await nativeToken.waitForDeployment();
 
     // Setup native token
@@ -39,8 +39,8 @@ describe("OvaBridgeAdapter", function () {
     await nativeToken.mint(user1.address, ethers.parseEther("100000"));
 
     // Deploy TokenHome
-    const OvaTokenHome = await ethers.getContractFactory("OvaTokenHome");
-    const tokenHome = await OvaTokenHome.deploy(
+    const AriTokenHome = await ethers.getContractFactory("AriTokenHome");
+    const tokenHome = await AriTokenHome.deploy(
       await nativeToken.getAddress(),
       await teleporter.getAddress(),
       THIS_CHAIN_ID,
@@ -49,9 +49,9 @@ describe("OvaBridgeAdapter", function () {
     await tokenHome.waitForDeployment();
 
     // Deploy TokenRemote (for wrapped partner tokens)
-    const OvaTokenRemote = await ethers.getContractFactory("OvaTokenRemote");
-    const tokenRemote = await OvaTokenRemote.deploy(
-      "Wrapped ovaEUR",
+    const AriTokenRemote = await ethers.getContractFactory("AriTokenRemote");
+    const tokenRemote = await AriTokenRemote.deploy(
+      "Wrapped ariEUR",
       "wEUR",
       await teleporter.getAddress(),
       THIS_CHAIN_ID,
@@ -66,8 +66,8 @@ describe("OvaBridgeAdapter", function () {
     await tokenRemote.addToAllowlist(user2.address);
 
     // Deploy BridgeAdapter
-    const OvaBridgeAdapter = await ethers.getContractFactory("OvaBridgeAdapter");
-    const bridgeAdapter = await OvaBridgeAdapter.deploy(
+    const AriBridgeAdapter = await ethers.getContractFactory("AriBridgeAdapter");
+    const bridgeAdapter = await AriBridgeAdapter.deploy(
       await nativeToken.getAddress(),
       admin.address
     );
@@ -153,8 +153,8 @@ describe("OvaBridgeAdapter", function () {
     });
 
     it("should emit ContractsUpdated event on configure", async function () {
-      const OvaBridgeAdapter = await ethers.getContractFactory("OvaBridgeAdapter");
-      const newAdapter = await OvaBridgeAdapter.deploy(
+      const AriBridgeAdapter = await ethers.getContractFactory("AriBridgeAdapter");
+      const newAdapter = await AriBridgeAdapter.deploy(
         await nativeToken.getAddress(),
         admin.address
       );
@@ -229,8 +229,8 @@ describe("OvaBridgeAdapter", function () {
     });
 
     it("should reject when TokenHome not configured", async function () {
-      const OvaBridgeAdapter = await ethers.getContractFactory("OvaBridgeAdapter");
-      const unconfiguredAdapter = await OvaBridgeAdapter.deploy(
+      const AriBridgeAdapter = await ethers.getContractFactory("AriBridgeAdapter");
+      const unconfiguredAdapter = await AriBridgeAdapter.deploy(
         await nativeToken.getAddress(),
         admin.address
       );
@@ -313,8 +313,8 @@ describe("OvaBridgeAdapter", function () {
     });
 
     it("should reject when TokenRemote not configured", async function () {
-      const OvaBridgeAdapter = await ethers.getContractFactory("OvaBridgeAdapter");
-      const unconfiguredAdapter = await OvaBridgeAdapter.deploy(
+      const AriBridgeAdapter = await ethers.getContractFactory("AriBridgeAdapter");
+      const unconfiguredAdapter = await AriBridgeAdapter.deploy(
         await nativeToken.getAddress(),
         admin.address
       );

@@ -24,9 +24,9 @@ import java.util.concurrent.ConcurrentHashMap
 @Component
 @Order(1) // Run before authentication filters
 class RateLimitingFilter(
-    @Value("\${ova.rate-limit.auth.requests-per-minute:10}") private val authRequestsPerMinute: Long,
-    @Value("\${ova.rate-limit.auth.requests-per-hour:100}") private val authRequestsPerHour: Long,
-    @Value("\${ova.rate-limit.general.requests-per-minute:60}") private val generalRequestsPerMinute: Long
+    @Value("\${ari.rate-limit.auth.requests-per-minute:10}") private val authRequestsPerMinute: Long,
+    @Value("\${ari.rate-limit.auth.requests-per-hour:100}") private val authRequestsPerHour: Long,
+    @Value("\${ari.rate-limit.general.requests-per-minute:60}") private val generalRequestsPerMinute: Long
 ) : OncePerRequestFilter() {
 
     private val log = LoggerFactory.getLogger(javaClass)

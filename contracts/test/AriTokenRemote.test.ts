@@ -1,11 +1,11 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
-import { OvaTokenRemote, MockTeleporter } from "../typechain-types";
+import { AriTokenRemote, MockTeleporter } from "../typechain-types";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 
-describe("OvaTokenRemote", function () {
-  let tokenRemote: OvaTokenRemote;
+describe("AriTokenRemote", function () {
+  let tokenRemote: AriTokenRemote;
   let teleporter: MockTeleporter;
   let admin: SignerWithAddress;
   let bridgeAdmin: SignerWithAddress;
@@ -26,9 +26,9 @@ describe("OvaTokenRemote", function () {
     await teleporter.waitForDeployment();
 
     // Deploy TokenRemote
-    const OvaTokenRemote = await ethers.getContractFactory("OvaTokenRemote");
-    const tokenRemote = await OvaTokenRemote.deploy(
-      "Wrapped ovaTRY",
+    const AriTokenRemote = await ethers.getContractFactory("AriTokenRemote");
+    const tokenRemote = await AriTokenRemote.deploy(
+      "Wrapped ariTRY",
       "wTRY",
       await teleporter.getAddress(),
       THIS_CHAIN_ID,
@@ -60,7 +60,7 @@ describe("OvaTokenRemote", function () {
 
   describe("Deployment", function () {
     it("should set the correct name and symbol", async function () {
-      expect(await tokenRemote.name()).to.equal("Wrapped ovaTRY");
+      expect(await tokenRemote.name()).to.equal("Wrapped ariTRY");
       expect(await tokenRemote.symbol()).to.equal("wTRY");
     });
 
@@ -315,8 +315,8 @@ describe("OvaTokenRemote", function () {
       const MockTeleporter = await ethers.getContractFactory("MockTeleporter");
       const newTeleporter = await MockTeleporter.deploy();
 
-      const OvaTokenRemote = await ethers.getContractFactory("OvaTokenRemote");
-      const newRemote = await OvaTokenRemote.deploy(
+      const AriTokenRemote = await ethers.getContractFactory("AriTokenRemote");
+      const newRemote = await AriTokenRemote.deploy(
         "Test Token",
         "TEST",
         await newTeleporter.getAddress(),

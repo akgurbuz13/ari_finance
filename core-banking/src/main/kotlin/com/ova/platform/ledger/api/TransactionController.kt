@@ -88,7 +88,12 @@ class TransactionController(
 
     @GetMapping("/transactions/{transactionId}")
     fun getTransaction(@PathVariable transactionId: UUID): ResponseEntity<TransactionDetailResponse> {
+        val userId = getAuthenticatedUserId()
         val transaction = transactionService.getTransactionById(transactionId)
+        if (!transactionService.userCanAccessTransaction(transaction.id, userId)) {
+            throw ForbiddenException("You do not have access to this transaction")
+        }
+
         val entries = ledgerService.getEntries(transactionId)
         return ResponseEntity.ok(
             TransactionDetailResponse(

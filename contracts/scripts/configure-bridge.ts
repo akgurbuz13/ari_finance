@@ -18,10 +18,10 @@ import * as path from "path";
  *
  * USAGE:
  *   # Configure TR L1 side
- *   npx hardhat run scripts/configure-bridge.ts --network ova-tr-testnet
+ *   npx hardhat run scripts/configure-bridge.ts --network ari-tr-testnet
  *
  *   # Configure EU L1 side
- *   npx hardhat run scripts/configure-bridge.ts --network ova-eu-testnet
+ *   npx hardhat run scripts/configure-bridge.ts --network ari-eu-testnet
  */
 
 interface ChainDeployment {
@@ -76,7 +76,7 @@ async function main() {
   const chainId = Number(network.chainId);
 
   console.log("\n" + "=".repeat(60));
-  console.log("OVA BRIDGE CONFIGURATION");
+  console.log("ARI BRIDGE CONFIGURATION");
   console.log("=".repeat(60));
   console.log("Network:", network.name);
   console.log("Chain ID:", chainId);
@@ -116,13 +116,13 @@ async function main() {
   console.log("  TokenRemote:", partnerChain.contracts.tokenRemote);
 
   // Get contract instances
-  const TokenHome = await ethers.getContractFactory("OvaTokenHome");
+  const TokenHome = await ethers.getContractFactory("AriTokenHome");
   const tokenHome = TokenHome.attach(currentChain.contracts.tokenHome);
 
-  const TokenRemote = await ethers.getContractFactory("OvaTokenRemote");
+  const TokenRemote = await ethers.getContractFactory("AriTokenRemote");
   const tokenRemote = TokenRemote.attach(currentChain.contracts.tokenRemote);
 
-  const BridgeAdapter = await ethers.getContractFactory("OvaBridgeAdapter");
+  const BridgeAdapter = await ethers.getContractFactory("AriBridgeAdapter");
   const bridgeAdapter = BridgeAdapter.attach(currentChain.contracts.bridgeAdapter);
 
   // ===== 1. Register TokenRemote on partner chain with our TokenHome =====
@@ -248,7 +248,7 @@ ${isTraChain ? "🇹🇷 TR L1" : "🇪🇺 EU L1"} is now configured:
 
   if (isTraChain) {
     console.log("Next: Run this script on EU L1 to complete setup");
-    console.log("  npx hardhat run scripts/configure-bridge.ts --network ova-eu-testnet");
+    console.log("  npx hardhat run scripts/configure-bridge.ts --network ari-eu-testnet");
   } else {
     console.log("🎉 Dual-chain bridge configuration complete!");
     console.log("\nYou can now:");

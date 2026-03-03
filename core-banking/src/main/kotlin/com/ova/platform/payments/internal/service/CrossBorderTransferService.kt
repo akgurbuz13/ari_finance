@@ -9,7 +9,6 @@ import com.ova.platform.ledger.internal.service.AccountService
 import com.ova.platform.ledger.internal.service.LedgerService
 import com.ova.platform.payments.event.BurnRequested
 import com.ova.platform.payments.event.MintRequested
-import com.ova.platform.payments.event.PaymentCompleted
 import com.ova.platform.payments.event.PaymentInitiated
 import com.ova.platform.payments.internal.model.FxQuote
 import com.ova.platform.payments.internal.model.PaymentOrder
@@ -53,13 +52,13 @@ class CrossBorderTransferService(
      * 4. Ledger postings:
      *    a. Debit sender TRY wallet
      *    b. Credit system float TRY (source side receives funds)
-     *    c. Debit system float TRY (source side FX conversion out)
-     *    d. Credit system float EUR via FX rate (target side FX conversion in)
+     *    c. Move source funds from float to safeguarding source account
+     *    d. Move target funds from safeguarding target account to float target account
      *    e. Debit system float EUR (target side sends funds)
      *    f. Credit receiver EUR wallet
      *    g. Fee entries: debit sender TRY, credit fee revenue TRY
      * 5. Publish MintRequested (credit side) and BurnRequested (debit side) to outbox
-     * 6. Mark payment as completed
+     * 6. Keep payment in settling state until both on-chain legs are confirmed
      */
     @Transactional
     fun execute(
@@ -148,6 +147,8 @@ class CrossBorderTransferService(
             // Get or create system accounts
             val systemFloatSource = accountService.getOrCreateSystemAccount(senderAccount.currency, AccountType.SYSTEM_FLOAT)
             val systemFloatTarget = accountService.getOrCreateSystemAccount(receiverAccount.currency, AccountType.SYSTEM_FLOAT)
+            val safeguardingSource = accountService.getOrCreateSystemAccount(senderAccount.currency, AccountType.SAFEGUARDING)
+            val safeguardingTarget = accountService.getOrCreateSystemAccount(receiverAccount.currency, AccountType.SAFEGUARDING)
             val feeRevenueAccount = accountService.getOrCreateSystemAccount(fxQuote.feeCurrency, AccountType.FEE_REVENUE)
 
             // Main transfer postings:
@@ -181,8 +182,9 @@ class CrossBorderTransferService(
                 )
             )
 
-            // Leg 2: FX conversion - debit system float source currency, credit system float target currency
+            // Leg 2: FX bookkeeping and safeguarding movements
             val fxPostings = listOf(
+                // Source side: move captured funds to source safeguarding account
                 PostingInstruction(
                     accountId = systemFloatSource.id,
                     direction = EntryDirection.DEBIT,
@@ -190,10 +192,23 @@ class CrossBorderTransferService(
                     currency = senderAccount.currency
                 ),
                 PostingInstruction(
-                    accountId = systemFloatSource.id,
+                    accountId = safeguardingSource.id,
                     direction = EntryDirection.CREDIT,
                     amount = fxQuote.sourceAmount,
                     currency = senderAccount.currency
+                ),
+                // Target side: release prefunded target currency from safeguarding into float
+                PostingInstruction(
+                    accountId = safeguardingTarget.id,
+                    direction = EntryDirection.DEBIT,
+                    amount = fxQuote.targetAmount,
+                    currency = receiverAccount.currency
+                ),
+                PostingInstruction(
+                    accountId = systemFloatTarget.id,
+                    direction = EntryDirection.CREDIT,
+                    amount = fxQuote.targetAmount,
+                    currency = receiverAccount.currency
                 )
             )
 
@@ -289,18 +304,7 @@ class CrossBorderTransferService(
                 )
             )
 
-            // Step 7: Mark completed
-            transitionStatus(paymentOrder.id, PaymentStatus.SETTLING, PaymentStatus.COMPLETED, null)
-
-            outboxPublisher.publish(
-                PaymentCompleted(
-                    paymentOrderId = paymentOrder.id,
-                    paymentType = PaymentType.CROSS_BORDER.value,
-                    ledgerTransactionId = mainTransaction.id,
-                    amount = fxQuote.sourceAmount,
-                    currency = senderAccount.currency
-                )
-            )
+            // Step 7: Payment remains in SETTLING until both burn and mint confirmations arrive.
 
             auditService.log(
                 actorId = initiatorId,

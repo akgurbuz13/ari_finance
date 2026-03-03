@@ -4,8 +4,8 @@ pragma solidity ^0.8.24;
 import "@openzeppelin/contracts/governance/TimelockController.sol";
 
 /**
- * @title OvaTimelock
- * @notice Timelock controller for Ova platform governance operations.
+ * @title AriTimelock
+ * @notice Timelock controller for ARI platform governance operations.
  *         All critical administrative operations (contract upgrades, role changes,
  *         parameter modifications) must go through this timelock.
  *
@@ -15,7 +15,7 @@ import "@openzeppelin/contracts/governance/TimelockController.sol";
  * - Executors: Anyone can execute after delay (prevents griefing)
  * - Admin: Self (can only be modified through timelock)
  */
-contract OvaTimelock is TimelockController {
+contract AriTimelock is TimelockController {
     /// @notice Minimum delay for production deployments (48 hours)
     uint256 public constant PRODUCTION_MIN_DELAY = 48 hours;
 

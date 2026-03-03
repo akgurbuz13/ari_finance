@@ -153,7 +153,7 @@ class AuthService(
     }
 
     private fun generateTokens(user: User): AuthTokens {
-        val accessToken = jwtTokenProvider.generateAccessToken(user.id, user.email)
+        val accessToken = jwtTokenProvider.generateAccessToken(user.id, user.email, roles = listOf(user.role))
         val refreshToken = jwtTokenProvider.generateRefreshToken(user.id)
 
         val tokenHash = hashToken(refreshToken)

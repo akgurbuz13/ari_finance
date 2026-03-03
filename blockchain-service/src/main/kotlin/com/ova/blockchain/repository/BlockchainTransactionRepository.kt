@@ -57,7 +57,7 @@ class BlockchainTransactionRepository(private val jdbcTemplate: JdbcTemplate) {
             INSERT INTO blockchain.transactions
                 (tx_hash, chain_id, operation, from_address, to_address, amount, currency,
                  status, block_number, gas_used, payment_order_id, error_message, metadata, confirmed_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?::jsonb, ?)
             ON CONFLICT (chain_id, tx_hash) DO UPDATE SET
                 status = EXCLUDED.status,
                 block_number = EXCLUDED.block_number,
@@ -72,7 +72,7 @@ class BlockchainTransactionRepository(private val jdbcTemplate: JdbcTemplate) {
             tx.amount, tx.currency, tx.status, tx.blockNumber, tx.gasUsed,
             tx.paymentOrderId, tx.errorMessage, tx.metadata,
             tx.confirmedAt?.let { java.sql.Timestamp.from(it) }
-        )!!
+        )
         return tx.copy(id = id)
     }
 
@@ -123,10 +123,11 @@ class BlockchainTransactionRepository(private val jdbcTemplate: JdbcTemplate) {
         return jdbcTemplate.query(
             """
             SELECT * FROM blockchain.transactions
-            WHERE metadata LIKE ?
+            WHERE metadata IS NOT NULL
+              AND metadata ->> 'transferId' = ?
             ORDER BY created_at ASC
             """,
-            rowMapper, "%\"transferId\":\"$transferId\"%"
+            rowMapper, transferId
         )
     }
 

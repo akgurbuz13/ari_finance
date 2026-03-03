@@ -17,27 +17,27 @@ const config: HardhatUserConfig = {
     hardhat: {
       chainId: 31337,
     },
-    // Ova TR L1 (Turkey)
-    "ova-tr-testnet": {
-      url: process.env.TR_L1_RPC_URL || "http://localhost:9650/ext/bc/tr/rpc",
+    // ARI TR L1 (Turkey) - Fuji Chain ID 1279
+    "ari-tr-testnet": {
+      url: process.env.TR_L1_RPC_URL || "http://127.0.0.1:9650/ext/bc/9x7zHB85vsWaX2BiVPGRWVWh4KHWcroZWGBWbzR958JYRQZWP/rpc",
       accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
-      chainId: Number(process.env.TR_L1_CHAIN_ID) || 99999,
+      chainId: Number(process.env.TR_L1_CHAIN_ID) || 1279,
     },
-    "ova-tr-mainnet": {
+    "ari-tr-mainnet": {
       url: process.env.TR_L1_MAINNET_RPC_URL || "",
       accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
-      chainId: Number(process.env.TR_L1_MAINNET_CHAIN_ID) || 99999,
+      chainId: Number(process.env.TR_L1_MAINNET_CHAIN_ID) || 1279,
     },
-    // Ova EU L1 (Europe)
-    "ova-eu-testnet": {
-      url: process.env.EU_L1_RPC_URL || "http://localhost:9651/ext/bc/eu/rpc",
+    // ARI EU L1 (Europe) - Fuji Chain ID 1832
+    "ari-eu-testnet": {
+      url: process.env.EU_L1_RPC_URL || "http://127.0.0.1:9652/ext/bc/21Euii5No2ut9NyF7VWkkWhkeiDk2fcZkE1GkfMjNtTtgL3DWE/rpc",
       accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
-      chainId: Number(process.env.EU_L1_CHAIN_ID) || 99998,
+      chainId: Number(process.env.EU_L1_CHAIN_ID) || 1832,
     },
-    "ova-eu-mainnet": {
+    "ari-eu-mainnet": {
       url: process.env.EU_L1_MAINNET_RPC_URL || "",
       accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
-      chainId: Number(process.env.EU_L1_MAINNET_CHAIN_ID) || 99998,
+      chainId: Number(process.env.EU_L1_MAINNET_CHAIN_ID) || 1832,
     },
     // Legacy testnet/mainnet for backwards compatibility
     testnet: {
@@ -54,12 +54,12 @@ const config: HardhatUserConfig = {
   // Etherscan verification config (for Avalanche)
   etherscan: {
     apiKey: {
-      "ova-tr-mainnet": process.env.SNOWTRACE_API_KEY || "",
-      "ova-eu-mainnet": process.env.SNOWTRACE_API_KEY || "",
+      "ari-tr-mainnet": process.env.SNOWTRACE_API_KEY || "",
+      "ari-eu-mainnet": process.env.SNOWTRACE_API_KEY || "",
     },
     customChains: [
       {
-        network: "ova-tr-mainnet",
+        network: "ari-tr-mainnet",
         chainId: Number(process.env.TR_L1_MAINNET_CHAIN_ID) || 99999,
         urls: {
           apiURL: process.env.TR_EXPLORER_API_URL || "",
@@ -67,7 +67,7 @@ const config: HardhatUserConfig = {
         },
       },
       {
-        network: "ova-eu-mainnet",
+        network: "ari-eu-mainnet",
         chainId: Number(process.env.EU_L1_MAINNET_CHAIN_ID) || 99998,
         urls: {
           apiURL: process.env.EU_EXPLORER_API_URL || "",

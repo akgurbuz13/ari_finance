@@ -19,12 +19,12 @@ import org.web3j.tx.gas.ContractGasProvider
 import java.math.BigInteger
 
 /**
- * Type-safe wrapper for OvaTokenRemote.sol contract interactions via web3j.
+ * Type-safe wrapper for AriTokenRemote.sol contract interactions via web3j.
  *
- * OvaTokenRemote is deployed on "remote" chains where wrapped tokens are minted.
+ * AriTokenRemote is deployed on "remote" chains where wrapped tokens are minted.
  * It mints wrapped tokens when receiving from home chain and burns when sending back.
  *
- * For Ova:
+ * For ARI:
  * - On TR L1: This wraps EUR tokens from EU L1 as "wEUR"
  * - On EU L1: This wraps TRY tokens from TR L1 as "wTRY"
  *
@@ -34,7 +34,7 @@ import java.math.BigInteger
  * - Burning sends tokens back to home chain
  * - Inherits KYC requirements from the platform
  */
-class OvaTokenRemoteContract(
+class AriTokenRemoteContract(
     private val web3j: Web3j,
     private val contractAddress: String,
     private val credentials: Credentials,
@@ -300,10 +300,21 @@ class OvaTokenRemoteContract(
             throw RuntimeException("Transaction failed: ${response.error.message}")
         }
 
-        val receipt = web3j.ethGetTransactionReceipt(response.transactionHash)
-            .send()
-            .transactionReceipt
-            .orElseThrow { RuntimeException("No receipt for tx: ${response.transactionHash}") }
+        // Poll for receipt with retries (Avalanche L1s may need a moment to mine)
+        val txHash = response.transactionHash
+        var receipt: TransactionReceipt? = null
+        for (i in 1..30) {
+            receipt = web3j.ethGetTransactionReceipt(txHash)
+                .send()
+                .transactionReceipt
+                .orElse(null)
+            if (receipt != null) break
+            Thread.sleep(1000)
+        }
+
+        if (receipt == null) {
+            throw RuntimeException("No receipt for tx after 30s: $txHash")
+        }
 
         if (!receipt.isStatusOK) {
             throw RuntimeException("Transaction reverted: ${receipt.transactionHash}")

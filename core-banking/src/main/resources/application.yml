@@ -1,6 +1,6 @@
 spring:
   application:
-    name: ova-core-banking
+    name: ari-core-banking
 
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:ova}
@@ -43,27 +43,27 @@ management:
     health:
       show-details: when-authorized
 
-ova:
-  region: ${OVA_REGION:TR}
+ari:
+  region: ${ARI_REGION:TR}
   jwt:
     # SECURITY: In production, use AWS Secrets Manager via spring-cloud-aws-secrets-manager
     # or Kubernetes secrets mounted as environment variables
-    secret: ${JWT_SECRET:}  # No default - must be configured
+    secret: ${JWT_SECRET:${ARI_JWT_SECRET:}}  # No default - must be configured
     # For RS256 asymmetric signing (recommended for production):
     # private-key-path: ${JWT_PRIVATE_KEY_PATH:}
     # public-key-path: ${JWT_PUBLIC_KEY_PATH:}
     access-token-expiry: 900 # 15 minutes in seconds
     refresh-token-expiry: 604800 # 7 days in seconds
   blockchain-service:
-    url: ${BLOCKCHAIN_SERVICE_URL:http://localhost:8081}
+    url: ${BLOCKCHAIN_SERVICE_URL:${ARI_BLOCKCHAIN_SERVICE_URL:http://localhost:8081}}
   internal:
     # SECURITY: API key for service-to-service communication
     # In production, use AWS Secrets Manager or Kubernetes secrets
-    api-key: ${INTERNAL_API_KEY:}  # No default - must be configured
+    api-key: ${INTERNAL_API_KEY:${ARI_INTERNAL_API_KEY:}}  # No default - must be configured
   cors:
     # SECURITY: Comma-separated list of allowed origins
     # In production, set explicitly - no wildcards allowed
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:}
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:${ARI_CORS_ALLOWED_ORIGINS:}}
   rate-limit:
     auth:
       requests-per-minute: ${RATE_LIMIT_AUTH_PER_MINUTE:10}
@@ -91,3 +91,13 @@ ova:
       threshold-try: ${MONITORING_THRESHOLD_TRY:85000}
       # Thresholds in EUR
       threshold-eur: ${MONITORING_THRESHOLD_EUR:10000}
+  rails:
+    webhook:
+      allow-unsigned: ${RAILS_WEBHOOK_ALLOW_UNSIGNED:false}
+      fast-secret: ${RAILS_WEBHOOK_FAST_SECRET:}
+      eft-secret: ${RAILS_WEBHOOK_EFT_SECRET:}
+      sepa-secret: ${RAILS_WEBHOOK_SEPA_SECRET:}
+  kyc:
+    webhook:
+      allow-unsigned: ${KYC_WEBHOOK_ALLOW_UNSIGNED:false}
+      secret: ${KYC_WEBHOOK_SECRET:}

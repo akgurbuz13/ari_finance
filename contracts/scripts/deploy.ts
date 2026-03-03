@@ -1,15 +1,15 @@
 import { ethers, upgrades } from "hardhat";
 
 /**
- * Deployment script for Ova Platform smart contracts on a SINGLE chain.
+ * Deployment script for ARI Platform smart contracts on a SINGLE chain.
  *
  * DEPLOYMENT ORDER (important for dependencies):
- * 1. OvaTimelock - Governance timelock (48h delay)
+ * 1. AriTimelock - Governance timelock (48h delay)
  * 2. ValidatorManager - PoA validator set management
- * 3. OvaStablecoinUpgradeable - UUPS proxy stablecoin
- * 4. OvaTokenHome - ICTT TokenHome for native token bridging
- * 5. OvaTokenRemote - ICTT TokenRemote for wrapped tokens from partner chain
- * 6. OvaBridgeAdapter - High-level bridge orchestration
+ * 3. AriStablecoinUpgradeable - UUPS proxy stablecoin
+ * 4. AriTokenHome - ICTT TokenHome for native token bridging
+ * 5. AriTokenRemote - ICTT TokenRemote for wrapped tokens from partner chain
+ * 6. AriBridgeAdapter - High-level bridge orchestration
  * 7. KycAllowList - KYC verification registry
  *
  * SECURITY NOTES:
@@ -18,17 +18,17 @@ import { ethers, upgrades } from "hardhat";
  * - Verify all contracts on explorer before announcing
  *
  * USAGE:
- *   npx hardhat run scripts/deploy.ts --network ova-tr-testnet
- *   npx hardhat run scripts/deploy.ts --network ova-eu-testnet
+ *   npx hardhat run scripts/deploy.ts --network ari-tr-testnet
+ *   npx hardhat run scripts/deploy.ts --network ari-eu-testnet
  *
  * ENVIRONMENT VARIABLES:
  *   DEPLOY_ENV=production          # Use production settings (48h timelock)
  *   MULTISIG_ADDRESS=0x...         # Governance multisig
  *   MINTER_ADDRESS=0x...           # Address with minting rights
  *   BRIDGE_OPERATOR_ADDRESS=0x...  # Address for bridge operations
- *   TOKEN_NAME="Ova Turkish Lira"  # Token name
- *   TOKEN_SYMBOL="ovaTRY"          # Token symbol
- *   WRAPPED_TOKEN_NAME="Wrapped ovaEUR"  # Wrapped token from partner chain
+ *   TOKEN_NAME="ARI Turkish Lira"  # Token name
+ *   TOKEN_SYMBOL="ariTRY"          # Token symbol
+ *   WRAPPED_TOKEN_NAME="Wrapped ariEUR"  # Wrapped token from partner chain
  *   WRAPPED_TOKEN_SYMBOL="wEUR"    # Wrapped token symbol
  *   SUPPLY_CAP=0                   # Supply cap (0 = unlimited)
  *   TELEPORTER_ADDRESS=0x...       # Avalanche Teleporter contract
@@ -44,9 +44,12 @@ async function main() {
   const multisigAddress = process.env.MULTISIG_ADDRESS || deployer.address;
   const minterAddress = process.env.MINTER_ADDRESS || deployer.address;
   const bridgeOperatorAddress = process.env.BRIDGE_OPERATOR_ADDRESS || deployer.address;
-  const tokenName = process.env.TOKEN_NAME || "Ova Turkish Lira";
-  const tokenSymbol = process.env.TOKEN_SYMBOL || "ovaTRY";
-  const wrappedTokenName = process.env.WRAPPED_TOKEN_NAME || "Wrapped ovaEUR";
+  // In dev/testnet, deployer keeps admin for easy role management.
+  // In production, timelock is admin (requires proposals + delay for changes).
+  const adminAddress = isProduction ? "TIMELOCK" : deployer.address; // resolved after timelock deploy
+  const tokenName = process.env.TOKEN_NAME || "ARI Turkish Lira";
+  const tokenSymbol = process.env.TOKEN_SYMBOL || "ariTRY";
+  const wrappedTokenName = process.env.WRAPPED_TOKEN_NAME || "Wrapped ariEUR";
   const wrappedTokenSymbol = process.env.WRAPPED_TOKEN_SYMBOL || "wEUR";
   const supplyCap = process.env.SUPPLY_CAP || "0"; // 0 = unlimited
   const teleporterAddress = process.env.TELEPORTER_ADDRESS || ethers.ZeroAddress;
@@ -65,18 +68,22 @@ async function main() {
   console.log("Blockchain ID:", blockchainID);
 
   // ===== 1. Deploy Timelock =====
-  console.log("\n--- Deploying OvaTimelock ---");
+  console.log("\n--- Deploying AriTimelock ---");
   const minDelay = isProduction ? 48 * 60 * 60 : 60 * 60; // 48h prod, 1h dev
   const proposers = [multisigAddress];
   const executors = [ethers.ZeroAddress]; // Anyone can execute after delay
   const timelockAdmin = ethers.ZeroAddress; // No admin (self-governed)
 
-  const OvaTimelock = await ethers.getContractFactory("OvaTimelock");
-  const timelock = await OvaTimelock.deploy(minDelay, proposers, executors, timelockAdmin);
+  const AriTimelock = await ethers.getContractFactory("AriTimelock");
+  const timelock = await AriTimelock.deploy(minDelay, proposers, executors, timelockAdmin);
   await timelock.waitForDeployment();
   const timelockAddress = await timelock.getAddress();
-  console.log("OvaTimelock deployed to:", timelockAddress);
+  console.log("AriTimelock deployed to:", timelockAddress);
   console.log("  Min delay:", minDelay / 3600, "hours");
+
+  // Resolve admin: deployer for testnet (immediate role management), timelock for production
+  const contractAdmin = isProduction ? timelockAddress : deployer.address;
+  console.log("Contract admin:", contractAdmin, isProduction ? "(timelock)" : "(deployer - testnet)");
 
   // ===== 2. Deploy ValidatorManager =====
   console.log("\n--- Deploying ValidatorManager ---");
@@ -95,11 +102,11 @@ async function main() {
   console.log("KycAllowList deployed to:", kycAllowListAddress);
 
   // ===== 4. Deploy Stablecoin (Upgradeable) =====
-  console.log("\n--- Deploying OvaStablecoinUpgradeable (UUPS Proxy) ---");
-  const OvaStablecoinUpgradeable = await ethers.getContractFactory("OvaStablecoinUpgradeable");
+  console.log("\n--- Deploying AriStablecoinUpgradeable (UUPS Proxy) ---");
+  const AriStablecoinUpgradeable = await ethers.getContractFactory("AriStablecoinUpgradeable");
   const stablecoin = await upgrades.deployProxy(
-    OvaStablecoinUpgradeable,
-    [tokenName, tokenSymbol, timelockAddress, minterAddress, BigInt(supplyCap)],
+    AriStablecoinUpgradeable,
+    [tokenName, tokenSymbol, contractAdmin, minterAddress, BigInt(supplyCap)],
     {
       kind: "uups",
       initializer: "initialize",
@@ -108,43 +115,43 @@ async function main() {
   await stablecoin.waitForDeployment();
   const stablecoinAddress = await stablecoin.getAddress();
   const implementationAddress = await upgrades.erc1967.getImplementationAddress(stablecoinAddress);
-  console.log("OvaStablecoin proxy deployed to:", stablecoinAddress);
-  console.log("OvaStablecoin implementation:", implementationAddress);
+  console.log("AriStablecoin proxy deployed to:", stablecoinAddress);
+  console.log("AriStablecoin implementation:", implementationAddress);
 
   // ===== 5. Deploy TokenHome =====
-  console.log("\n--- Deploying OvaTokenHome ---");
-  const OvaTokenHome = await ethers.getContractFactory("OvaTokenHome");
-  const tokenHome = await OvaTokenHome.deploy(
+  console.log("\n--- Deploying AriTokenHome ---");
+  const AriTokenHome = await ethers.getContractFactory("AriTokenHome");
+  const tokenHome = await AriTokenHome.deploy(
     stablecoinAddress,      // Native token
     teleporterAddress,      // Teleporter messenger
     blockchainID,           // This chain's blockchain ID
-    timelockAddress         // Admin (timelock)
+    contractAdmin           // Admin
   );
   await tokenHome.waitForDeployment();
   const tokenHomeAddress = await tokenHome.getAddress();
-  console.log("OvaTokenHome deployed to:", tokenHomeAddress);
+  console.log("AriTokenHome deployed to:", tokenHomeAddress);
 
   // ===== 6. Deploy TokenRemote (for wrapped tokens from partner chain) =====
-  console.log("\n--- Deploying OvaTokenRemote ---");
-  const OvaTokenRemote = await ethers.getContractFactory("OvaTokenRemote");
-  const tokenRemote = await OvaTokenRemote.deploy(
+  console.log("\n--- Deploying AriTokenRemote ---");
+  const AriTokenRemote = await ethers.getContractFactory("AriTokenRemote");
+  const tokenRemote = await AriTokenRemote.deploy(
     wrappedTokenName,       // Name of wrapped token
     wrappedTokenSymbol,     // Symbol of wrapped token
     teleporterAddress,      // Teleporter messenger
     blockchainID,           // This chain's blockchain ID
-    timelockAddress         // Admin
+    contractAdmin           // Admin
   );
   await tokenRemote.waitForDeployment();
   const tokenRemoteAddress = await tokenRemote.getAddress();
-  console.log("OvaTokenRemote deployed to:", tokenRemoteAddress);
+  console.log("AriTokenRemote deployed to:", tokenRemoteAddress);
 
   // ===== 7. Deploy Bridge Adapter =====
-  console.log("\n--- Deploying OvaBridgeAdapter ---");
-  const OvaBridgeAdapter = await ethers.getContractFactory("OvaBridgeAdapter");
-  const bridgeAdapter = await OvaBridgeAdapter.deploy(stablecoinAddress, timelockAddress);
+  console.log("\n--- Deploying AriBridgeAdapter ---");
+  const AriBridgeAdapter = await ethers.getContractFactory("AriBridgeAdapter");
+  const bridgeAdapter = await AriBridgeAdapter.deploy(stablecoinAddress, contractAdmin);
   await bridgeAdapter.waitForDeployment();
   const bridgeAdapterAddress = await bridgeAdapter.getAddress();
-  console.log("OvaBridgeAdapter deployed to:", bridgeAdapterAddress);
+  console.log("AriBridgeAdapter deployed to:", bridgeAdapterAddress);
 
   // ===== 8. Configure Roles =====
   console.log("\n--- Configuring Roles ---");
@@ -154,25 +161,24 @@ async function main() {
   await bridgeAdapter.grantRole(BRIDGE_OPERATOR_ROLE, bridgeOperatorAddress);
   console.log("Granted BRIDGE_OPERATOR_ROLE to:", bridgeOperatorAddress);
 
-  // Transfer bridge adapter admin to timelock
-  const BRIDGE_ADMIN_ROLE = await bridgeAdapter.DEFAULT_ADMIN_ROLE();
-  await bridgeAdapter.grantRole(BRIDGE_ADMIN_ROLE, timelockAddress);
-  console.log("Granted DEFAULT_ADMIN_ROLE on BridgeAdapter to timelock");
-
-  // Grant TokenHome admin roles
+  // Grant bridge admin roles to deployer (for testnet) or timelock (for prod)
   const TOKEN_HOME_BRIDGE_ADMIN = await tokenHome.BRIDGE_ADMIN_ROLE();
-  await tokenHome.grantRole(TOKEN_HOME_BRIDGE_ADMIN, timelockAddress);
-  console.log("Granted BRIDGE_ADMIN_ROLE on TokenHome to timelock");
-
-  // Grant TokenRemote admin roles
   const TOKEN_REMOTE_BRIDGE_ADMIN = await tokenRemote.BRIDGE_ADMIN_ROLE();
-  await tokenRemote.grantRole(TOKEN_REMOTE_BRIDGE_ADMIN, timelockAddress);
-  console.log("Granted BRIDGE_ADMIN_ROLE on TokenRemote to timelock");
 
   if (isProduction) {
-    // Renounce deployer's admin role on bridge adapter
+    // Transfer admin to timelock in production
+    const BRIDGE_ADMIN_ROLE = await bridgeAdapter.DEFAULT_ADMIN_ROLE();
+    await bridgeAdapter.grantRole(BRIDGE_ADMIN_ROLE, timelockAddress);
+    console.log("Granted DEFAULT_ADMIN_ROLE on BridgeAdapter to timelock");
+    await tokenHome.grantRole(TOKEN_HOME_BRIDGE_ADMIN, timelockAddress);
+    console.log("Granted BRIDGE_ADMIN_ROLE on TokenHome to timelock");
+    await tokenRemote.grantRole(TOKEN_REMOTE_BRIDGE_ADMIN, timelockAddress);
+    console.log("Granted BRIDGE_ADMIN_ROLE on TokenRemote to timelock");
+    // Renounce deployer's admin role
     await bridgeAdapter.renounceRole(BRIDGE_ADMIN_ROLE, deployer.address);
     console.log("Renounced deployer's admin role on BridgeAdapter");
+  } else {
+    console.log("Testnet mode: deployer retains admin roles for easy configuration");
   }
 
   // ===== Summary =====
@@ -183,16 +189,16 @@ async function main() {
   console.log("Chain ID:", (await ethers.provider.getNetwork()).chainId.toString());
   console.log("");
   console.log("Core Contracts:");
-  console.log("  OvaTimelock:              ", timelockAddress);
+  console.log("  AriTimelock:              ", timelockAddress);
   console.log("  ValidatorManager:         ", validatorManagerAddress);
   console.log("  KycAllowList:             ", kycAllowListAddress);
-  console.log("  OvaStablecoin (proxy):    ", stablecoinAddress);
-  console.log("  OvaStablecoin (impl):     ", implementationAddress);
+  console.log("  AriStablecoin (proxy):    ", stablecoinAddress);
+  console.log("  AriStablecoin (impl):     ", implementationAddress);
   console.log("");
   console.log("ICTT Bridge Contracts:");
-  console.log("  OvaTokenHome:             ", tokenHomeAddress);
-  console.log("  OvaTokenRemote:           ", tokenRemoteAddress);
-  console.log("  OvaBridgeAdapter:         ", bridgeAdapterAddress);
+  console.log("  AriTokenHome:             ", tokenHomeAddress);
+  console.log("  AriTokenRemote:           ", tokenRemoteAddress);
+  console.log("  AriBridgeAdapter:         ", bridgeAdapterAddress);
   console.log("");
   console.log("Admin/Governance:");
   console.log("  Timelock min delay:       ", minDelay / 3600, "hours");

@@ -11,25 +11,25 @@ import java.util.concurrent.ConcurrentHashMap
  * Caches contract instances per chain to avoid redundant initialization.
  *
  * Contract types:
- * - OvaStablecoin: The native stablecoin on each chain (ovaTRY on TR, ovaEUR on EU)
- * - OvaBridgeAdapter: High-level bridge orchestration contract
- * - OvaTokenHome: ICTT TokenHome - locks native tokens when bridging out
- * - OvaTokenRemote: ICTT TokenRemote - mints/burns wrapped tokens from partner chain
+ * - AriStablecoin: The native stablecoin on each chain (ariTRY on TR, ariEUR on EU)
+ * - AriBridgeAdapter: High-level bridge orchestration contract
+ * - AriTokenHome: ICTT TokenHome - locks native tokens when bridging out
+ * - AriTokenRemote: ICTT TokenRemote - mints/burns wrapped tokens from partner chain
  */
 @Component
 class ContractFactory(
     private val web3jProvider: Web3jProvider,
     private val config: BlockchainConfig
 ) {
-    private val stablecoinContracts = ConcurrentHashMap<Long, OvaStablecoinContract>()
-    private val bridgeContracts = ConcurrentHashMap<Long, OvaBridgeAdapterContract>()
-    private val tokenHomeContracts = ConcurrentHashMap<Long, OvaTokenHomeContract>()
-    private val tokenRemoteContracts = ConcurrentHashMap<Long, OvaTokenRemoteContract>()
+    private val stablecoinContracts = ConcurrentHashMap<Long, AriStablecoinContract>()
+    private val bridgeContracts = ConcurrentHashMap<Long, AriBridgeAdapterContract>()
+    private val tokenHomeContracts = ConcurrentHashMap<Long, AriTokenHomeContract>()
+    private val tokenRemoteContracts = ConcurrentHashMap<Long, AriTokenRemoteContract>()
 
-    fun getStablecoin(chainId: Long, credentials: Credentials): OvaStablecoinContract {
+    fun getStablecoin(chainId: Long, credentials: Credentials): AriStablecoinContract {
         val key = chainId
         return stablecoinContracts.computeIfAbsent(key) {
-            OvaStablecoinContract(
+            AriStablecoinContract(
                 web3j = web3jProvider.getWeb3j(chainId),
                 contractAddress = web3jProvider.getStablecoinAddress(chainId),
                 credentials = credentials,
@@ -39,16 +39,18 @@ class ContractFactory(
         }
     }
 
-    fun getStablecoinForCurrency(currency: String, credentials: Credentials): OvaStablecoinContract {
+    fun getStablecoinForCurrency(currency: String, credentials: Credentials): AriStablecoinContract {
         val chainId = web3jProvider.getChainIdForCurrency(currency)
         return getStablecoin(chainId, credentials)
     }
 
-    fun getBridgeAdapter(chainId: Long, credentials: Credentials): OvaBridgeAdapterContract {
+    fun getBridgeAdapter(chainId: Long, credentials: Credentials): AriBridgeAdapterContract {
         return bridgeContracts.computeIfAbsent(chainId) {
-            OvaBridgeAdapterContract(
+            val address = config.getBridgeAdapterAddress(chainId)
+            require(address.isNotBlank()) { "BridgeAdapter address not configured for chain $chainId" }
+            AriBridgeAdapterContract(
                 web3j = web3jProvider.getWeb3j(chainId),
-                contractAddress = config.bridgeContractAddress,
+                contractAddress = address,
                 credentials = credentials,
                 gasProvider = web3jProvider.getGasProvider(),
                 chainId = chainId
@@ -59,14 +61,14 @@ class ContractFactory(
     /**
      * Get TokenHome contract for a chain.
      * TokenHome is deployed on the chain where the native token exists.
-     * - TR L1: TokenHome for ovaTRY (locks TRY when bridging to EU)
-     * - EU L1: TokenHome for ovaEUR (locks EUR when bridging to TR)
+     * - TR L1: TokenHome for ariTRY (locks TRY when bridging to EU)
+     * - EU L1: TokenHome for ariEUR (locks EUR when bridging to TR)
      */
-    fun getTokenHome(chainId: Long, credentials: Credentials): OvaTokenHomeContract {
+    fun getTokenHome(chainId: Long, credentials: Credentials): AriTokenHomeContract {
         return tokenHomeContracts.computeIfAbsent(chainId) {
             val address = config.getTokenHomeAddress(chainId)
             require(address.isNotBlank()) { "TokenHome address not configured for chain $chainId" }
-            OvaTokenHomeContract(
+            AriTokenHomeContract(
                 web3j = web3jProvider.getWeb3j(chainId),
                 contractAddress = address,
                 credentials = credentials,
@@ -82,11 +84,11 @@ class ContractFactory(
      * - TR L1: TokenRemote for wEUR (wrapped EUR from EU L1)
      * - EU L1: TokenRemote for wTRY (wrapped TRY from TR L1)
      */
-    fun getTokenRemote(chainId: Long, credentials: Credentials): OvaTokenRemoteContract {
+    fun getTokenRemote(chainId: Long, credentials: Credentials): AriTokenRemoteContract {
         return tokenRemoteContracts.computeIfAbsent(chainId) {
             val address = config.getTokenRemoteAddress(chainId)
             require(address.isNotBlank()) { "TokenRemote address not configured for chain $chainId" }
-            OvaTokenRemoteContract(
+            AriTokenRemoteContract(
                 web3j = web3jProvider.getWeb3j(chainId),
                 contractAddress = address,
                 credentials = credentials,
@@ -99,7 +101,7 @@ class ContractFactory(
     /**
      * Get TokenHome contract for a specific currency.
      */
-    fun getTokenHomeForCurrency(currency: String, credentials: Credentials): OvaTokenHomeContract {
+    fun getTokenHomeForCurrency(currency: String, credentials: Credentials): AriTokenHomeContract {
         val chainId = web3jProvider.getChainIdForCurrency(currency)
         return getTokenHome(chainId, credentials)
     }
@@ -109,7 +111,7 @@ class ContractFactory(
      * Note: This returns the remote on the DESTINATION chain.
      * e.g., for "TRY" currency, returns the wTRY contract on EU L1.
      */
-    fun getTokenRemoteForWrappedCurrency(currency: String, credentials: Credentials): OvaTokenRemoteContract {
+    fun getTokenRemoteForWrappedCurrency(currency: String, credentials: Credentials): AriTokenRemoteContract {
         // Wrapped tokens exist on the PARTNER chain
         val homeChainId = web3jProvider.getChainIdForCurrency(currency)
         val remoteChainId = config.getPartnerChainId(homeChainId)

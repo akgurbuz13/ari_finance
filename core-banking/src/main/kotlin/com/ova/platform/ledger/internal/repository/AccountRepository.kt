@@ -56,6 +56,15 @@ class AccountRepository(private val jdbcTemplate: JdbcTemplate) {
         ).firstOrNull()
     }
 
+    fun lockAccount(id: UUID): Boolean {
+        val rows = jdbcTemplate.query(
+            "SELECT id FROM ledger.accounts WHERE id = ? FOR UPDATE",
+            { rs, _ -> rs.getString("id") },
+            id
+        )
+        return rows.isNotEmpty()
+    }
+
     fun findByUserIdAndCurrency(userId: UUID, currency: String): Account? {
         return jdbcTemplate.query(
             "SELECT * FROM ledger.accounts WHERE user_id = ? AND currency = ? AND account_type = 'user_wallet'",

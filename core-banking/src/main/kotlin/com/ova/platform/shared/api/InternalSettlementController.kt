@@ -1,5 +1,6 @@
 package com.ova.platform.shared.api
 
+import com.ova.platform.payments.event.PaymentCompleted
 import com.ova.platform.payments.internal.model.PaymentStatus
 import com.ova.platform.payments.internal.model.PaymentType
 import com.ova.platform.payments.internal.repository.PaymentOrderRepository
@@ -7,6 +8,7 @@ import com.ova.platform.payments.internal.repository.PaymentStatusHistoryReposit
 import com.ova.platform.payments.internal.model.PaymentStatusHistory
 import com.ova.platform.payments.internal.service.DepositService
 import com.ova.platform.payments.internal.service.WithdrawalService
+import com.ova.platform.shared.event.OutboxPublisher
 import com.ova.platform.shared.security.AuditService
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
@@ -25,6 +27,7 @@ class InternalSettlementController(
     private val statusHistoryRepository: PaymentStatusHistoryRepository,
     private val depositService: DepositService,
     private val withdrawalService: WithdrawalService,
+    private val outboxPublisher: OutboxPublisher,
     private val auditService: AuditService
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
@@ -112,11 +115,12 @@ class InternalSettlementController(
         val metadata = order.metadata?.toMutableMap() ?: mutableMapOf()
         metadata["${operation}_tx_hash"] = txHash ?: ""
         metadata["${operation}_confirmed"] = "true"
+        paymentOrderRepository.updateMetadata(paymentOrderId, metadata)
 
-        val burnConfirmed = metadata["burn_confirmed"] == "true"
-        val mintConfirmed = metadata["mint_confirmed"] == "true"
+        val burnConfirmed = metadata["burn_confirmed"]?.toString() == "true"
+        val mintConfirmed = metadata["mint_confirmed"]?.toString() == "true"
 
-        if (burnConfirmed && mintConfirmed) {
+        if (burnConfirmed && mintConfirmed && order.status != PaymentStatus.COMPLETED) {
             // Both legs confirmed — mark cross-border transfer as completed
             paymentOrderRepository.updateStatus(paymentOrderId, PaymentStatus.COMPLETED)
             statusHistoryRepository.save(
@@ -127,6 +131,22 @@ class InternalSettlementController(
                     reason = "Both on-chain legs confirmed (burn + mint)"
                 )
             )
+
+            val ledgerTransactionId = order.ledgerTransactionId
+            if (ledgerTransactionId != null) {
+                outboxPublisher.publish(
+                    PaymentCompleted(
+                        paymentOrderId = paymentOrderId,
+                        paymentType = PaymentType.CROSS_BORDER.value,
+                        ledgerTransactionId = ledgerTransactionId,
+                        amount = order.amount,
+                        currency = order.currency
+                    )
+                )
+            } else {
+                log.warn("Cross-border payment {} has no ledger transaction id at completion", paymentOrderId)
+            }
+
             log.info("Cross-border payment {} fully settled on-chain", paymentOrderId)
         } else {
             log.info("Cross-border payment {} partially settled: burn={}, mint={}",

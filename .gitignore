@@ -63,3 +63,5 @@ contracts/typechain-types/
 *.p12
 *.jks
 .env.aws-test
+.env.fuji
+.demo-state

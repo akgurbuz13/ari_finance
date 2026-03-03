@@ -1,6 +1,7 @@
 package com.ova.platform.ledger.api
 
 import com.ova.platform.ledger.internal.service.AccountService
+import com.ova.platform.shared.exception.ForbiddenException
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
@@ -50,6 +51,9 @@ class AccountController(private val accountService: AccountService) {
 
     @GetMapping("/{accountId}/balance")
     fun getBalance(@PathVariable accountId: UUID): ResponseEntity<BalanceResponse> {
+        val userId = UUID.fromString(SecurityContextHolder.getContext().authentication.principal as String)
+        validateAccountOwnership(accountId, userId)
+
         val balance = accountService.getBalance(accountId)
         val account = accountService.getAccountById(accountId)
         return ResponseEntity.ok(
@@ -59,6 +63,13 @@ class AccountController(private val accountService: AccountService) {
                 balance = balance.toPlainString()
             )
         )
+    }
+
+    private fun validateAccountOwnership(accountId: UUID, userId: UUID) {
+        val account = accountService.getAccountById(accountId)
+        if (account.userId != userId) {
+            throw ForbiddenException("You do not have access to this account")
+        }
     }
 }
 

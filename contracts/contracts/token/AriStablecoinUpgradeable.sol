@@ -8,7 +8,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 /**
- * @title OvaStablecoinUpgradeable
+ * @title AriStablecoinUpgradeable
  * @notice UUPS-upgradeable ERC-20 stablecoin with mint/burn/freeze/allowlist capabilities.
  *         Deployed per L1 chain (TR L1 for TRY, EU L1 for EUR).
  *         Only KYC-verified addresses can hold or transfer tokens.
@@ -23,7 +23,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
  * - Supports pause for emergency response
  * - Burn requires explicit authorization (for redemption workflows)
  */
-contract OvaStablecoinUpgradeable is
+contract AriStablecoinUpgradeable is
     Initializable,
     ERC20Upgradeable,
     AccessControlUpgradeable,
@@ -62,8 +62,8 @@ contract OvaStablecoinUpgradeable is
 
     /**
      * @notice Initialize the stablecoin (replaces constructor for upgradeable contracts)
-     * @param name_ Token name (e.g., "Ova Turkish Lira")
-     * @param symbol_ Token symbol (e.g., "ovaTRY")
+     * @param name_ Token name (e.g., "ARI Turkish Lira")
+     * @param symbol_ Token symbol (e.g., "ariTRY")
      * @param admin Initial admin address (should be multisig or timelock)
      * @param minter Initial minter address (backend service key)
      * @param supplyCap_ Maximum supply cap (0 for unlimited)
@@ -101,11 +101,11 @@ contract OvaStablecoinUpgradeable is
      * @param amount Amount to mint
      */
     function mint(address to, uint256 amount) external onlyRole(MINTER_ROLE) whenNotPaused {
-        require(allowlisted[to], "OvaStablecoin: recipient not KYC verified");
-        require(!frozen[to], "OvaStablecoin: recipient account frozen");
+        require(allowlisted[to], "AriStablecoin: recipient not KYC verified");
+        require(!frozen[to], "AriStablecoin: recipient account frozen");
 
         if (supplyCap > 0) {
-            require(totalSupply() + amount <= supplyCap, "OvaStablecoin: supply cap exceeded");
+            require(totalSupply() + amount <= supplyCap, "AriStablecoin: supply cap exceeded");
         }
 
         _mint(to, amount);
@@ -118,7 +118,7 @@ contract OvaStablecoinUpgradeable is
      * @param amount Amount to burn
      */
     function burn(address from, uint256 amount) external onlyRole(MINTER_ROLE) whenNotPaused {
-        require(allowlisted[from], "OvaStablecoin: holder not KYC verified");
+        require(allowlisted[from], "AriStablecoin: holder not KYC verified");
         _burn(from, amount);
         emit TokensBurned(from, amount, msg.sender);
     }
@@ -218,12 +218,12 @@ contract OvaStablecoinUpgradeable is
     ) internal override whenNotPaused {
         // Skip checks for mint (from == 0) and burn (to == 0)
         if (from != address(0)) {
-            require(allowlisted[from], "OvaStablecoin: sender not KYC verified");
-            require(!frozen[from], "OvaStablecoin: sender account frozen");
+            require(allowlisted[from], "AriStablecoin: sender not KYC verified");
+            require(!frozen[from], "AriStablecoin: sender account frozen");
         }
         if (to != address(0)) {
-            require(allowlisted[to], "OvaStablecoin: recipient not KYC verified");
-            require(!frozen[to], "OvaStablecoin: recipient account frozen");
+            require(allowlisted[to], "AriStablecoin: recipient not KYC verified");
+            require(!frozen[to], "AriStablecoin: recipient account frozen");
         }
         super._update(from, to, value);
     }

@@ -1,5 +1,6 @@
 package com.ova.platform.payments.api
 
+import com.ova.platform.ledger.internal.service.AccountService
 import com.ova.platform.payments.internal.model.PaymentOrder
 import com.ova.platform.payments.internal.model.PaymentStatusHistory
 import com.ova.platform.payments.internal.repository.PaymentOrderRepository
@@ -8,6 +9,7 @@ import com.ova.platform.payments.internal.service.CrossBorderTransferService
 import com.ova.platform.payments.internal.service.DepositService
 import com.ova.platform.payments.internal.service.DomesticTransferService
 import com.ova.platform.payments.internal.service.WithdrawalService
+import com.ova.platform.shared.exception.ForbiddenException
 import com.ova.platform.shared.exception.NotFoundException
 import jakarta.validation.Valid
 import jakarta.validation.constraints.DecimalMin
@@ -28,6 +30,7 @@ class PaymentController(
     private val crossBorderTransferService: CrossBorderTransferService,
     private val depositService: DepositService,
     private val withdrawalService: WithdrawalService,
+    private val accountService: AccountService,
     private val paymentOrderRepository: PaymentOrderRepository,
     private val statusHistoryRepository: PaymentStatusHistoryRepository
 ) {
@@ -115,8 +118,15 @@ class PaymentController(
 
     @GetMapping("/{id}")
     fun getPaymentDetails(@PathVariable id: UUID): ResponseEntity<PaymentDetailResponse> {
+        val userId = currentUserId()
         val order = paymentOrderRepository.findById(id)
             ?: throw NotFoundException("PaymentOrder", id.toString())
+
+        val userCanAccess = accountService.isAccountOwnedByUser(order.senderAccountId, userId) ||
+            accountService.isAccountOwnedByUser(order.receiverAccountId, userId)
+        if (!userCanAccess) {
+            throw ForbiddenException("You do not have access to this payment")
+        }
 
         val statusHistory = statusHistoryRepository.findByPaymentOrderId(id)
 
@@ -134,6 +144,11 @@ class PaymentController(
         @RequestParam(defaultValue = "50") limit: Int,
         @RequestParam(defaultValue = "0") offset: Int
     ): ResponseEntity<List<PaymentOrderResponse>> {
+        val userId = currentUserId()
+        if (!accountService.isAccountOwnedByUser(accountId, userId)) {
+            throw ForbiddenException("You do not have access to this account")
+        }
+
         val orders = paymentOrderRepository.findByAccountId(accountId, limit, offset)
         return ResponseEntity.ok(orders.map { it.toResponse() })
     }
