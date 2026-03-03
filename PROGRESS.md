@@ -28,6 +28,23 @@ All 6 phases of the hackathon sprint are complete:
 - Web app: builds successfully
 - E2E mint verified on Fuji TR L1 (tx 0x152bbe77...)
 
+### Bug Investigation & Fixes (2026-03-03)
+
+Pre-demo investigation and fixes:
+
+**CI Backend Test Fixes:**
+- Fixed Redis port mismatch: `BaseIntegrationTest` hardcoded port `16379`, CI Redis runs on `6379`. Now reads from `SPRING_DATA_REDIS_PORT` env var with `16379` fallback for local dev.
+- Fixed config prefix: `application-test.yml` used dead `ova:` prefix instead of `ari:`. Updated to match `application.yml`.
+- Added JVM memory limit: `-Xmx1536m` in `GRADLE_OPTS` to prevent OOM in CI.
+- Added `SPRING_DATA_REDIS_PORT` env var to CI workflow.
+
+**Cross-Border Transfer Fix:**
+- Fixed hardcoded `region = "TR"` / `region = "EU"` in `CrossBorderTransferService`. Now derives region from currency via `regionForCurrency()` helper. EUR→TRY direction was completely broken before this fix.
+
+**Documentation:**
+- Created `docs/adr/001-multi-region-data-residency.md` — production multi-region architecture (BDDK/GDPR compliance).
+- Added TODO comment in `CrossBorderTransferService` for multi-region ledger postings.
+
 ---
 
 ## Quick Status

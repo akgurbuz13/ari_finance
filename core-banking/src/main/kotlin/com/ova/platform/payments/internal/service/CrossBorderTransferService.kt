@@ -138,6 +138,10 @@ class CrossBorderTransferService(
         transitionStatus(paymentOrder.id, PaymentStatus.COMPLIANCE_CHECK, PaymentStatus.PROCESSING, "Compliance check passed")
 
         // Step 5: Ledger postings
+        // TODO [PRODUCTION]: When deploying multi-region, replace direct DB writes for
+        // foreign-region accounts with cross-region API calls. The receiver's ledger
+        // credit (Leg 3) should be posted via the receiver's regional core-banking instance.
+        // See docs/adr/001-multi-region-data-residency.md
         transitionStatus(paymentOrder.id, PaymentStatus.PROCESSING, PaymentStatus.SETTLING, null)
 
         try {
@@ -290,7 +294,7 @@ class CrossBorderTransferService(
                     sourceAccountId = senderAccountId,
                     amount = fxQuote.sourceAmount,
                     currency = senderAccount.currency,
-                    region = "TR"
+                    region = regionForCurrency(senderAccount.currency)
                 )
             )
 
@@ -300,7 +304,7 @@ class CrossBorderTransferService(
                     targetAccountId = receiverAccountId,
                     amount = fxQuote.targetAmount,
                     currency = receiverAccount.currency,
-                    region = "EU"
+                    region = regionForCurrency(receiverAccount.currency)
                 )
             )
 
@@ -339,6 +343,12 @@ class CrossBorderTransferService(
             log.error("Cross-border transfer failed for orderId={}: {}", paymentOrder.id, e.message)
             throw e
         }
+    }
+
+    private fun regionForCurrency(currency: String): String = when (currency) {
+        "TRY" -> "TR"
+        "EUR" -> "EU"
+        else -> throw BadRequestException("Unsupported currency for cross-border: $currency")
     }
 
     private fun validateFxQuote(quote: FxQuote, sourceCurrency: String, targetCurrency: String) {

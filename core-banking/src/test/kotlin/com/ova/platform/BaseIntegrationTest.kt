@@ -30,9 +30,9 @@ abstract class BaseIntegrationTest {
                 registry.add("spring.datasource.username") { postgres.username }
                 registry.add("spring.datasource.password") { postgres.password }
             }
-            // Disable Redis in tests unless explicitly needed
-            registry.add("spring.data.redis.host") { "localhost" }
-            registry.add("spring.data.redis.port") { "16379" }
+            // Redis: use CI env vars if available, otherwise local dev defaults
+            registry.add("spring.data.redis.host") { System.getenv("SPRING_DATA_REDIS_HOST") ?: "localhost" }
+            registry.add("spring.data.redis.port") { System.getenv("SPRING_DATA_REDIS_PORT") ?: "16379" }
             // Provide test secrets
             registry.add("ari.jwt.secret") { "test-jwt-secret-must-be-at-least-32-characters-long-for-validation" }
             registry.add("ari.internal.api-key") { "test-internal-api-key" }

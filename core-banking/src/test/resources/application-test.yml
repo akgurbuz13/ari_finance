@@ -28,7 +28,7 @@ spring:
 server:
   port: 0
 
-ova:
+ari:
   region: TR
   jwt:
     secret: test-secret-key-must-be-at-least-256-bits-long-for-hmac-sha256-algorithm
@@ -36,6 +36,8 @@ ova:
     refresh-token-expiry: 604800
   blockchain-service:
     url: http://localhost:8081
+  internal:
+    api-key: test-internal-api-key
   outbox:
     poller:
       enabled: false
