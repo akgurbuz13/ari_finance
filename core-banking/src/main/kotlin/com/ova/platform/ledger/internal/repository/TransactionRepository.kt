@@ -177,6 +177,6 @@ class TransactionRepository(
             """,
             Long::class.java,
             *params.toTypedArray()
-        )
+        ) ?: 0L
     }
 }

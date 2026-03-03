@@ -63,6 +63,115 @@ Teleporter: `0x253b2784c75e510dD0fF1da844684a1aC0aa5fcf` (standard across all Av
 
 ---
 
+## On-Chain Components (Avalanche L1)
+
+ARI's core value proposition is built on-chain. Every financial operation — stablecoin issuance, cross-border settlement, compliance enforcement — is backed by smart contracts on Avalanche L1 blockchains.
+
+### Why Avalanche L1s?
+
+Traditional cross-border fintech relies on correspondent banking networks (SWIFT, SEPA) with 1-3 day settlement and opaque fee structures. ARI replaces this with two purpose-built Avalanche L1s that settle in seconds with full transparency.
+
+**Regulatory isolation**: Turkey (BDDK/MASAK) and the EU (PSD2/MiCA) have different regulatory frameworks. By deploying a separate L1 per jurisdiction, each chain's validator set, governance, and compliance rules can be configured independently. Assets don't leak across regulatory boundaries — cross-border transfers go through an explicit bridge with audit trails.
+
+**Permissioned by design**: Both L1s use Proof of Authority consensus. Validators are known entities (the platform operator for MVP, licensed financial institutions in production). This satisfies regulators who require identifiable transaction processors, while still getting the immutability and transparency benefits of blockchain settlement.
+
+### AriStablecoin — KYC-Enforced Regulated Stablecoin
+
+`AriStablecoinUpgradeable` is not a typical ERC-20. It enforces compliance at the token level:
+
+- **KYC Allowlist**: Every `transfer()`, `mint()`, and `burn()` checks that both sender and recipient are on the KYC allowlist. Unverified addresses cannot hold or receive tokens. This is enforced in the smart contract itself — not just at the API layer.
+- **Freeze/Unfreeze**: If a sanctions screening flags an address, compliance can call `freeze(address)` to immediately block all transfers to/from that address. The tokens remain in the wallet but cannot move.
+- **Mint/Burn with Role Control**: Only addresses with `MINTER_ROLE` can create new tokens (backing new fiat deposits) or destroy them (processing withdrawals). This role is held by the blockchain service's operational key.
+- **UUPS Upgradeable**: Deployed behind an ERC-1967 proxy so contract logic can be upgraded (e.g., adding new compliance checks) without migrating token balances.
+- **Pause**: Emergency circuit breaker — `pause()` halts all token operations platform-wide.
+
+```solidity
+// Every transfer checks KYC status on-chain
+function _update(address from, address to, uint256 value) internal override {
+    require(!frozen[from], "AriStablecoin: sender frozen");
+    require(!frozen[to], "AriStablecoin: recipient frozen");
+    if (from != address(0)) require(kycAllowList.isAllowed(from), "AriStablecoin: sender not KYC");
+    if (to != address(0)) require(kycAllowList.isAllowed(to), "AriStablecoin: recipient not KYC");
+    super._update(from, to, value);
+}
+```
+
+### ICTT Bridge — Cross-Chain Token Transfer via Teleporter
+
+Cross-border transfers between TR and EU use Avalanche's native Inter-Chain Token Transfer (ICTT) protocol, powered by Teleporter/ICM messaging.
+
+**How it works:**
+
+```
+User: "Transfer 1,000 TRY to EUR account"
+         │
+         ▼
+┌─── Core Banking ────────────────────────────────────────────┐
+│  1. Get FX quote (1,000 TRY → 34.50 EUR at market rate)    │
+│  2. Debit sender's TRY ledger, credit receiver's EUR ledger │
+│  3. Publish BurnRequested + MintRequested to outbox          │
+└──────────────────────────────────────────┬──────────────────┘
+                                           │
+         ┌─────────────────────────────────┘
+         ▼
+┌─── Blockchain Service ─────────────────────────────────────┐
+│  4. Process BurnRequested:                                  │
+│     → AriTokenHome.bridgeTokens(amount, EU_BLOCKCHAIN_ID)  │
+│     → ariTRY locked in TokenHome on TR L1                   │
+│                                                             │
+│  5. Teleporter sends cross-chain message (automatic via AWM)│
+│                                                             │
+│  6. AriTokenRemote on EU L1 receives message:              │
+│     → Mints wrapped ariTRY (wTRY) on EU L1                 │
+│                                                             │
+│  7. Process MintRequested:                                  │
+│     → Mint ariEUR to receiver's custodial wallet on EU L1   │
+│                                                             │
+│  8. Settlement callback → core-banking confirms completion  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**The bridge contracts:**
+
+| Contract | Role | Deployed On |
+|----------|------|-------------|
+| `AriTokenHome` | Locks native tokens, initiates Teleporter message to remote chain | Both L1s |
+| `AriTokenRemote` | Receives Teleporter message, mints wrapped representation | Both L1s |
+| `AriBridgeAdapter` | Orchestrates bridge flow: approve → lock → message → confirm | Both L1s |
+
+Each L1 has both a TokenHome (for its native stablecoin) and a TokenRemote (for wrapped tokens from the other chain). This enables bidirectional transfers: TRY→EUR and EUR→TRY.
+
+### Custodial Wallet Management
+
+Users don't manage private keys. The platform creates and controls wallets on their behalf:
+
+1. **Deterministic derivation**: Wallets are derived from a master key + userId + index via HMAC-SHA256. The same user always gets the same wallet address.
+2. **Automatic KYC allowlisting**: When a wallet is created, the blockchain service calls `AriStablecoin.addToAllowlist(walletAddress)` so the wallet can receive tokens.
+3. **Per-chain wallets**: Each user gets separate wallets on TR L1 and EU L1 (different regulatory jurisdictions = different on-chain identities).
+
+### Verifying On-Chain
+
+All contracts are deployed on Fuji testnet and can be queried directly:
+
+```bash
+# Check ariTRY balance of any address
+cast call 0x44F26f6812694184FC29D7b14FB91523948542a7 \
+  "balanceOf(address)(uint256)" <wallet_address> \
+  --rpc-url http://127.0.0.1:9650/ext/bc/9x7zHB85.../rpc
+
+# Check if an address is KYC-allowlisted
+cast call 0x44F26f6812694184FC29D7b14FB91523948542a7 \
+  "allowlisted(address)(bool)" <wallet_address> \
+  --rpc-url http://127.0.0.1:9650/ext/bc/9x7zHB85.../rpc
+
+# Check total ariTRY supply
+cast call 0x44F26f6812694184FC29D7b14FB91523948542a7 \
+  "totalSupply()(uint256)" \
+  --rpc-url http://127.0.0.1:9650/ext/bc/9x7zHB85.../rpc
+```
+
+---
+
 ## How It Works
 
 ### Deposit (Fiat to On-Chain)

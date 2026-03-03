@@ -18,6 +18,11 @@ NC='\033[0m'
 
 echo -e "${GREEN}=== ARI Platform - Fuji Testnet Runner ===${NC}"
 
+# Load Fuji config
+if [ -f "$PROJECT_DIR/.env.fuji" ]; then
+    source "$PROJECT_DIR/.env.fuji"
+fi
+
 # Check prerequisites
 if ! docker ps | grep -q postgres; then
     echo -e "${YELLOW}Starting Docker infrastructure...${NC}"
@@ -27,8 +32,8 @@ fi
 
 # Check L1 connectivity
 echo -e "${YELLOW}Checking Fuji L1 connectivity...${NC}"
-TR_RPC="http://127.0.0.1:9650/ext/bc/9x7zHB85vsWaX2BiVPGRWVWh4KHWcroZWGBWbzR958JYRQZWP/rpc"
-EU_RPC="http://127.0.0.1:9652/ext/bc/21Euii5No2ut9NyF7VWkkWhkeiDk2fcZkE1GkfMjNtTtgL3DWE/rpc"
+TR_RPC="${TR_L1_RPC_URL:-http://127.0.0.1:9650/ext/bc/9x7zHB85vsWaX2BiVPGRWVWh4KHWcroZWGBWbzR958JYRQZWP/rpc}"
+EU_RPC="${EU_L1_RPC_URL:-http://127.0.0.1:9652/ext/bc/21Euii5No2ut9NyF7VWkkWhkeiDk2fcZkE1GkfMjNtTtgL3DWE/rpc}"
 
 if curl -s --max-time 3 -X POST -H "Content-Type: application/json" \
     --data '{"jsonrpc":"2.0","method":"eth_chainId","params":[],"id":1}' \
@@ -59,7 +64,12 @@ case "$SERVICE" in
     blockchain-service|bs)
         echo -e "${GREEN}Starting blockchain-service with fuji profile...${NC}"
         cd "$PROJECT_DIR"
-        JAVA_HOME=$(/usr/libexec/java_home -v 21) \
+        # Set JAVA_HOME to JDK 21 if available (macOS/Linux)
+        if command -v /usr/libexec/java_home &>/dev/null; then
+            export JAVA_HOME=$(/usr/libexec/java_home -v 21)
+        elif [ -d "/usr/lib/jvm/java-21-openjdk-amd64" ]; then
+            export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"
+        fi
         ./gradlew :blockchain-service:bootRun --args='--spring.profiles.active=fuji'
         ;;
     all)

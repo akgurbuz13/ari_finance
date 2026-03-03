@@ -14,7 +14,7 @@ import javax.crypto.spec.SecretKeySpec
 @ConditionalOnProperty(name = ["ari.kyc.provider"], havingValue = "simulated", matchIfMissing = true)
 class SimulatedKycProvider(
     private val objectMapper: ObjectMapper,
-    @Value("\${ari.kyc.webhook.allow-unsigned:true}") private val allowUnsignedWebhooks: Boolean,
+    @Value("\${ari.kyc.webhook.allow-unsigned:false}") private val allowUnsignedWebhooks: Boolean,
     @Value("\${ari.kyc.webhook.secret:}") private val webhookSecret: String
 ) : KycProviderAdapter {
 
