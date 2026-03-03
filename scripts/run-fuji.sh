@@ -92,8 +92,8 @@ case "$SERVICE" in
             -d '{
                 "email": "fuji-test@ari.finance",
                 "password": "TestPassword123!",
-                "fullName": "Fuji Test User",
-                "phoneNumber": "+905551234567"
+                "phone": "+905551234567",
+                "region": "TR"
             }')
         echo "$SIGNUP_RESP" | python3 -m json.tool 2>/dev/null || echo "$SIGNUP_RESP"
 
@@ -135,8 +135,23 @@ case "$SERVICE" in
         echo "Check blockchain-service logs for MintRequested processing"
         echo "Check Fuji TR L1 explorer for mint transaction"
         ;;
+    demo-setup|setup)
+        echo -e "${GREEN}Running demo data setup...${NC}"
+        "$SCRIPT_DIR/setup-demo.sh"
+        ;;
+    demo|demo-e2e)
+        echo -e "${GREEN}Running full E2E demo...${NC}"
+        "$SCRIPT_DIR/demo-e2e.sh"
+        ;;
     *)
-        echo "Usage: $0 {core-banking|blockchain-service|all|test}"
+        echo "Usage: $0 {core-banking|blockchain-service|all|test|demo-setup|demo}"
+        echo ""
+        echo "  core-banking (cb)       Start core-banking on :8080"
+        echo "  blockchain-service (bs) Start blockchain-service on :8081"
+        echo "  all                     Show instructions for both"
+        echo "  test                    Quick E2E smoke test"
+        echo "  demo-setup (setup)      Set up demo data (user, accounts, funding)"
+        echo "  demo (demo-e2e)         Run full demo (mint + cross-border + bridge)"
         exit 1
         ;;
 esac
