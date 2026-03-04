@@ -3,6 +3,7 @@ package com.ova.platform.identity.internal.service
 import com.ova.platform.identity.event.UserCreated
 import com.ova.platform.identity.internal.model.User
 import com.ova.platform.identity.internal.model.UserStatus
+import com.ova.platform.identity.internal.repository.PasswordResetTokenRepository
 import com.ova.platform.identity.internal.repository.RefreshTokenRepository
 import com.ova.platform.identity.internal.repository.UserRepository
 import com.ova.platform.shared.event.OutboxPublisher
@@ -27,6 +28,7 @@ import java.util.UUID
 class AuthService(
     private val userRepository: UserRepository,
     private val refreshTokenRepository: RefreshTokenRepository,
+    private val passwordResetTokenRepository: PasswordResetTokenRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtTokenProvider: JwtTokenProvider,
     private val outboxPublisher: OutboxPublisher,
@@ -150,6 +152,41 @@ class AuthService(
         userRepository.update(user.copy(totpEnabled = true))
         auditService.log(userId, "user", "enable_2fa", "user", userId.toString())
         return true
+    }
+
+    @Transactional
+    fun requestPasswordReset(email: String): String? {
+        val user = userRepository.findByEmail(email) ?: return null
+
+        val resetToken = UUID.randomUUID().toString()
+        val tokenHash = hashToken(resetToken)
+        val expiresAt = Instant.now().plusSeconds(3600) // 1 hour
+
+        passwordResetTokenRepository.save(user.id, tokenHash, expiresAt)
+
+        auditService.log(user.id, "user", "password_reset_requested", "user", user.id.toString())
+
+        // MVP: return token directly (no email service)
+        // Production: send token via email, return null
+        return resetToken
+    }
+
+    @Transactional
+    fun resetPassword(token: String, newPassword: String) {
+        val tokenHash = hashToken(token)
+        val resetToken = passwordResetTokenRepository.findValidByTokenHash(tokenHash)
+            ?: throw BadRequestException("Invalid or expired reset token")
+
+        val user = userRepository.findById(resetToken.userId)
+            ?: throw BadRequestException("User not found")
+
+        userRepository.update(user.copy(passwordHash = passwordEncoder.encode(newPassword)))
+        passwordResetTokenRepository.markUsed(tokenHash)
+
+        // Revoke all refresh tokens for security
+        refreshTokenRepository.revokeAllByUserId(user.id)
+
+        auditService.log(user.id, "user", "password_reset_completed", "user", user.id.toString())
     }
 
     private fun generateTokens(user: User): AuthTokens {

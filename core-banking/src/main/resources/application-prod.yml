@@ -1,0 +1,65 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT:5432}/${DB_NAME}?sslmode=require
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 600000
+      connection-init-sql: SET search_path TO public,identity,ledger,payments,shared
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      ssl:
+        enabled: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    schemas: identity,ledger,payments,shared
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+server:
+  port: ${PORT:8080}
+  forward-headers-strategy: framework
+
+ari:
+  compliance:
+    sanctions:
+      enabled: false
+    masak:
+      enabled: false
+    transaction-monitoring:
+      enabled: false
+  rate-limit:
+    auth:
+      requests-per-minute: 5
+      requests-per-hour: 30
+    general:
+      requests-per-minute: 30
+  rails:
+    webhook:
+      allow-unsigned: true
+  kyc:
+    webhook:
+      allow-unsigned: true
