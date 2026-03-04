@@ -1,0 +1,112 @@
+services:
+  # Core Banking API
+  - type: web
+    name: ari-core-banking
+    runtime: docker
+    dockerfilePath: ./core-banking/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: REDIS_HOST
+        sync: false
+      - key: REDIS_PORT
+        value: "6379"
+      - key: REDIS_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: INTERNAL_API_KEY
+        generateValue: true
+      - key: CORS_ALLOWED_ORIGINS
+        value: "https://app.arifinance.co,https://admin.arifinance.co"
+      - key: ARI_REGION
+        value: TR
+      - key: BLOCKCHAIN_SERVICE_URL
+        sync: false
+      - key: JAVA_OPTS
+        value: "-Xmx384m -XX:+UseSerialGC"
+
+  # Blockchain Service
+  - type: web
+    name: ari-blockchain-service
+    runtime: docker
+    dockerfilePath: ./blockchain-service/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: REDIS_HOST
+        sync: false
+      - key: REDIS_PORT
+        value: "6379"
+      - key: REDIS_PASSWORD
+        sync: false
+      - key: INTERNAL_API_KEY
+        sync: false
+      - key: CORE_BANKING_URL
+        sync: false
+      - key: TR_L1_RPC_URL
+        sync: false
+      - key: TR_L1_CHAIN_ID
+        sync: false
+      - key: TR_STABLECOIN_ADDRESS
+        sync: false
+      - key: EU_L1_RPC_URL
+        sync: false
+      - key: EU_L1_CHAIN_ID
+        sync: false
+      - key: EU_STABLECOIN_ADDRESS
+        sync: false
+      - key: TR_TOKEN_HOME_ADDRESS
+        sync: false
+      - key: EU_TOKEN_HOME_ADDRESS
+        sync: false
+      - key: TR_TOKEN_REMOTE_ADDRESS
+        sync: false
+      - key: EU_TOKEN_REMOTE_ADDRESS
+        sync: false
+      - key: TR_BRIDGE_ADAPTER_ADDRESS
+        sync: false
+      - key: EU_BRIDGE_ADAPTER_ADDRESS
+        sync: false
+      - key: TR_BLOCKCHAIN_ID
+        sync: false
+      - key: EU_BLOCKCHAIN_ID
+        sync: false
+      - key: WALLET_MASTER_KEY
+        sync: false
+      - key: MINTER_PRIVATE_KEY
+        sync: false
+      - key: ADMIN_PRIVATE_KEY
+        sync: false
+      - key: BRIDGE_OPERATOR_PRIVATE_KEY
+        sync: false
+      - key: RELAYER_PRIVATE_KEY
+        sync: false
+      - key: JAVA_OPTS
+        value: "-Xmx384m -XX:+UseSerialGC"

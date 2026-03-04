@@ -103,6 +103,30 @@ class AuthController(
         return ResponseEntity.noContent().build()
     }
 
+    @PostMapping("/forgot-password")
+    fun forgotPassword(
+        @Valid @RequestBody request: ForgotPasswordRequest
+    ): ResponseEntity<ForgotPasswordResponse> {
+        val resetToken = authService.requestPasswordReset(request.email)
+
+        // Always return 200 to avoid email enumeration
+        // MVP: include token in response (no email service)
+        return ResponseEntity.ok(
+            ForgotPasswordResponse(
+                message = "If the email exists, a reset token has been generated.",
+                resetToken = resetToken
+            )
+        )
+    }
+
+    @PostMapping("/reset-password")
+    fun resetPassword(
+        @Valid @RequestBody request: ResetPasswordRequest
+    ): ResponseEntity<Map<String, String>> {
+        authService.resetPassword(request.token, request.newPassword)
+        return ResponseEntity.ok(mapOf("message" to "Password has been reset successfully."))
+    }
+
     @PostMapping("/2fa/setup")
     fun setupTotp(httpRequest: HttpServletRequest): ResponseEntity<TotpSetupResponse> {
         val clientIp = extractClientIp(httpRequest)
@@ -185,6 +209,20 @@ data class TotpEnableRequest(
 data class TotpSetupResponse(
     val secret: String,
     val uri: String
+)
+
+data class ForgotPasswordRequest(
+    @field:Email @field:NotBlank val email: String
+)
+
+data class ForgotPasswordResponse(
+    val message: String,
+    val resetToken: String? = null
+)
+
+data class ResetPasswordRequest(
+    @field:NotBlank val token: String,
+    @field:Size(min = 8) @field:NotBlank val newPassword: String
 )
 
 data class AuthResponse(

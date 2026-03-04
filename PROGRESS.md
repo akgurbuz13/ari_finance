@@ -1,8 +1,8 @@
 # ARI Fintech — Implementation Progress
 
-> **Last Updated:** 2026-03-03
-> **Current Phase:** Avalanche Hackathon MVP — All phases complete, ready for submission
-> **Overall Completion:** ~95% of MVP
+> **Last Updated:** 2026-03-04
+> **Current Phase:** MVP Production Deployment — Free-tier infrastructure on arifinance.co
+> **Overall Completion:** ~97% of MVP
 
 This document tracks implementation progress against the [ARCHITECTURE.md](./ARCHITECTURE.md) plan. Update this document when completing significant milestones.
 
@@ -27,6 +27,27 @@ All 6 phases of the hackathon sprint are complete:
 - Core-banking: compiles clean
 - Web app: builds successfully
 - E2E mint verified on Fuji TR L1 (tx 0x152bbe77...)
+
+### MVP Production Deployment (2026-03-04)
+
+Production deployment infrastructure for `arifinance.co` using free-tier services:
+
+**Code Changes:**
+- Added password reset endpoints (`POST /api/v1/auth/forgot-password`, `POST /api/v1/auth/reset-password`)
+- Migration `V019__password_reset_tokens.sql` for token storage
+- `PasswordResetTokenRepository` with auto-invalidation of previous tokens
+- Updated `AuthService` with `requestPasswordReset()` and `resetPassword()` methods
+- Updated `SecurityConfig` to permit reset endpoints
+- Created `application-prod.yml` for core-banking (Neon 5-conn, Upstash TLS, sanctions disabled)
+- Created `application-prod.yml` for blockchain-service (matching prod config)
+- Updated Dockerfiles for root-context builds and `JAVA_OPTS` support
+- Created `render.yaml` deployment blueprint for Render.com
+- Created `deploy-fuji-l1s.ts` simplified contract deployment for Builder Console nodes
+- Created `DEPLOYMENT.md` comprehensive step-by-step deployment guide
+
+**Target Architecture:** Vercel (web + admin) + Render (backend) + Neon (PostgreSQL) + Upstash (Redis) + Builder Console (Avalanche L1s) = $0/month
+
+**Branch:** `deploy/mvp-live` (separate from `main`)
 
 ### Bug Investigation & Fixes (2026-03-03)
 
@@ -165,7 +186,7 @@ Pre-demo investigation and fixes:
 | E2E test suite | ✅ | Bash script ready |
 | Security audit | ⏳ | Pending external |
 | Smart contract audit | ⏳ | Pending external |
-| Production deployment | ⏳ | Awaiting validators |
+| Production deployment | 🔶 | Free-tier deployment ready (deploy/mvp-live branch) |
 
 ---
 
@@ -259,7 +280,7 @@ After initial implementation of Phases 1-5, a comprehensive review revealed that
 ### Medium Priority
 | Issue | Impact | Effort | Notes |
 |-------|--------|--------|-------|
-| Password reset endpoints missing | User friction | Low | Add to AuthController |
+| Password reset endpoints missing | User friction | Low | ✅ Added (deploy/mvp-live branch) |
 | Mobile biometric auth incomplete | User experience | Low | Flutter plugin ready |
 | Push notifications are stubs | User engagement | Medium | FCM/APNs integration needed |
 | FX rates are hardcoded | Testing only | Low | Partner API integration needed |
