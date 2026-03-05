@@ -127,7 +127,7 @@ export default function HomePage() {
         {accounts.length === 0 && (
           <Card className="col-span-2 bg-gradient-card text-white">
             <div className="text-center py-8">
-              <h2 className="text-h2 text-white">Welcome to Ova</h2>
+              <h2 className="text-h2 text-white">Welcome to ARI</h2>
               <p className="text-body text-white/70 mt-2">
                 Create your first account to start sending money between Turkey and Europe.
               </p>
