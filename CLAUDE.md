@@ -7,6 +7,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ARI is a regulated fintech platform (Turkey + EU) with a Kotlin/Spring Boot modular monolith backend, a separate blockchain settlement service, customer web app, admin console, Flutter mobile app, and Solidity smart contracts on Avalanche L1. (Codebase still uses `Ova` prefix in class/file names from before the Phase 0 rebrand.)
 
 **Repository**: https://github.com/akgurbuz13/ova_finance
+**Brand name**: ARI (uppercase, no dot, no period)
+
+### Commit Rules
+- **NEVER add Co-Authored-By lines** to commit messages. User does not want Claude listed as co-author.
 
 ---
 
