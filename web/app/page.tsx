@@ -28,8 +28,8 @@ export default function LandingPage() {
           : "bg-white border-b border-ova-200"
       )}>
         <div className="mx-auto flex h-16 max-w-landing items-center justify-between px-6">
-          <Link href="/" className="ova-logo text-2xl" aria-label="Ova home">
-            ova
+          <Link href="/" className="ova-logo text-2xl" aria-label="ARI home">
+            ARI
           </Link>
 
           {/* Center nav links (desktop) */}
@@ -173,7 +173,7 @@ export default function LandingPage() {
       {/* ──── HOW IT WORKS ──── */}
       <section id="how-it-works" className="py-20 bg-white">
         <div className="mx-auto max-w-landing px-6">
-          <h2 className="text-h1 text-ova-navy text-center">How Ova works</h2>
+          <h2 className="text-h1 text-ova-navy text-center">How ARI works</h2>
           <p className="mt-3 text-body-lg text-ova-500 text-center max-w-md mx-auto">
             Three steps to move money between Turkey and Europe
           </p>
@@ -218,7 +218,7 @@ export default function LandingPage() {
       {/* ──── FEATURES ──── */}
       <section id="features" className="py-20">
         <div className="mx-auto max-w-landing px-6">
-          <h2 className="text-h1 text-ova-navy text-center">Why choose Ova</h2>
+          <h2 className="text-h1 text-ova-navy text-center">Why choose ARI</h2>
           <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
             <FeatureCard
               icon={<TrendingUp size={24} strokeWidth={1.5} />}
@@ -312,7 +312,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {/* Brand column */}
             <div className="col-span-2 md:col-span-1">
-              <p className="ova-logo text-2xl">ova</p>
+              <p className="ova-logo text-2xl">ARI</p>
               <p className="mt-2 text-body-sm text-ova-500">
                 Designed for trust.<br />Built for movement.
               </p>
@@ -351,11 +351,11 @@ export default function LandingPage() {
 
           <div className="mt-10 border-t border-ova-200 pt-6">
             <p className="text-caption text-ova-400">
-              Ova Financial Services, licensed by BDDK (Turkey) and authorized under PSD2 (European Union).
+              ARI Financial Services, licensed by BDDK (Turkey) and authorized under PSD2 (European Union).
               KVKK and GDPR compliant. All transfers are subject to regulatory compliance checks.
             </p>
             <p className="mt-2 text-caption text-ova-400">
-              © {new Date().getFullYear()} Ova Financial Services. All rights reserved.
+              © {new Date().getFullYear()} ARI Financial Services. All rights reserved.
             </p>
           </div>
         </div>

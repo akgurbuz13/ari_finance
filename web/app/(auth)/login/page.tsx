@@ -45,8 +45,8 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-10">
-          <Link href="/" className="ova-logo text-4xl" aria-label="Ova home">
-            ova
+          <Link href="/" className="ova-logo text-4xl" aria-label="ARI home">
+            ARI
           </Link>
           <p className="mt-3 text-body-sm text-ova-500">Sign in to your account</p>
         </div>

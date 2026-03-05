@@ -30,8 +30,8 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
     <aside className="flex h-screen w-60 flex-col bg-ova-navy">
       {/* Logo + close button */}
       <div className="px-6 py-6 flex items-center justify-between">
-        <Link href="/home" className="ova-logo text-2xl !text-white" aria-label="Ova dashboard">
-          ova
+        <Link href="/home" className="ova-logo text-2xl !text-white" aria-label="ARI dashboard">
+          ARI
         </Link>
         {onClose && (
           <button
