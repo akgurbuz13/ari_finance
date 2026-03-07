@@ -59,6 +59,10 @@ ari:
       # Avalanche blockchain IDs (bytes32 hex) for Teleporter cross-chain messaging
       tr-blockchain-id: ${TR_BLOCKCHAIN_ID:}
       eu-blockchain-id: ${EU_BLOCKCHAIN_ID:}
+    vehicle:
+      nft-address: ${VEHICLE_NFT_ADDRESS:}
+      escrow-address: ${VEHICLE_ESCROW_ADDRESS:}
+      treasury-address: ${TREASURY_ADDRESS:}
     wallet:
       # SECURITY: NO DEFAULT - Master key must be provided via secure secret management
       # In production, use AWS KMS or HashiCorp Vault for key management

@@ -27,6 +27,8 @@ class ContractFactory(
     private val burnMintBridgeContracts = ConcurrentHashMap<Long, AriBurnMintBridgeContract>()
     private val tokenHomeContracts = ConcurrentHashMap<Long, AriTokenHomeContract>()
     private val tokenRemoteContracts = ConcurrentHashMap<Long, AriTokenRemoteContract>()
+    private var vehicleNftContract: AriVehicleNFTContract? = null
+    private var vehicleEscrowContract: AriVehicleEscrowContract? = null
 
     fun getStablecoin(chainId: Long, credentials: Credentials): AriStablecoinContract {
         val key = chainId
@@ -131,6 +133,42 @@ class ContractFactory(
                 gasProvider = web3jProvider.getGasProvider(),
                 chainId = chainId
             )
+        }
+    }
+
+    /**
+     * Get AriVehicleNFT contract (TR L1 only for MVP).
+     */
+    fun getVehicleNFT(credentials: Credentials): AriVehicleNFTContract {
+        return vehicleNftContract ?: run {
+            val address = config.vehicleNftAddress
+            require(address.isNotBlank()) { "Vehicle NFT address not configured" }
+            val chainId = config.trL1ChainId
+            AriVehicleNFTContract(
+                web3j = web3jProvider.getWeb3j(chainId),
+                contractAddress = address,
+                credentials = credentials,
+                gasProvider = web3jProvider.getGasProvider(),
+                chainId = chainId
+            ).also { vehicleNftContract = it }
+        }
+    }
+
+    /**
+     * Get AriVehicleEscrow contract (TR L1 only for MVP).
+     */
+    fun getVehicleEscrow(credentials: Credentials): AriVehicleEscrowContract {
+        return vehicleEscrowContract ?: run {
+            val address = config.vehicleEscrowAddress
+            require(address.isNotBlank()) { "Vehicle escrow address not configured" }
+            val chainId = config.trL1ChainId
+            AriVehicleEscrowContract(
+                web3j = web3jProvider.getWeb3j(chainId),
+                contractAddress = address,
+                credentials = credentials,
+                gasProvider = web3jProvider.getGasProvider(),
+                chainId = chainId
+            ).also { vehicleEscrowContract = it }
         }
     }
 

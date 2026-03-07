@@ -27,6 +27,10 @@ class BlockchainConfig(
     @Value("\${ari.blockchain.bridge.eu-token-remote-address:}") val euTokenRemoteAddress: String,
     @Value("\${ari.blockchain.bridge.tr-blockchain-id:}") val trBlockchainId: String,
     @Value("\${ari.blockchain.bridge.eu-blockchain-id:}") val euBlockchainId: String,
+    // Vehicle escrow contracts (TR L1 only for MVP)
+    @Value("\${ari.blockchain.vehicle.nft-address:}") val vehicleNftAddress: String,
+    @Value("\${ari.blockchain.vehicle.escrow-address:}") val vehicleEscrowAddress: String,
+    @Value("\${ari.blockchain.vehicle.treasury-address:}") val treasuryAddress: String,
     @Value("\${ari.blockchain.wallet.master-key}") val walletMasterKey: String,
     @Value("\${ari.core-banking.url}") val coreBankingUrl: String
 ) {
