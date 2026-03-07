@@ -9,14 +9,14 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "ARI - The Financial Platform for Turkey & Europe",
+  title: "ARI - All Your Finances. One Powerful Platform.",
   description:
-    "Manage your accounts, send money instantly between Turkey and Europe, and sell your car safely. One platform, everything you need.",
-  keywords: ["fintech", "Turkey", "Europe", "money transfer", "vehicle sales", "TRY", "EUR", "cross-border", "financial platform", "secure payments", "digital banking"],
+    "Manage your accounts, send money instantly across borders, and sell your car safely. One platform, everything you need.",
+  keywords: ["fintech", "money transfer", "vehicle sales", "cross-border", "financial platform", "secure payments", "digital banking", "multi-currency"],
   openGraph: {
-    title: "ARI - The Financial Platform for Turkey & Europe",
+    title: "ARI - All Your Finances. One Powerful Platform.",
     description:
-      "Multi-currency accounts, instant transfers, and protected vehicle sales. The financial platform built for Turkey and Europe.",
+      "Multi-currency accounts, instant transfers, and protected vehicle sales. The financial platform built for the modern world.",
     type: "website",
   },
 };

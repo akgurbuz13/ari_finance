@@ -48,7 +48,7 @@ function HeroVisual() {
 
       {/* Card: Account Balance — top left */}
       <motion.div
-        className="absolute top-4 left-0 w-[230px]"
+        className="absolute top-4 left-4 w-[270px]"
         initial={{ opacity: 0, y: 30, rotate: -2 }}
         animate={{ opacity: 1, y: 0, rotate: -2 }}
         transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
@@ -76,7 +76,7 @@ function HeroVisual() {
 
       {/* Card: Transfer — top right */}
       <motion.div
-        className="absolute top-28 right-0 w-[210px]"
+        className="absolute top-20 right-4 w-[240px]"
         initial={{ opacity: 0, y: 30, rotate: 3 }}
         animate={{ opacity: 1, y: 0, rotate: 3 }}
         transition={{ duration: 0.7, delay: 0.55, ease: 'easeOut' }}
@@ -101,9 +101,9 @@ function HeroVisual() {
         </motion.div>
       </motion.div>
 
-      {/* Card: Vehicle Sale — bottom left */}
+      {/* Card: Vehicle Sale — bottom center */}
       <motion.div
-        className="absolute bottom-0 left-8 w-[260px]"
+        className="absolute bottom-4 left-[15%] w-[290px]"
         initial={{ opacity: 0, y: 30, rotate: 1 }}
         animate={{ opacity: 1, y: 0, rotate: 1 }}
         transition={{ duration: 0.7, delay: 0.8, ease: 'easeOut' }}
@@ -220,13 +220,6 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Copy */}
             <div className="max-w-xl">
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.05 }}
-                className="inline-flex items-center gap-2 rounded-full bg-ova-50 border border-ova-200 px-3.5 py-1.5 mb-6">
-                <span className="w-1.5 h-1.5 rounded-full bg-ova-green animate-pulse" />
-                <span className="text-caption text-ova-500">Now available in Turkey &amp; Europe</span>
-              </motion.div>
-
               <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.12 }}
                 className="text-[2.75rem] md:text-[3.25rem] font-semibold text-ova-navy leading-[1.08] tracking-tight">
@@ -238,7 +231,7 @@ export default function LandingPage() {
               <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.22 }}
                 className="mt-6 text-body-lg text-ova-500 max-w-md leading-relaxed">
-                Manage your accounts, send money between Turkey and Europe in seconds, and sell your car safely — all from your phone.
+                Manage your accounts, send money across borders in seconds, and sell your car safely — all from your phone.
               </motion.p>
 
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
@@ -298,7 +291,7 @@ export default function LandingPage() {
               {
                 icon: Send, color: 'bg-ova-blue', badge: 'Transfers',
                 title: 'Instant Transfers',
-                desc: 'Send money between Turkey and Europe in under 2 minutes. Real-time tracking, transparent fees, competitive exchange rates.',
+                desc: 'Send money across borders in under 2 minutes. Real-time tracking, transparent fees, competitive exchange rates.',
               },
               {
                 icon: Car, color: 'bg-ova-green', badge: 'Vehicles',
@@ -403,7 +396,7 @@ export default function LandingPage() {
             <AnimatedSection>
               <motion.p variants={fadeUp} className="text-body-sm font-medium text-ova-blue uppercase tracking-wider">Transfers</motion.p>
               <motion.h2 variants={fadeUp} className="mt-3 text-h1 text-ova-navy">
-                Move money between Turkey and Europe. Instantly.
+                Move money across borders. Instantly.
               </motion.h2>
               <motion.p variants={fadeUp} className="mt-4 text-body-lg text-ova-500 max-w-md">
                 Competitive exchange rates, transparent fees, and real-time tracking. Your money arrives in seconds, not days.
@@ -510,7 +503,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="col-span-2 md:col-span-1">
               <p className="ova-logo text-2xl">ARI</p>
-              <p className="mt-2 text-body-sm text-ova-500">The financial platform for<br />Turkey and Europe.</p>
+              <p className="mt-2 text-body-sm text-ova-500">The financial platform<br />built for the modern world.</p>
             </div>
             <div>
               <h4 className="text-caption text-ova-400 uppercase tracking-wide">Product</h4>
