@@ -19,7 +19,8 @@ enum class AccountType(val value: String) {
     SYSTEM_FLOAT("system_float"),
     FEE_REVENUE("fee_revenue"),
     SAFEGUARDING("safeguarding"),
-    CROSS_BORDER_TRANSIT("cross_border_transit");
+    CROSS_BORDER_TRANSIT("cross_border_transit"),
+    VEHICLE_ESCROW_HOLDING("vehicle_escrow_holding");
 
     companion object {
         fun fromValue(value: String): AccountType =
