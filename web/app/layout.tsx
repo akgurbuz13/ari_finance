@@ -9,14 +9,14 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "ARI - Secure Vehicle Sales & Cross-Border Transfers | Blockchain Escrow",
+  title: "ARI - The Financial Platform for Turkey & Europe",
   description:
-    "Replace Turkey's broken notary system with blockchain-guaranteed escrow for vehicle sales. Plus instant cross-border transfers between TRY and EUR. Powered by Avalanche.",
-  keywords: ["vehicle escrow", "car sales Turkey", "blockchain escrow", "smart contract", "NFT ownership", "fintech", "Turkey", "Europe", "TRY", "EUR", "cross-border", "transfers", "Avalanche", "notary replacement"],
+    "Manage your accounts, send money instantly between Turkey and Europe, and sell your car safely. One platform, everything you need.",
+  keywords: ["fintech", "Turkey", "Europe", "money transfer", "vehicle sales", "TRY", "EUR", "cross-border", "financial platform", "secure payments", "digital banking"],
   openGraph: {
-    title: "ARI - Secure Vehicle Sales & Cross-Border Transfers",
+    title: "ARI - The Financial Platform for Turkey & Europe",
     description:
-      "Sell your car without the notary. Send money without the bank. Blockchain-guaranteed escrow for vehicle sales and instant cross-border transfers. Powered by Avalanche.",
+      "Multi-currency accounts, instant transfers, and protected vehicle sales. The financial platform built for Turkey and Europe.",
     type: "website",
   },
 };
