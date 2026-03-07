@@ -28,7 +28,8 @@ enum class PaymentType(val value: String) {
     DEPOSIT("deposit"),
     WITHDRAWAL("withdrawal"),
     DOMESTIC_P2P("domestic_p2p"),
-    CROSS_BORDER("cross_border");
+    CROSS_BORDER("cross_border"),
+    CROSS_BORDER_SAME_CCY("cross_border_same_ccy");
 
     companion object {
         fun fromValue(value: String): PaymentType =

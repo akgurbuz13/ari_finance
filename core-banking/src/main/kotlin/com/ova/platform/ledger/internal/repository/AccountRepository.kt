@@ -21,6 +21,7 @@ class AccountRepository(private val jdbcTemplate: JdbcTemplate) {
             accountType = AccountType.fromValue(rs.getString("account_type")),
             status = AccountStatus.fromValue(rs.getString("status")),
             iban = rs.getString("iban"),
+            region = rs.getString("region") ?: "TR",
             createdAt = rs.getTimestamp("created_at").toInstant()
         )
     }
@@ -28,11 +29,11 @@ class AccountRepository(private val jdbcTemplate: JdbcTemplate) {
     fun save(account: Account): Account {
         jdbcTemplate.update(
             """
-            INSERT INTO ledger.accounts (id, user_id, currency, account_type, status, iban)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO ledger.accounts (id, user_id, currency, account_type, status, iban, region)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
             account.id, account.userId, account.currency,
-            account.accountType.value, account.status.value, account.iban
+            account.accountType.value, account.status.value, account.iban, account.region
         )
         return account
     }
@@ -72,6 +73,13 @@ class AccountRepository(private val jdbcTemplate: JdbcTemplate) {
         ).firstOrNull()
     }
 
+    fun findByUserIdCurrencyAndRegion(userId: UUID, currency: String, region: String): Account? {
+        return jdbcTemplate.query(
+            "SELECT * FROM ledger.accounts WHERE user_id = ? AND currency = ? AND region = ? AND account_type = 'user_wallet'",
+            rowMapper, userId, currency, region
+        ).firstOrNull()
+    }
+
     fun findAllByUserId(userId: UUID): List<Account> {
         return jdbcTemplate.query(
             "SELECT * FROM ledger.accounts WHERE user_id = ? AND account_type = 'user_wallet' ORDER BY currency",
@@ -107,6 +115,17 @@ class AccountRepository(private val jdbcTemplate: JdbcTemplate) {
             AND user_id = '00000000-0000-0000-0000-000000000000'
             """,
             rowMapper, currency, accountType.value
+        ).firstOrNull()
+    }
+
+    fun findSystemAccountByRegion(currency: String, accountType: AccountType, region: String): Account? {
+        return jdbcTemplate.query(
+            """
+            SELECT * FROM ledger.accounts
+            WHERE currency = ? AND account_type = ? AND region = ?
+            AND user_id = '00000000-0000-0000-0000-000000000000'
+            """,
+            rowMapper, currency, accountType.value, region
         ).firstOrNull()
     }
 }

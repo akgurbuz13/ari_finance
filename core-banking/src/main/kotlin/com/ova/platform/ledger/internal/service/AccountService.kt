@@ -20,10 +20,12 @@ class AccountService(
 ) {
 
     @Transactional
-    fun createUserWallet(userId: UUID, currency: String): Account {
-        val existing = accountRepository.findByUserIdAndCurrency(userId, currency)
+    fun createUserWallet(userId: UUID, currency: String, region: String? = null): Account {
+        val accountRegion = region ?: regionForCurrency(currency)
+
+        val existing = accountRepository.findByUserIdCurrencyAndRegion(userId, currency, accountRegion)
         if (existing != null) {
-            throw ConflictException("Account already exists for currency $currency")
+            throw ConflictException("Account already exists for currency $currency in region $accountRegion")
         }
 
         val iban = ibanGeneratorService.generateIban()
@@ -33,14 +35,21 @@ class AccountService(
                 userId = userId,
                 currency = currency,
                 accountType = AccountType.USER_WALLET,
-                iban = iban
+                iban = iban,
+                region = accountRegion
             )
         )
 
         auditService.log(userId, "user", "create_account", "account", account.id.toString(),
-            details = mapOf("currency" to currency, "iban" to iban))
+            details = mapOf("currency" to currency, "iban" to iban, "region" to accountRegion))
 
         return account
+    }
+
+    private fun regionForCurrency(currency: String): String = when (currency) {
+        "TRY" -> "TR"
+        "EUR" -> "EU"
+        else -> "TR"
     }
 
     fun findByIban(iban: String): Account? {
@@ -88,7 +97,21 @@ class AccountService(
                 Account(
                     userId = systemUserId,
                     currency = currency,
-                    accountType = accountType
+                    accountType = accountType,
+                    region = regionForCurrency(currency)
+                )
+            )
+    }
+
+    fun getOrCreateSystemAccountWithRegion(currency: String, accountType: AccountType, region: String): Account {
+        val systemUserId = UUID.fromString("00000000-0000-0000-0000-000000000000")
+        return accountRepository.findSystemAccountByRegion(currency, accountType, region)
+            ?: accountRepository.save(
+                Account(
+                    userId = systemUserId,
+                    currency = currency,
+                    accountType = accountType,
+                    region = region
                 )
             )
     }

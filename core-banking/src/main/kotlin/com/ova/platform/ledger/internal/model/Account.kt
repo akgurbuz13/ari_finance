@@ -10,6 +10,7 @@ data class Account(
     val accountType: AccountType,
     val status: AccountStatus = AccountStatus.ACTIVE,
     val iban: String? = null,
+    val region: String = "TR",
     val createdAt: Instant = Instant.now()
 )
 
@@ -17,7 +18,8 @@ enum class AccountType(val value: String) {
     USER_WALLET("user_wallet"),
     SYSTEM_FLOAT("system_float"),
     FEE_REVENUE("fee_revenue"),
-    SAFEGUARDING("safeguarding");
+    SAFEGUARDING("safeguarding"),
+    CROSS_BORDER_TRANSIT("cross_border_transit");
 
     companion object {
         fun fromValue(value: String): AccountType =

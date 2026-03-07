@@ -18,7 +18,7 @@ class AccountController(private val accountService: AccountService) {
     @PostMapping
     fun createAccount(@Valid @RequestBody request: CreateAccountRequest): ResponseEntity<AccountResponse> {
         val userId = UUID.fromString(SecurityContextHolder.getContext().authentication.principal as String)
-        val account = accountService.createUserWallet(userId, request.currency)
+        val account = accountService.createUserWallet(userId, request.currency, request.region)
         return ResponseEntity.status(HttpStatus.CREATED).body(
             AccountResponse(
                 id = account.id.toString(),
@@ -26,6 +26,7 @@ class AccountController(private val accountService: AccountService) {
                 accountType = account.accountType.value,
                 status = account.status.value,
                 balance = "0",
+                region = account.region,
                 createdAt = account.createdAt.toString()
             )
         )
@@ -43,6 +44,7 @@ class AccountController(private val accountService: AccountService) {
                     accountType = it.account.accountType.value,
                     status = it.account.status.value,
                     balance = it.balance.toPlainString(),
+                    region = it.account.region,
                     createdAt = it.account.createdAt.toString()
                 )
             }
@@ -74,7 +76,8 @@ class AccountController(private val accountService: AccountService) {
 }
 
 data class CreateAccountRequest(
-    @field:NotBlank @field:Pattern(regexp = "TRY|EUR") val currency: String
+    @field:NotBlank @field:Pattern(regexp = "TRY|EUR") val currency: String,
+    @field:Pattern(regexp = "TR|EU") val region: String? = null
 )
 
 data class AccountResponse(
@@ -83,6 +86,7 @@ data class AccountResponse(
     val accountType: String,
     val status: String,
     val balance: String,
+    val region: String,
     val createdAt: String
 )
 
