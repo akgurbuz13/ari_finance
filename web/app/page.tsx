@@ -93,21 +93,21 @@ function EscrowFlowVisual() {
         />
 
         {/* ── Floating particle dots along paths ── */}
-        <motion.circle r="3" fill="#1A6FD4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [0, 1, 1, 0], cx: [90, 140, 170, 210], cy: [100, 100, 145, 180] }}
-          transition={{ duration: 2, delay: 1.5, repeat: Infinity, repeatDelay: 3, ease: 'easeInOut' }}
-        />
-        <motion.circle r="3" fill="#1A6FD4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [0, 1, 1, 0], cx: [210, 260, 290, 330], cy: [180, 180, 225, 260] }}
-          transition={{ duration: 2, delay: 2.5, repeat: Infinity, repeatDelay: 3, ease: 'easeInOut' }}
-        />
-        <motion.circle r="2.5" fill="#16803C"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [0, 0.8, 0.8, 0], cx: [330, 280, 250, 210], cy: [260, 260, 215, 180] }}
-          transition={{ duration: 2, delay: 3.5, repeat: Infinity, repeatDelay: 3, ease: 'easeInOut' }}
-        />
+        <motion.g initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 1, 1, 0], x: [0, 50, 80, 120], y: [0, 0, 45, 80] }}
+          transition={{ duration: 2, delay: 1.5, repeat: Infinity, repeatDelay: 3, ease: 'easeInOut' }}>
+          <circle cx="90" cy="100" r="3" fill="#1A6FD4" />
+        </motion.g>
+        <motion.g initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 1, 1, 0], x: [0, 50, 80, 120], y: [0, 0, 45, 80] }}
+          transition={{ duration: 2, delay: 2.5, repeat: Infinity, repeatDelay: 3, ease: 'easeInOut' }}>
+          <circle cx="210" cy="180" r="3" fill="#1A6FD4" />
+        </motion.g>
+        <motion.g initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 0.8, 0.8, 0], x: [0, -50, -80, -120], y: [0, 0, -45, -80] }}
+          transition={{ duration: 2, delay: 3.5, repeat: Infinity, repeatDelay: 3, ease: 'easeInOut' }}>
+          <circle cx="330" cy="260" r="2.5" fill="#16803C" />
+        </motion.g>
 
         {/* ── Node: Car (Seller) ── */}
         <motion.g initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }}
