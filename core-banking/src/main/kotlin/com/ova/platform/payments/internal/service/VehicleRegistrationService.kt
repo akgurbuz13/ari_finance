@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.security.MessageDigest
+import org.bouncycastle.jcajce.provider.digest.Keccak
 import java.util.UUID
 
 @Service
@@ -101,7 +101,7 @@ class VehicleRegistrationService(
     }
 
     private fun keccak256Hex(input: String): String {
-        val digest = MessageDigest.getInstance("SHA3-256")
+        val digest = Keccak.Digest256()
         val hash = digest.digest(input.toByteArray())
         return "0x" + hash.joinToString("") { "%02x".format(it) }
     }

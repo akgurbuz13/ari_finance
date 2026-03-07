@@ -327,10 +327,10 @@ describe("AriVehicleEscrow", function () {
       await escrow.connect(operator).sellerConfirm(0);
       await escrow.connect(operator).buyerConfirm(0);
 
-      // State is now COMPLETED
+      // Both confirmed — cancel should be rejected
       await expect(
         escrow.connect(operator).cancel(0)
-      ).to.be.revertedWith("Already completed");
+      ).to.be.revertedWith("Both confirmed, cannot cancel");
     });
 
     it("Should reject cancel on already cancelled escrow", async function () {

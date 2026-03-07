@@ -8,20 +8,7 @@ import type { Vehicle } from '../../../lib/api/types';
 import Card from '../../../components/ui/Card';
 import Button from '../../../components/ui/Button';
 import Skeleton from '../../../components/ui/Skeleton';
-
-const statusColors: Record<string, string> = {
-  PENDING: 'bg-yellow-100 text-yellow-800',
-  MINTED: 'bg-green-100 text-green-800',
-  IN_ESCROW: 'bg-blue-100 text-blue-800',
-  TRANSFERRED: 'bg-purple-100 text-purple-800',
-};
-
-const statusLabels: Record<string, string> = {
-  PENDING: 'Minting...',
-  MINTED: 'Ready',
-  IN_ESCROW: 'In Escrow',
-  TRANSFERRED: 'Transferred',
-};
+import { STATUS_COLORS, STATUS_LABELS } from './constants';
 
 export default function VehiclesPage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -87,8 +74,8 @@ export default function VehiclesPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className={`px-3 py-1 rounded-full text-caption font-medium ${statusColors[vehicle.status] || 'bg-ova-100 text-ova-600'}`}>
-                      {statusLabels[vehicle.status] || vehicle.status}
+                    <span className={`px-3 py-1 rounded-full text-caption font-medium ${STATUS_COLORS[vehicle.status] || 'bg-ova-100 text-ova-600'}`}>
+                      {STATUS_LABELS[vehicle.status] || vehicle.status}
                     </span>
                     <ArrowRight size={16} className="text-ova-400" />
                   </div>

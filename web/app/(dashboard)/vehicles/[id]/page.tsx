@@ -9,13 +9,7 @@ import type { Vehicle } from '../../../../lib/api/types';
 import Card from '../../../../components/ui/Card';
 import Button from '../../../../components/ui/Button';
 import Skeleton from '../../../../components/ui/Skeleton';
-
-const statusColors: Record<string, string> = {
-  PENDING: 'bg-yellow-100 text-yellow-800',
-  MINTED: 'bg-green-100 text-green-800',
-  IN_ESCROW: 'bg-blue-100 text-blue-800',
-  TRANSFERRED: 'bg-purple-100 text-purple-800',
-};
+import { STATUS_COLORS } from '../constants';
 
 export default function VehicleDetailPage() {
   const params = useParams();
@@ -57,7 +51,7 @@ export default function VehicleDetailPage() {
           <h1 className="text-h2 text-ova-900">{vehicle.year} {vehicle.make} {vehicle.model}</h1>
           <p className="text-body-sm text-ova-500 mt-1">{vehicle.plateNumber}</p>
         </div>
-        <span className={`px-3 py-1 rounded-full text-caption font-medium ${statusColors[vehicle.status] || 'bg-ova-100 text-ova-600'}`}>
+        <span className={`px-3 py-1 rounded-full text-caption font-medium ${STATUS_COLORS[vehicle.status] || 'bg-ova-100 text-ova-600'}`}>
           {vehicle.status}
         </span>
       </div>

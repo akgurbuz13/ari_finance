@@ -227,7 +227,7 @@ class OutboxPollerService(
             val receipt = nft.mint(ownerWallet.address, vinHashBytes, plateHashBytes, metadataUri)
 
             // Extract tokenId from receipt event logs (VehicleMinted event)
-            val tokenId = extractTokenIdFromReceipt(receipt)
+            val tokenId = extractIndexedId(receipt, VEHICLE_MINTED_TOPIC)
 
             notifyVehicleSettlement(mapOf(
                 "type" to "VEHICLE_MINTED",
@@ -263,8 +263,10 @@ class OutboxPollerService(
                 nft.addToAllowlist(buyerWallet.address)
             }
 
-            // Approve escrow contract for the NFT
-            nft.approve(blockchainConfig.vehicleEscrowAddress, java.math.BigInteger.valueOf(vehicleTokenId))
+            // Approve escrow contract for the NFT — must use seller's credentials (NFT owner)
+            val sellerCredentials = walletService.getCredentials(UUID.fromString(sellerUserId))
+            val sellerNft = contractFactory.getVehicleNFT(sellerCredentials)
+            sellerNft.approve(blockchainConfig.vehicleEscrowAddress, java.math.BigInteger.valueOf(vehicleTokenId))
 
             // Create on-chain escrow
             val amountWei = saleAmount.multiply(BigDecimal.TEN.pow(18)).toBigInteger()
@@ -275,8 +277,8 @@ class OutboxPollerService(
                 amountWei
             )
 
-            // Extract onChainEscrowId from logs
-            val onChainEscrowId = extractEscrowIdFromReceipt(receipt)
+            // Extract onChainEscrowId from logs (EscrowCreated event)
+            val onChainEscrowId = extractIndexedId(receipt, ESCROW_CREATED_TOPIC)
 
             notifyVehicleSettlement(mapOf(
                 "type" to "ESCROW_SETUP_CONFIRMED",
@@ -376,52 +378,35 @@ class OutboxPollerService(
         }
     }
 
-    // EscrowCompleted event topic: keccak256("EscrowCompleted(uint256,address,address,uint256,uint256)")
-    private val ESCROW_COMPLETED_TOPIC = "0x" + org.web3j.crypto.Hash.sha3String(
+    private val VEHICLE_MINTED_TOPIC = org.web3j.crypto.Hash.sha3String(
+        "VehicleMinted(uint256,address,bytes32,bytes32)"
+    )
+    private val ESCROW_CREATED_TOPIC = org.web3j.crypto.Hash.sha3String(
+        "EscrowCreated(uint256,uint256,address,address,uint256,uint256)"
+    )
+    private val ESCROW_COMPLETED_TOPIC = org.web3j.crypto.Hash.sha3String(
         "EscrowCompleted(uint256,address,address,uint256,uint256)"
-    ).removePrefix("0x")
+    )
 
-    private fun extractTokenIdFromReceipt(receipt: TransactionReceipt): Long {
-        // VehicleMinted(uint256 indexed tokenId, address indexed to, bytes32 vinHash, bytes32 plateHash)
-        // tokenId is topic[1]
+    /**
+     * Extract an indexed uint256 (topic[1]) from a specific event in a transaction receipt.
+     * Filters by event topic to avoid matching the wrong event.
+     */
+    private fun extractIndexedId(receipt: TransactionReceipt, eventTopic: String? = null): Long {
         for (log in receipt.logs) {
             if (log.topics.size >= 2) {
+                if (eventTopic != null && log.topics[0] != eventTopic) continue
                 try {
                     return java.math.BigInteger(log.topics[1].removePrefix("0x"), 16).toLong()
                 } catch (_: Exception) { }
             }
         }
-        return 0
-    }
-
-    private fun extractEscrowIdFromReceipt(receipt: TransactionReceipt): Long {
-        // EscrowCreated(uint256 indexed escrowId, ...)
-        for (log in receipt.logs) {
-            if (log.topics.size >= 2) {
-                try {
-                    return java.math.BigInteger(log.topics[1].removePrefix("0x"), 16).toLong()
-                } catch (_: Exception) { }
-            }
-        }
-        return 0
+        return -1
     }
 
     private fun notifyVehicleSettlement(data: Map<String, Any>) {
         try {
-            if (internalApiKey.isBlank()) {
-                throw IllegalStateException("Core banking internal API key is not configured")
-            }
-
-            val headers = HttpHeaders().apply {
-                contentType = MediaType.APPLICATION_JSON
-                set("X-Internal-Api-Key", internalApiKey)
-            }
-
-            restTemplate.postForEntity(
-                "$coreBankingUrl/api/internal/vehicle-settlement",
-                HttpEntity(data, headers),
-                Void::class.java
-            )
+            postToCoreBanking("/api/internal/vehicle-settlement", data)
             log.info("Vehicle settlement notified: type={}", data["type"])
         } catch (e: Exception) {
             log.error("Failed to notify vehicle settlement: {}", e.message)
@@ -434,7 +419,6 @@ class OutboxPollerService(
      * then gets/creates their custodial wallet.
      */
     private fun resolveWalletAddress(accountId: String, currency: String): String {
-        // Look up the user ID for this ledger account from the shared DB
         val userId = jdbcTemplate.queryForObject(
             "SELECT user_id FROM ledger.accounts WHERE id = ?",
             UUID::class.java,
@@ -447,32 +431,32 @@ class OutboxPollerService(
 
     private fun notifyCoreBanking(paymentOrderId: String, operation: String, txHash: String, success: Boolean) {
         try {
-            val callback = mapOf(
+            postToCoreBanking("/api/internal/settlement-confirmed", mapOf(
                 "paymentOrderId" to paymentOrderId,
                 "operation" to operation,
                 "txHash" to txHash,
                 "success" to success
-            )
-
-            if (internalApiKey.isBlank()) {
-                throw IllegalStateException("Core banking internal API key is not configured")
-            }
-
-            val headers = HttpHeaders().apply {
-                contentType = MediaType.APPLICATION_JSON
-                set("X-Internal-Api-Key", internalApiKey)
-            }
-
-            restTemplate.postForEntity(
-                "$coreBankingUrl/api/internal/settlement-confirmed",
-                HttpEntity(callback, headers),
-                Void::class.java
-            )
+            ))
             log.info("Core-banking notified: paymentOrderId={}, operation={}, success={}",
                 paymentOrderId, operation, success)
         } catch (e: Exception) {
             log.error("Failed to notify core-banking for payment={}: {}", paymentOrderId, e.message)
         }
+    }
+
+    private fun postToCoreBanking(path: String, data: Map<String, Any>) {
+        require(internalApiKey.isNotBlank()) { "Core banking internal API key is not configured" }
+
+        val headers = HttpHeaders().apply {
+            contentType = MediaType.APPLICATION_JSON
+            set("X-Internal-Api-Key", internalApiKey)
+        }
+
+        restTemplate.postForEntity(
+            "$coreBankingUrl$path",
+            HttpEntity(data, headers),
+            Void::class.java
+        )
     }
 
     private data class OutboxEvent(

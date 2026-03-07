@@ -4,7 +4,6 @@ pragma solidity ^0.8.24;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 /**
  * @title IAriStablecoinEscrow
@@ -207,29 +206,24 @@ contract AriVehicleEscrow is AccessControl, ReentrancyGuard, Pausable {
      */
     function cancel(uint256 escrowId) external onlyRole(OPERATOR_ROLE) whenNotPaused nonReentrant {
         Escrow storage escrow = escrows[escrowId];
-        require(escrow.state != EscrowState.COMPLETED, "Already completed");
-        require(escrow.state != EscrowState.CANCELLED, "Already cancelled");
         require(
             !(escrow.sellerConfirmed && escrow.buyerConfirmed),
             "Both confirmed, cannot cancel"
         );
-
-        bool wasFunded = escrow.state == EscrowState.FUNDED;
-
-        if (wasFunded) {
-            uint256 totalAmount = escrow.saleAmount + escrow.feeAmount;
-            stablecoin.burn(address(this), totalAmount);
-        }
-
-        escrow.state = EscrowState.CANCELLED;
-        emit EscrowCancelled(escrowId, wasFunded);
+        _cancelEscrow(escrowId, escrow);
     }
 
     /**
      * @notice Admin emergency cancel — bypasses confirmation check
      */
     function adminCancel(uint256 escrowId) external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant {
-        Escrow storage escrow = escrows[escrowId];
+        _cancelEscrow(escrowId, escrows[escrowId]);
+    }
+
+    /**
+     * @dev Shared cancellation logic: validates state, burns if funded, emits event
+     */
+    function _cancelEscrow(uint256 escrowId, Escrow storage escrow) internal {
         require(escrow.state != EscrowState.COMPLETED, "Already completed");
         require(escrow.state != EscrowState.CANCELLED, "Already cancelled");
 
