@@ -8,6 +8,7 @@ ARI is a regulated fintech platform (Turkey + EU) with a Kotlin/Spring Boot modu
 
 **Repository**: https://github.com/akgurbuz13/ova_finance
 **Brand name**: ARI (uppercase, no dot, no period)
+**Logo CSS**: `.ova-logo` in `web/app/globals.css` must use `text-transform: uppercase`. NEVER set it to lowercase.
 
 ### Commit Rules
 - **NEVER add Co-Authored-By lines** to commit messages. User does not want Claude listed as co-author.

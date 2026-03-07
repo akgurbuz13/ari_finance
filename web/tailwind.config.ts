@@ -77,6 +77,7 @@ const config: Config = {
       backgroundImage: {
         "gradient-card": "linear-gradient(135deg, #0D1B2A 0%, #1B2D3E 100%)",
         "gradient-subtle": "linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)",
+        "gradient-radial": "radial-gradient(circle, var(--tw-gradient-stops))",
       },
       animation: {
         "hero-enter": "heroEnter 600ms ease-out",
