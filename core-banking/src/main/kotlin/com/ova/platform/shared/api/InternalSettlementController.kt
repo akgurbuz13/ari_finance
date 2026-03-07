@@ -14,6 +14,7 @@ import com.ova.platform.payments.internal.repository.PaymentOrderRepository
 import com.ova.platform.payments.internal.repository.PaymentStatusHistoryRepository
 import com.ova.platform.payments.internal.model.PaymentStatusHistory
 import com.ova.platform.payments.internal.service.DepositService
+import com.ova.platform.payments.internal.service.VehicleEscrowService
 import com.ova.platform.payments.internal.service.WithdrawalService
 import com.ova.platform.shared.event.OutboxPublisher
 import com.ova.platform.shared.security.AuditService
@@ -37,6 +38,7 @@ class InternalSettlementController(
     private val ledgerService: LedgerService,
     private val accountService: AccountService,
     private val outboxPublisher: OutboxPublisher,
+    private val vehicleEscrowService: VehicleEscrowService,
     private val auditService: AuditService
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
@@ -118,6 +120,46 @@ class InternalSettlementController(
                 "success" to request.success
             )
         )
+
+        return ResponseEntity.ok(mapOf("status" to "processed"))
+    }
+
+    @PostMapping("/vehicle-settlement")
+    fun onVehicleSettlement(@RequestBody request: VehicleSettlementRequest): ResponseEntity<Map<String, String>> {
+        log.info("Vehicle settlement: type={}, escrowId={}", request.type, request.escrowId)
+
+        try {
+            when (request.type) {
+                "VEHICLE_MINTED" -> vehicleEscrowService.onVehicleMinted(
+                    UUID.fromString(request.vehicleRegistrationId!!),
+                    request.tokenId!!,
+                    request.txHash ?: ""
+                )
+                "ESCROW_SETUP_CONFIRMED" -> vehicleEscrowService.onEscrowSetupConfirmed(
+                    UUID.fromString(request.escrowId!!),
+                    request.onChainEscrowId!!,
+                    request.txHash ?: ""
+                )
+                "ESCROW_FUNDED" -> vehicleEscrowService.onEscrowFunded(
+                    UUID.fromString(request.escrowId!!),
+                    request.txHash ?: ""
+                )
+                "ESCROW_CONFIRMED" -> vehicleEscrowService.onEscrowConfirmed(
+                    UUID.fromString(request.escrowId!!),
+                    request.role ?: "SELLER",
+                    request.completed ?: false,
+                    request.txHash ?: ""
+                )
+                "ESCROW_CANCELLED" -> vehicleEscrowService.onEscrowCancelled(
+                    UUID.fromString(request.escrowId!!),
+                    request.txHash ?: ""
+                )
+                else -> log.warn("Unknown vehicle settlement type: {}", request.type)
+            }
+        } catch (e: Exception) {
+            log.error("Vehicle settlement failed: type={}, error={}", request.type, e.message, e)
+            return ResponseEntity.ok(mapOf("status" to "error", "message" to (e.message ?: "unknown")))
+        }
 
         return ResponseEntity.ok(mapOf("status" to "processed"))
     }
@@ -244,4 +286,15 @@ data class SettlementConfirmationRequest(
     val operation: String,
     val txHash: String?,
     val success: Boolean
+)
+
+data class VehicleSettlementRequest(
+    val type: String,
+    val vehicleRegistrationId: String? = null,
+    val escrowId: String? = null,
+    val tokenId: Long? = null,
+    val onChainEscrowId: Long? = null,
+    val role: String? = null,
+    val completed: Boolean? = null,
+    val txHash: String? = null
 )
