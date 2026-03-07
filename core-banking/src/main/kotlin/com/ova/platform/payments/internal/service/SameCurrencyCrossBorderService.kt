@@ -133,7 +133,7 @@ class SameCurrencyCrossBorderService(
         transitionStatus(paymentOrder.id, PaymentStatus.PROCESSING, PaymentStatus.SETTLING, null)
 
         try {
-            val transitAccount = accountService.getOrCreateSystemAccountWithRegion(
+            val transitAccount = accountService.getOrCreateSystemAccount(
                 currency, AccountType.CROSS_BORDER_TRANSIT, senderAccount.region
             )
 
@@ -199,7 +199,7 @@ class SameCurrencyCrossBorderService(
                 paymentOrder.id, amount, currency, senderAccount.region, receiverAccount.region
             )
 
-            return paymentOrderRepository.findById(paymentOrder.id) ?: paymentOrder
+            return paymentOrder
 
         } catch (e: Exception) {
             transitionStatus(paymentOrder.id, PaymentStatus.SETTLING, PaymentStatus.FAILED, e.message)

@@ -90,28 +90,16 @@ class AccountService(
         auditService.log(adminId, "admin", "unfreeze_account", "account", accountId.toString())
     }
 
-    fun getOrCreateSystemAccount(currency: String, accountType: AccountType): Account {
+    fun getOrCreateSystemAccount(currency: String, accountType: AccountType, region: String? = null): Account {
         val systemUserId = UUID.fromString("00000000-0000-0000-0000-000000000000")
-        return accountRepository.findSystemAccount(currency, accountType)
+        val effectiveRegion = region ?: regionForCurrency(currency)
+        return accountRepository.findSystemAccountByRegion(currency, accountType, effectiveRegion)
             ?: accountRepository.save(
                 Account(
                     userId = systemUserId,
                     currency = currency,
                     accountType = accountType,
-                    region = regionForCurrency(currency)
-                )
-            )
-    }
-
-    fun getOrCreateSystemAccountWithRegion(currency: String, accountType: AccountType, region: String): Account {
-        val systemUserId = UUID.fromString("00000000-0000-0000-0000-000000000000")
-        return accountRepository.findSystemAccountByRegion(currency, accountType, region)
-            ?: accountRepository.save(
-                Account(
-                    userId = systemUserId,
-                    currency = currency,
-                    accountType = accountType,
-                    region = region
+                    region = effectiveRegion
                 )
             )
     }

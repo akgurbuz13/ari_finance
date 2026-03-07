@@ -17,6 +17,7 @@ import org.springframework.http.MediaType
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
+import org.web3j.utils.Numeric
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -173,7 +174,7 @@ class OutboxPollerService(
 
             // Get the destination blockchain ID (bytes32 hex for Teleporter)
             val destBlockchainIdHex = blockchainConfig.getBlockchainId(targetChainId)
-            val destBlockchainIdBytes = hexStringToByteArray(destBlockchainIdHex)
+            val destBlockchainIdBytes = Numeric.hexStringToByteArray(destBlockchainIdHex)
 
             // Single bridge call: burns on source + sends Teleporter message
             // Teleporter relayers deliver the message to dest chain
@@ -188,13 +189,6 @@ class OutboxPollerService(
         } catch (e: Exception) {
             log.error("CrossBorderBurnMint failed for paymentOrderId={}: {}", paymentOrderId, e.message, e)
             notifyCoreBanking(paymentOrderId, "bridge_transfer", "", false)
-        }
-    }
-
-    private fun hexStringToByteArray(hex: String): ByteArray {
-        val cleanHex = hex.removePrefix("0x")
-        return ByteArray(cleanHex.length / 2) { i ->
-            cleanHex.substring(i * 2, i * 2 + 2).toInt(16).toByte()
         }
     }
 

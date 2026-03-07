@@ -122,7 +122,7 @@ class ReconciliationService(
             """,
             Long::class.java,
             provider, currency, java.sql.Date.valueOf(date)
-        )?.toInt() ?: 0
+        ).toInt()
 
         // Skip if no activity for this provider/currency
         if (expectedAmount == BigDecimal.ZERO && actualAmount == BigDecimal.ZERO && unmatchedCount == 0) {
@@ -135,7 +135,7 @@ class ReconciliationService(
             else -> "discrepancy"
         }
 
-        val recon = reconciliationRepository.saveReconciliation(
+        reconciliationRepository.saveReconciliation(
             RailReconciliation(
                 railProvider = provider,
                 reconciliationDate = date,

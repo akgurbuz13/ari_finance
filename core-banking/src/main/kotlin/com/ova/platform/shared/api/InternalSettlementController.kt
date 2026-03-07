@@ -7,6 +7,7 @@ import com.ova.platform.ledger.internal.model.TransactionType
 import com.ova.platform.ledger.internal.service.AccountService
 import com.ova.platform.ledger.internal.service.LedgerService
 import com.ova.platform.payments.event.PaymentCompleted
+import com.ova.platform.payments.internal.model.PaymentOrder
 import com.ova.platform.payments.internal.model.PaymentStatus
 import com.ova.platform.payments.internal.model.PaymentType
 import com.ova.platform.payments.internal.repository.PaymentOrderRepository
@@ -68,12 +69,12 @@ class InternalSettlementController(
                 PaymentType.CROSS_BORDER -> {
                     // Cross-border has multiple settlement steps (burn + mint)
                     // Track completion per operation
-                    handleCrossBorderSettlement(paymentOrderId, request.operation, request.txHash)
+                    handleCrossBorderSettlement(order, request.operation, request.txHash)
                 }
                 PaymentType.CROSS_BORDER_SAME_CCY -> {
                     // Same-currency cross-border: single bridge_transfer operation
                     if (order.status == PaymentStatus.SETTLING) {
-                        handleSameCcyCrossBorderSettlement(paymentOrderId, request.txHash)
+                        handleSameCcyCrossBorderSettlement(order, request.txHash)
                     }
                 }
                 else -> {
@@ -121,11 +122,10 @@ class InternalSettlementController(
         return ResponseEntity.ok(mapOf("status" to "processed"))
     }
 
-    private fun handleCrossBorderSettlement(paymentOrderId: UUID, operation: String, txHash: String?) {
+    private fun handleCrossBorderSettlement(order: PaymentOrder, operation: String, txHash: String?) {
         // Cross-border transfers require both a burn (source chain) and mint (destination chain).
         // We update metadata to track which leg has been confirmed.
-        val order = paymentOrderRepository.findById(paymentOrderId) ?: return
-
+        val paymentOrderId = order.id
         val metadata = order.metadata?.toMutableMap() ?: mutableMapOf()
         metadata["${operation}_tx_hash"] = txHash ?: ""
         metadata["${operation}_confirmed"] = "true"
@@ -172,8 +172,8 @@ class InternalSettlementController(
      * This is the critical step: blockchain IS the settlement rail.
      * Only now do we credit the receiver's account.
      */
-    private fun handleSameCcyCrossBorderSettlement(paymentOrderId: UUID, txHash: String?) {
-        val order = paymentOrderRepository.findById(paymentOrderId) ?: return
+    private fun handleSameCcyCrossBorderSettlement(order: PaymentOrder, txHash: String?) {
+        val paymentOrderId = order.id
 
         // Update metadata with bridge tx hash
         val metadata = order.metadata?.toMutableMap() ?: mutableMapOf()
@@ -183,7 +183,7 @@ class InternalSettlementController(
 
         // Credit receiver: debit transit -> credit receiver
         val senderAccount = accountService.getAccountById(order.senderAccountId)
-        val transitAccount = accountService.getOrCreateSystemAccountWithRegion(
+        val transitAccount = accountService.getOrCreateSystemAccount(
             order.currency, AccountType.CROSS_BORDER_TRANSIT, senderAccount.region
         )
 
