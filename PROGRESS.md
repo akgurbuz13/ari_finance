@@ -1,10 +1,57 @@
 # ARI Fintech — Implementation Progress
 
 > **Last Updated:** 2026-03-07
-> **Current Phase:** Same-Currency Cross-Border Transfers via Burn/Mint Bridge
-> **Overall Completion:** ~98% of MVP
+> **Current Phase:** Vehicle Securitization & Smart Contract Escrow
+> **Overall Completion:** ~98% of MVP + Vehicle Escrow Feature
 
 This document tracks implementation progress against the [ARCHITECTURE.md](./ARCHITECTURE.md) plan. Update this document when completing significant milestones.
+
+---
+
+## Vehicle Securitization & Smart Contract Escrow (2026-03-07)
+
+Full-stack vehicle NFT + escrow system replacing Turkey's broken notary process. On-chain NFT ownership + escrow ensures neither party can cheat in vehicle sales.
+
+**Smart Contracts (Phase 1):**
+- `AriVehicleNFT.sol` — ERC-721 with transfer restrictions (escrow/admin only), KYC allowlist, VIN uniqueness
+- `AriVehicleEscrow.sol` — On-chain escrow state machine: dual confirmation, 50 TRY fee, atomic swap, cancel with burn
+- `deploy-vehicle-escrow.ts` — Deployment script with role setup
+- 48 new Solidity tests (183 total), all passing
+
+**Database & Models (Phase 2):**
+- `V021__vehicle_escrow_tables.sql` — `vehicle_registrations` + `vehicle_escrows` tables
+- `VehicleRegistration`, `VehicleEscrow` entities with `VehicleStatus`, `EscrowState` enums
+- JdbcTemplate repositories following existing patterns
+- `VEHICLE_ESCROW_HOLDING` account type for transit pattern
+
+**Core-Banking Services (Phase 3):**
+- `VehicleRegistrationService.kt` — Register vehicle, hash VIN/plate, publish mint event
+- `VehicleEscrowService.kt` — Full lifecycle: create, join, fund, confirm, cancel + settlement callbacks
+- `VehicleController.kt` — REST API (9 endpoints) for all vehicle/escrow operations
+- 5 new outbox event types (`VehicleMintRequested`, `EscrowSetup/Funding/Confirmation/Cancellation`)
+- Vehicle settlement callback endpoint in `InternalSettlementController`
+
+**Blockchain Service (Phase 4):**
+- `AriVehicleNFTContract.kt` — Web3j wrapper (mint, approve, ownerOf, allowlist)
+- `AriVehicleEscrowContract.kt` — Web3j wrapper (create, fund, confirm, cancel)
+- `ContractFactory` extended with `getVehicleNFT()`, `getVehicleEscrow()`
+- `OutboxPollerService` extended with 5 vehicle event handlers
+- Vehicle settlement callback to core-banking
+
+**Web App (Phase 5):**
+- My Vehicles page — list vehicles with status badges
+- Register Vehicle page — form with VIN, plate, make/model/year
+- Vehicle Detail page — on-chain proof, mint status, sell button
+- Create Escrow page — set price, get shareable link/code
+- Join Escrow page — lookup by share code, review deal info
+- Escrow Detail page — progress timeline, action buttons, on-chain proof links
+- Sidebar navigation updated with Vehicles item
+
+**Architecture:**
+- NFT = source of truth for vehicle ownership (on-chain)
+- Escrow = atomic swap (ariTRY payment + NFT ownership in single transaction)
+- Transit account pattern: buyer funds → VEHICLE_ESCROW_HOLDING → seller/fee on completion
+- Outbox pattern for all blockchain interactions (same as existing payment flows)
 
 ---
 
@@ -117,7 +164,7 @@ Pre-demo investigation and fixes:
 |-----------|--------|------------|-------|
 | Core Banking Backend | ✅ Production-Ready | 92% | All modules + same-ccy cross-border |
 | Blockchain Service | ✅ Production-Ready | 97% | Mint/Burn/ICTT Bridge/BurnMint Bridge |
-| Smart Contracts | ✅ Production-Ready | 92% | 135 tests, AriBurnMintBridge added |
+| Smart Contracts | ✅ Production-Ready | 95% | 183 tests, Vehicle NFT + Escrow added |
 | Web App | ✅ Production-Ready | 95% | Full user flows |
 | Admin Console | ✅ Production-Ready | 90% | All admin features |
 | Mobile App | 🔶 Needs Review | 70% | Core flows implemented |
