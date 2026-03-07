@@ -69,7 +69,7 @@ function AccountCard({ account }: { account: Account }) {
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="text-caption uppercase text-ova-500 tracking-wide">
-              {account.currency} {account.accountType.replace(/_/g, ' ')}
+              {account.currency} — {account.region === 'TR' ? 'Turkey' : 'Europe'}
             </span>
             <StatusPill
               variant={

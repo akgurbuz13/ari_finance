@@ -87,7 +87,7 @@ class CrossBorderTransferService(
             throw BadRequestException("Receiver account $receiverAccountId is ${receiverAccount.status.value}")
         }
         if (senderAccount.currency == receiverAccount.currency) {
-            throw BadRequestException("Cross-border transfer requires different currencies. Use domestic transfer instead.")
+            throw BadRequestException("FX cross-border transfer requires different currencies. Use same-currency cross-border instead.")
         }
 
         // Validate FX quote

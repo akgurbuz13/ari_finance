@@ -24,6 +24,7 @@ export interface Account {
   accountType: string;
   status: 'active' | 'frozen' | 'closed';
   balance: string;
+  region: 'TR' | 'EU';
   createdAt: string;
 }
 
@@ -39,7 +40,7 @@ export interface Transaction {
 
 export interface PaymentOrder {
   id: string;
-  type: 'deposit' | 'withdrawal' | 'domestic_p2p' | 'cross_border';
+  type: 'deposit' | 'withdrawal' | 'domestic_p2p' | 'cross_border' | 'cross_border_same_ccy';
   status: string;
   senderAccountId: string;
   receiverAccountId: string;

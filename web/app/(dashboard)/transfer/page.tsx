@@ -93,11 +93,14 @@ export default function TransferPage() {
     return accounts.find(a => a.id === cbSourceAccount);
   }, [accounts, cbSourceAccount]);
 
+  const [cbSameCurrency, setCbSameCurrency] = useState(false);
+
   const getTargetCurrency = useCallback(() => {
     const source = getSourceAccount();
     if (!source) return 'EUR';
+    if (cbSameCurrency) return source.currency;
     return source.currency === 'TRY' ? 'EUR' : 'TRY';
-  }, [getSourceAccount]);
+  }, [getSourceAccount, cbSameCurrency]);
 
   const handleDomestic = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,6 +166,83 @@ export default function TransferPage() {
     } finally {
       setCbLoading(false);
     }
+  };
+
+  const handleSameCurrencyTransfer = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCbError('');
+    setCbLoading(true);
+
+    try {
+      const res = await api.post('/payments/cross-border', {
+        senderAccountId: cbSourceAccount,
+        receiverAccountId: cbReceiverAccount,
+        amount: parseFloat(cbAmount),
+      }, {
+        headers: { 'Idempotency-Key': crypto.randomUUID() },
+      });
+
+      setCbPaymentId(res.data.id || '');
+      simulateSameCcyProgress();
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { message?: string } } };
+      setCbError(axiosErr.response?.data?.message || 'Same-currency cross-border transfer failed');
+    } finally {
+      setCbLoading(false);
+    }
+  };
+
+  const simulateSameCcyProgress = () => {
+    const now = () => new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+    const initialSteps: TransferStep[] = [
+      { label: 'Payment initiated', status: 'active', timestamp: now() },
+      { label: 'Compliance check', status: 'pending' },
+      { label: 'Blockchain settlement', status: 'pending', details: [] },
+      { label: 'Delivered', status: 'pending' },
+    ];
+    setProgressSteps(initialSteps);
+    setCbStep('progress');
+
+    let stepIndex = 0;
+    progressRef.current = setInterval(() => {
+      stepIndex++;
+      setProgressSteps(prev => {
+        const updated = prev.map((s, i) => {
+          if (i < stepIndex) return { ...s, status: 'completed' as const, timestamp: s.timestamp || now() };
+          if (i === stepIndex) {
+            const step = { ...s, status: 'active' as const, timestamp: now() };
+            if (i === 2) {
+              step.details = [
+                { label: 'Burn on source chain', value: 'Processing...' },
+                { label: 'Teleporter relay', value: 'Pending' },
+                { label: 'Mint on dest chain', value: 'Pending' },
+              ];
+            }
+            return step;
+          }
+          return s;
+        });
+        return updated;
+      });
+
+      if (stepIndex >= initialSteps.length - 1) {
+        if (progressRef.current) clearInterval(progressRef.current);
+        setTimeout(() => {
+          setProgressSteps(prev => prev.map(s => ({
+            ...s,
+            status: 'completed' as const,
+            timestamp: s.timestamp || now(),
+            details: s.label === 'Blockchain settlement' ? [
+              { label: 'Burn on source chain', value: '0x1a2b...3c4d' },
+              { label: 'Teleporter relay', value: 'Confirmed' },
+              { label: 'Mint on dest chain', value: 'Confirmed' },
+            ] : s.details,
+          })));
+          setCbStep('success');
+        }, 2000);
+      }
+    }, 2000);
   };
 
   const simulateProgress = () => {
@@ -258,6 +338,7 @@ export default function TransferPage() {
     setCbReceiverAccount('');
     setCbError('');
     setCbPaymentId('');
+    setCbSameCurrency(false);
     setProgressSteps([]);
     if (countdownRef.current) {
       clearInterval(countdownRef.current);
@@ -376,7 +457,7 @@ export default function TransferPage() {
               {cbError}
             </div>
           )}
-          <form onSubmit={handleGetQuote} className="space-y-5">
+          <form onSubmit={cbSameCurrency ? handleSameCurrencyTransfer : handleGetQuote} className="space-y-5">
             <div>
               <label className="block text-body-sm font-medium text-ova-700 mb-3">From Account</label>
               <select
@@ -395,11 +476,23 @@ export default function TransferPage() {
             </div>
 
             {cbSourceAccount && (
-              <div className="p-3 bg-ova-100 border border-ova-200 rounded-xl">
-                <p className="text-caption text-ova-500 uppercase tracking-wide">Target currency</p>
-                <p className="text-body-sm font-semibold text-ova-900">
-                  {getTargetCurrency()} ({getTargetCurrency() === 'TRY' ? '₺' : '€'})
-                </p>
+              <div className="space-y-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={cbSameCurrency}
+                    onChange={(e) => setCbSameCurrency(e.target.checked)}
+                    className="w-4 h-4 rounded border-ova-300 text-ova-blue focus:ring-ova-blue"
+                  />
+                  <span className="text-body-sm text-ova-700">Same currency (different region)</span>
+                </label>
+                <div className="p-3 bg-ova-100 border border-ova-200 rounded-xl">
+                  <p className="text-caption text-ova-500 uppercase tracking-wide">Target currency</p>
+                  <p className="text-body-sm font-semibold text-ova-900">
+                    {getTargetCurrency()} ({getTargetCurrency() === 'TRY' ? '₺' : '€'})
+                    {cbSameCurrency && <span className="text-caption text-ova-400 ml-2">(different region)</span>}
+                  </p>
+                </div>
               </div>
             )}
 
@@ -441,7 +534,7 @@ export default function TransferPage() {
             </div>
 
             <Button type="submit" fullWidth loading={cbLoading}>
-              Get quote <ArrowRight size={16} strokeWidth={1.5} className="ml-1" />
+              {cbSameCurrency ? 'Send' : 'Get quote'} <ArrowRight size={16} strokeWidth={1.5} className="ml-1" />
             </Button>
           </form>
         </Card>
@@ -577,7 +670,11 @@ export default function TransferPage() {
             </motion.div>
             <h3 className="text-h2 text-ova-900">Transfer complete</h3>
             <p className="text-body-sm text-ova-500">
-              {cbQuote ? `${formatAmount(cbQuote.targetAmount, cbQuote.targetCurrency)} delivered` : 'Your transfer has been completed.'}
+              {cbQuote
+                ? `${formatAmount(cbQuote.targetAmount, cbQuote.targetCurrency)} delivered`
+                : cbAmount
+                  ? `${formatAmount(cbAmount, getSourceAccount()?.currency || 'TRY')} delivered`
+                  : 'Your transfer has been completed.'}
             </p>
             {cbPaymentId && (
               <p className="text-caption text-ova-400 font-mono">

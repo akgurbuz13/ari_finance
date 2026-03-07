@@ -8,6 +8,7 @@ import com.ova.platform.payments.internal.repository.PaymentStatusHistoryReposit
 import com.ova.platform.payments.internal.service.CrossBorderTransferService
 import com.ova.platform.payments.internal.service.DepositService
 import com.ova.platform.payments.internal.service.DomesticTransferService
+import com.ova.platform.payments.internal.service.SameCurrencyCrossBorderService
 import com.ova.platform.payments.internal.service.WithdrawalService
 import com.ova.platform.shared.exception.ForbiddenException
 import com.ova.platform.shared.exception.NotFoundException
@@ -28,6 +29,7 @@ import java.util.UUID
 class PaymentController(
     private val domesticTransferService: DomesticTransferService,
     private val crossBorderTransferService: CrossBorderTransferService,
+    private val sameCurrencyCrossBorderService: SameCurrencyCrossBorderService,
     private val depositService: DepositService,
     private val withdrawalService: WithdrawalService,
     private val accountService: AccountService,
@@ -104,14 +106,33 @@ class PaymentController(
     ): ResponseEntity<PaymentOrderResponse> {
         val userId = currentUserId()
 
-        val order = crossBorderTransferService.execute(
-            idempotencyKey = idempotencyKey,
-            senderAccountId = request.senderAccountId,
-            receiverAccountId = request.receiverAccountId,
-            fxQuoteId = request.fxQuoteId,
-            description = request.description,
-            initiatorId = userId
-        )
+        // Detect same vs different currency to route to the correct service
+        val senderAccount = accountService.getAccountById(request.senderAccountId)
+        val receiverAccount = accountService.getAccountById(request.receiverAccountId)
+
+        val order = if (senderAccount.currency == receiverAccount.currency) {
+            // Same currency, different regions -> burn/mint bridge
+            sameCurrencyCrossBorderService.execute(
+                idempotencyKey = idempotencyKey,
+                senderAccountId = request.senderAccountId,
+                receiverAccountId = request.receiverAccountId,
+                amount = request.amount
+                    ?: throw com.ova.platform.shared.exception.BadRequestException("Amount required for same-currency cross-border"),
+                description = request.description,
+                initiatorId = userId
+            )
+        } else {
+            // Different currencies -> FX cross-border
+            crossBorderTransferService.execute(
+                idempotencyKey = idempotencyKey,
+                senderAccountId = request.senderAccountId,
+                receiverAccountId = request.receiverAccountId,
+                fxQuoteId = request.fxQuoteId
+                    ?: throw com.ova.platform.shared.exception.BadRequestException("FX quote required for cross-currency transfer"),
+                description = request.description,
+                initiatorId = userId
+            )
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(order.toResponse())
     }
@@ -253,8 +274,10 @@ data class CrossBorderTransferRequest(
     @field:NotNull
     val receiverAccountId: UUID,
 
-    @field:NotNull
-    val fxQuoteId: UUID,
+    val fxQuoteId: UUID? = null,
+
+    @field:DecimalMin(value = "0.01", message = "Amount must be greater than zero")
+    val amount: BigDecimal? = null,
 
     val description: String? = null
 )
