@@ -42,15 +42,18 @@ function AnimatedSection({ children, className }: { children: React.ReactNode; c
 
 function HeroVisual() {
   return (
-    <div className="relative w-full h-[500px]">
+    <div className="relative w-full h-[480px] flex items-center justify-center">
       {/* Ambient glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] rounded-full bg-gradient-radial from-ova-blue/[0.06] to-transparent blur-3xl" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-gradient-radial from-ova-blue/[0.06] to-transparent blur-3xl" />
 
-      {/* Card: Account Balance — top left */}
+      {/* Tight card cluster */}
+      <div className="relative w-[420px] h-[440px]">
+
+      {/* Card: Account Balance — back left */}
       <motion.div
-        className="absolute top-0 left-0 w-[260px]"
-        initial={{ opacity: 0, y: 30, rotate: -2 }}
-        animate={{ opacity: 1, y: 0, rotate: -2 }}
+        className="absolute -top-2 -left-2 w-[260px] z-10"
+        initial={{ opacity: 0, y: 30, rotate: -3 }}
+        animate={{ opacity: 1, y: 0, rotate: -3 }}
         transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
       >
         <motion.div
@@ -74,11 +77,11 @@ function HeroVisual() {
         </motion.div>
       </motion.div>
 
-      {/* Card: Transfer — middle right */}
+      {/* Card: Transfer — back right */}
       <motion.div
-        className="absolute top-[42%] right-0 w-[240px]"
-        initial={{ opacity: 0, y: 30, rotate: 3 }}
-        animate={{ opacity: 1, y: 0, rotate: 3 }}
+        className="absolute top-[130px] -right-4 w-[240px] z-20"
+        initial={{ opacity: 0, y: 30, rotate: 2 }}
+        animate={{ opacity: 1, y: 0, rotate: 2 }}
         transition={{ duration: 0.7, delay: 0.55, ease: 'easeOut' }}
       >
         <motion.div
@@ -101,11 +104,11 @@ function HeroVisual() {
         </motion.div>
       </motion.div>
 
-      {/* Card: Vehicle Sale — bottom left */}
+      {/* Card: Vehicle Sale — front bottom */}
       <motion.div
-        className="absolute bottom-0 left-[8%] w-[280px]"
-        initial={{ opacity: 0, y: 30, rotate: 1 }}
-        animate={{ opacity: 1, y: 0, rotate: 1 }}
+        className="absolute top-[300px] left-[20px] w-[280px] z-30"
+        initial={{ opacity: 0, y: 30, rotate: -1 }}
+        animate={{ opacity: 1, y: 0, rotate: -1 }}
         transition={{ duration: 0.7, delay: 0.8, ease: 'easeOut' }}
       >
         <motion.div
@@ -142,6 +145,8 @@ function HeroVisual() {
           </div>
         </motion.div>
       </motion.div>
+
+      </div>{/* end card cluster */}
     </div>
   );
 }
