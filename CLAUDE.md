@@ -26,20 +26,27 @@ This prevents duplicate effort and ensures you build on existing work rather tha
 
 ---
 
-## Implementation Status (as of 2026-03-03)
+## Implementation Status (as of 2026-03-07)
 
 > **Full details in [PROGRESS.md](./PROGRESS.md)**
 
 | Component | Completion | Status |
 |-----------|------------|--------|
-| Core Banking Backend | 90% | ✅ Production-Ready |
-| Blockchain Service | 95% | ✅ Production-Ready |
-| Smart Contracts | 90% | ✅ Tested (115 tests), deployed on Fuji |
+| Core Banking Backend | 92% | ✅ Production-Ready |
+| Blockchain Service | 97% | ✅ Production-Ready |
+| Smart Contracts | 92% | ✅ Tested (135 tests), deployed on Fuji |
 | Web App | 95% | ✅ Production-Ready |
 | Admin Console | 90% | ✅ Production-Ready |
 | Mobile App | 70% | 🔶 Needs Review |
 | AWS Infrastructure | 85% | ✅ 2-Validator Ready |
 | Payment Rails | 30% | ⚠️ Stubs Only |
+
+### Same-Currency Cross-Border Transfers (2026-03-07)
+- `AriBurnMintBridge.sol` — burn/mint via Teleporter, no wrapped tokens
+- `SameCurrencyCrossBorderService.kt` — saga orchestrator with transit account pattern
+- Region-based accounts: `V020__cross_border_same_currency.sql`
+- Web app: same-currency toggle, blockchain settlement progress UI
+- 20 new Solidity tests, zero compiler warnings
 
 ### Avalanche Hackathon MVP: All 6 phases complete (Phases 0-5)
 - Rebrand Ova → ARI, Fuji L1 deployment, contract deployment, backend integration, demo readiness
@@ -48,7 +55,6 @@ This prevents duplicate effort and ensures you build on existing work rather tha
 - Cross-border region logic fix: `regionForCurrency()` helper (2026-03-03)
 
 ### Remaining Issues
-- Password reset endpoints missing in AuthController
 - Mobile biometric auth incomplete
 - Payment rails are intentional stubs (awaiting bank partnerships)
 
@@ -90,7 +96,7 @@ Test framework: JUnit 5 + Kotest assertions + MockK + Testcontainers.
 ```bash
 cd contracts && npm install              # Install dependencies
 cd contracts && npx hardhat compile
-cd contracts && npx hardhat test         # 115 tests
+cd contracts && npx hardhat test         # 135 tests
 cd contracts && npx hardhat coverage     # Coverage report
 ```
 
@@ -216,9 +222,11 @@ Update **MEMORY.md** when:
 |-----------|-----------|
 | User Auth | `AuthController.kt` → `JwtTokenProvider.kt` |
 | P2P Transfer | `PaymentController.kt` → `DomesticTransferService.kt` → `LedgerService.kt` |
-| Cross-Border | `CrossBorderTransferService.kt` → FX Quote → Ledger → Outbox → Blockchain |
+| Cross-Border (FX) | `CrossBorderTransferService.kt` → FX Quote → Ledger → Outbox → Blockchain |
+| Cross-Border (Same-Ccy) | `SameCurrencyCrossBorderService.kt` → Transit Account → Outbox → `AriBurnMintBridge.sol` |
 | Mint/Burn | `OutboxPollerService.kt` → `MintService.kt`/`BurnService.kt` → `OvaStablecoin.sol` |
 | ICTT Bridge | `IcttBridgeService.kt` → `OvaTokenHome.sol` ↔ Teleporter ↔ `OvaTokenRemote.sol` |
+| Burn/Mint Bridge | `OutboxPollerService.kt` → `AriBurnMintBridgeContract.kt` → `AriBurnMintBridge.sol` |
 
 ### Module Boundaries
 

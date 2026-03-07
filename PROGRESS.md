@@ -1,8 +1,8 @@
 # ARI Fintech — Implementation Progress
 
-> **Last Updated:** 2026-03-04
-> **Current Phase:** MVP Production Deployment — Free-tier infrastructure on arifinance.co
-> **Overall Completion:** ~97% of MVP
+> **Last Updated:** 2026-03-07
+> **Current Phase:** Same-Currency Cross-Border Transfers via Burn/Mint Bridge
+> **Overall Completion:** ~98% of MVP
 
 This document tracks implementation progress against the [ARCHITECTURE.md](./ARCHITECTURE.md) plan. Update this document when completing significant milestones.
 
@@ -22,11 +22,54 @@ All 6 phases of the hackathon sprint are complete:
 | Phase 5 | Final Verification & Submission | ✅ Complete |
 
 **Verification results:**
-- Solidity: 115/115 tests passing
+- Solidity: 135/135 tests passing (115 original + 20 AriBurnMintBridge)
 - Blockchain-service: all tests passing (Java 21)
-- Core-banking: compiles clean
+- Core-banking: compiles clean (zero warnings)
 - Web app: builds successfully
 - E2E mint verified on Fuji TR L1 (tx 0x152bbe77...)
+
+### Same-Currency Cross-Border Transfers (2026-03-07)
+
+Full-stack implementation of same-currency cross-border transfers (e.g. TRY/TR → TRY/EU) using a lightweight `AriBurnMintBridge` contract with Avalanche Teleporter. Burns native ariTRY on source chain, Teleporter relays, mints native ariTRY on destination chain — no wrapped tokens.
+
+**Architecture:**
+- Blockchain IS the settlement rail — receiver credited only after on-chain confirmation
+- Transit account pattern: sender debited to `CROSS_BORDER_TRANSIT`, receiver credited after bridge confirms
+- Single bridge call replaces separate burn + mint (Teleporter handles cross-chain delivery)
+
+**Smart Contracts (P2-P3):**
+- `AriBurnMintBridge.sol` (~161 lines) — burn/mint bridge with Teleporter, replay protection, partner registration
+- `deploy-burn-mint-bridge.ts` — deployment script for both chains
+- 20 new tests (deployment, partner registration, burn+bridge, receive+mint, replay protection, E2E cycle)
+- Bridge needs `MINTER_ROLE` + `DEFAULT_ADMIN_ROLE` on stablecoin for mint/burn/allowlist
+
+**Database (P1):**
+- Migration `V020__cross_border_same_currency.sql` — adds `region` column to accounts, `CROSS_BORDER_TRANSIT` account type, chain tracking on payment orders
+- Unique constraint updated: `UNIQUE(user_id, currency, account_type, region)` — enables same-currency accounts in different regions
+
+**Backend (P4-P6):**
+- `AriBurnMintBridgeContract.kt` — Web3j wrapper for bridge contract
+- `SameCurrencyCrossBorderService.kt` — saga orchestrator (validate → compliance → debit sender to transit → publish outbox event)
+- `CrossBorderBurnMintRequested` event + handler in `OutboxPollerService`
+- Settlement callback in `InternalSettlementController` creates receiver credit ledger entry
+- Multi-chain config: cross-currency stablecoin addresses, burn-mint bridge addresses per chain
+- `ContractFactory` extended with `getStablecoin(chainId, currency)` and `getBurnMintBridge(chainId)`
+- `MintService`/`BurnService` support explicit `chainId` parameter
+
+**Web App (P7):**
+- Same-currency toggle checkbox on cross-border transfer form
+- Blockchain settlement progress visualization (burn → Teleporter relay → mint)
+- Account cards show region label ("Turkey" / "Europe")
+- `region` field added to Account type
+
+**Code Quality:**
+- Replaced hand-rolled `hexStringToByteArray` with web3j `Numeric.hexStringToByteArray`
+- Consolidated `getOrCreateSystemAccount` methods (removed `WithRegion` variant)
+- Eliminated redundant DB re-fetches in settlement handlers
+- Fixed pre-existing ReconciliationService warnings (unused var, unnecessary safe call)
+- Zero compiler warnings across both backend modules
+
+**Commits:** `e686a89` (P1-P3), `cab581f` (P4-P6), `8a39953` (P7-P8), `3339df6` (simplify)
 
 ### MVP Production Deployment (2026-03-04)
 
@@ -72,9 +115,9 @@ Pre-demo investigation and fixes:
 
 | Component | Status | Completion | Notes |
 |-----------|--------|------------|-------|
-| Core Banking Backend | ✅ Production-Ready | 90% | All modules implemented |
-| Blockchain Service | ✅ Production-Ready | 95% | Mint/Burn/Bridge complete |
-| Smart Contracts | ✅ Production-Ready | 90% | All contracts deployed + tested |
+| Core Banking Backend | ✅ Production-Ready | 92% | All modules + same-ccy cross-border |
+| Blockchain Service | ✅ Production-Ready | 97% | Mint/Burn/ICTT Bridge/BurnMint Bridge |
+| Smart Contracts | ✅ Production-Ready | 92% | 135 tests, AriBurnMintBridge added |
 | Web App | ✅ Production-Ready | 95% | Full user flows |
 | Admin Console | ✅ Production-Ready | 90% | All admin features |
 | Mobile App | 🔶 Needs Review | 70% | Core flows implemented |
@@ -162,7 +205,10 @@ Pre-demo investigation and fixes:
 | FX quote engine | ✅ | 2026-02-03 | 30s TTL, spread calculation |
 | Cross-border orchestrator | ✅ | 2026-02-04 | Full saga pattern |
 | Daily reconciliation | ✅ | 2026-02-04 | On-chain vs off-chain |
-| **Test suites** | ✅ | 2026-02-05 | 115 Solidity + 12 Kotlin tests |
+| **AriBurnMintBridge contract** | ✅ | 2026-03-07 | Same-ccy burn/mint via Teleporter |
+| **Same-ccy cross-border service** | ✅ | 2026-03-07 | Saga orchestrator + transit pattern |
+| **Region-based accounts** | ✅ | 2026-03-07 | V020 migration, region dimension |
+| **Test suites** | ✅ | 2026-03-07 | 135 Solidity + 12 Kotlin tests |
 | **AWS 2-validator infra** | ✅ | 2026-02-05 | Terraform + bootstrap scripts |
 
 ### Phase 6: Web App, Mobile App & Launch Prep 🔶 PARTIAL
@@ -288,7 +334,6 @@ After initial implementation of Phases 1-5, a comprehensive review revealed that
 ### Low Priority
 | Issue | Impact | Effort | Notes |
 |-------|--------|--------|-------|
-| Kotlin warnings in blockchain-service | Code quality | Low | Unused variables, elvis operators |
 | No API rate limiting in prod | Potential abuse | Medium | Kong configuration needed |
 | Missing transaction export feature | User feature | Low | PDF/CSV generation |
 
@@ -302,7 +347,8 @@ After initial implementation of Phases 1-5, a comprehensive review revealed that
 | `core-banking/.../OvaPlatformApplication.kt` | Spring Boot entry |
 | `core-banking/.../identity/api/AuthController.kt` | Auth endpoints |
 | `core-banking/.../ledger/internal/service/LedgerService.kt` | Double-entry engine |
-| `core-banking/.../payments/internal/service/CrossBorderTransferService.kt` | Cross-border saga |
+| `core-banking/.../payments/internal/service/CrossBorderTransferService.kt` | FX cross-border saga |
+| `core-banking/.../payments/internal/service/SameCurrencyCrossBorderService.kt` | Same-ccy cross-border saga |
 
 ### Blockchain Service Entry Points
 | File | Purpose |
@@ -319,7 +365,8 @@ After initial implementation of Phases 1-5, a comprehensive review revealed that
 | `contracts/contracts/token/OvaStablecoin.sol` | Base stablecoin |
 | `contracts/contracts/bridge/OvaTokenHome.sol` | Native token lock/release |
 | `contracts/contracts/bridge/OvaTokenRemote.sol` | Wrapped token mint/burn |
-| `contracts/contracts/bridge/OvaBridgeAdapter.sol` | Bridge orchestration |
+| `contracts/contracts/bridge/OvaBridgeAdapter.sol` | ICTT bridge orchestration |
+| `contracts/contracts/bridge/AriBurnMintBridge.sol` | Same-ccy burn/mint bridge |
 
 ### Infrastructure
 | File | Purpose |
@@ -350,7 +397,7 @@ Before considering a phase complete, verify:
 
 ### Contracts
 - [ ] `npx hardhat compile` succeeds
-- [ ] `npx hardhat test` passes (115 tests)
+- [ ] `npx hardhat test` passes (135 tests)
 - [ ] `npx hardhat coverage` shows >80% coverage
 
 ### Frontend
