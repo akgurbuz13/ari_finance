@@ -48,7 +48,7 @@ function HeroVisual() {
 
       {/* Card: Account Balance — top left */}
       <motion.div
-        className="absolute top-4 left-4 w-[270px]"
+        className="absolute top-0 left-0 w-[260px]"
         initial={{ opacity: 0, y: 30, rotate: -2 }}
         animate={{ opacity: 1, y: 0, rotate: -2 }}
         transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
@@ -74,9 +74,9 @@ function HeroVisual() {
         </motion.div>
       </motion.div>
 
-      {/* Card: Transfer — top right */}
+      {/* Card: Transfer — middle right */}
       <motion.div
-        className="absolute top-20 right-4 w-[240px]"
+        className="absolute top-[42%] right-0 w-[240px]"
         initial={{ opacity: 0, y: 30, rotate: 3 }}
         animate={{ opacity: 1, y: 0, rotate: 3 }}
         transition={{ duration: 0.7, delay: 0.55, ease: 'easeOut' }}
@@ -101,9 +101,9 @@ function HeroVisual() {
         </motion.div>
       </motion.div>
 
-      {/* Card: Vehicle Sale — bottom center */}
+      {/* Card: Vehicle Sale — bottom left */}
       <motion.div
-        className="absolute bottom-4 left-[15%] w-[290px]"
+        className="absolute bottom-0 left-[8%] w-[280px]"
         initial={{ opacity: 0, y: 30, rotate: 1 }}
         animate={{ opacity: 1, y: 0, rotate: 1 }}
         transition={{ duration: 0.7, delay: 0.8, ease: 'easeOut' }}
