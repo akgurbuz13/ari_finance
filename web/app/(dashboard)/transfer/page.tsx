@@ -610,7 +610,7 @@ export default function TransferPage() {
 
             {/* Trust signal */}
             <p className="text-caption text-ova-400 text-center">
-              Your transfer is protected by BDDK and PSD2 regulations
+              Your transfer is protected by bank-grade encryption
             </p>
 
             {/* Actions */}

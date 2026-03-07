@@ -261,7 +261,7 @@ export default function LandingPage() {
       {/* ─── TRUST BAR ─── */}
       <section className="border-y border-ova-100 bg-ova-50/50 py-4">
         <div className="mx-auto flex max-w-landing flex-wrap items-center justify-center gap-x-8 gap-y-2 px-6 text-caption text-ova-400">
-          {['BDDK Licensed', 'PSD2 Authorized', 'KVKK Compliant', 'GDPR Compliant', 'Bank-Grade Encryption'].map(label => (
+          {['Bank-Grade Encryption', 'Identity Verified', 'GDPR Compliant', 'Protected Transactions', 'Always Available'].map(label => (
             <span key={label} className="flex items-center gap-1.5">
               <Shield size={12} strokeWidth={1.5} className="text-ova-300" />{label}
             </span>
@@ -405,7 +405,7 @@ export default function LandingPage() {
                 <FeatureItem icon={<Zap size={18} />} title="Under 2 minutes" desc="Transfers settle in seconds, not days." />
                 <FeatureItem icon={<Receipt size={18} />} title="0.25% flat fee" desc="No hidden charges, no tiers." />
                 <FeatureItem icon={<ArrowLeftRight size={18} />} title="Live FX rates" desc="Market rates, locked for 30 seconds." />
-                <FeatureItem icon={<Lock size={18} />} title="Fully regulated" desc="Licensed, insured, compliant." />
+                <FeatureItem icon={<Lock size={18} />} title="Secure by design" desc="Your money is protected at every step." />
               </motion.div>
             </AnimatedSection>
             <AnimatedSection>
@@ -533,7 +533,7 @@ export default function LandingPage() {
           </div>
           <div className="mt-10 border-t border-ova-200 pt-6">
             <p className="text-caption text-ova-400">
-              ARI Financial Services, licensed by BDDK (Turkey) and authorized under PSD2 (European Union). KVKK and GDPR compliant.
+              ARI Financial Services. Your money is protected by bank-grade encryption and verified identity checks.
             </p>
             <p className="mt-2 text-caption text-ova-400">&copy; {new Date().getFullYear()} ARI Financial Services. All rights reserved.</p>
           </div>

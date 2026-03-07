@@ -155,7 +155,7 @@ export default function SignupPage() {
         {/* Trust signal */}
         <div className="mt-8 flex items-center justify-center gap-2 text-caption text-ova-400">
           <ShieldCheck size={14} strokeWidth={1.5} />
-          <span>BDDK regulated · Encrypted end-to-end</span>
+          <span>Encrypted end-to-end · Identity verified</span>
         </div>
       </div>
     </div>
