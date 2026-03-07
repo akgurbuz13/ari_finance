@@ -12,6 +12,13 @@ class BlockchainConfig(
     @Value("\${ari.blockchain.eu-l1.rpc-url}") val euL1RpcUrl: String,
     @Value("\${ari.blockchain.eu-l1.chain-id}") val euL1ChainId: Long,
     @Value("\${ari.blockchain.eu-l1.stablecoin-address}") val euStablecoinAddress: String,
+    // Cross-currency stablecoins (ariTRY on EU, ariEUR on TR)
+    @Value("\${ari.blockchain.tr-l1.eur-stablecoin-address:}") val trEurStablecoinAddress: String,
+    @Value("\${ari.blockchain.eu-l1.try-stablecoin-address:}") val euTryStablecoinAddress: String,
+    // Burn-mint bridge addresses
+    @Value("\${ari.blockchain.bridge.tr-burn-mint-bridge-address:}") val trBurnMintBridgeAddress: String,
+    @Value("\${ari.blockchain.bridge.eu-burn-mint-bridge-address:}") val euBurnMintBridgeAddress: String,
+    // ICTT bridge contracts
     @Value("\${ari.blockchain.bridge.tr-bridge-adapter-address:}") val trBridgeAdapterAddress: String,
     @Value("\${ari.blockchain.bridge.eu-bridge-adapter-address:}") val euBridgeAdapterAddress: String,
     @Value("\${ari.blockchain.bridge.tr-token-home-address:}") val trTokenHomeAddress: String,
@@ -82,6 +89,42 @@ class BlockchainConfig(
             trL1ChainId -> euL1ChainId
             euL1ChainId -> trL1ChainId
             else -> throw IllegalArgumentException("Unknown chain ID: $chainId")
+        }
+    }
+
+    /**
+     * Get stablecoin address for a specific currency on a specific chain.
+     * Supports cross-currency (e.g. ariTRY on EU L1, ariEUR on TR L1).
+     */
+    fun getStablecoinAddress(chainId: Long, currency: String): String {
+        return when {
+            chainId == trL1ChainId && currency == "TRY" -> trStablecoinAddress
+            chainId == trL1ChainId && currency == "EUR" -> trEurStablecoinAddress
+            chainId == euL1ChainId && currency == "EUR" -> euStablecoinAddress
+            chainId == euL1ChainId && currency == "TRY" -> euTryStablecoinAddress
+            else -> throw IllegalArgumentException("No stablecoin for currency $currency on chain $chainId")
+        }
+    }
+
+    /**
+     * Get burn-mint bridge address for a chain.
+     */
+    fun getBurnMintBridgeAddress(chainId: Long): String {
+        return when (chainId) {
+            trL1ChainId -> trBurnMintBridgeAddress
+            euL1ChainId -> euBurnMintBridgeAddress
+            else -> throw IllegalArgumentException("Unknown chain ID: $chainId")
+        }
+    }
+
+    /**
+     * Get chain ID for a region.
+     */
+    fun getChainIdForRegion(region: String): Long {
+        return when (region) {
+            "TR" -> trL1ChainId
+            "EU" -> euL1ChainId
+            else -> throw IllegalArgumentException("Unknown region: $region")
         }
     }
 }

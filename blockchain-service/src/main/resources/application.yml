@@ -29,6 +29,8 @@ ari:
       rpc-url: ${TR_L1_RPC_URL:${ARI_BLOCKCHAIN_TR_L1_RPC_URL:http://127.0.0.1:9650/ext/bc/9x7zHB85vsWaX2BiVPGRWVWh4KHWcroZWGBWbzR958JYRQZWP/rpc}}
       chain-id: ${TR_L1_CHAIN_ID:1279}
       stablecoin-address: ${TR_STABLECOIN_ADDRESS:}
+      # Cross-currency: ariEUR deployed natively on TR L1
+      eur-stablecoin-address: ${TR_EUR_STABLECOIN_ADDRESS:}
       # Multisig governance addresses
       multisig-address: ${TR_MULTISIG_ADDRESS:}
       timelock-address: ${TR_TIMELOCK_ADDRESS:}
@@ -36,9 +38,14 @@ ari:
       rpc-url: ${EU_L1_RPC_URL:${ARI_BLOCKCHAIN_EU_L1_RPC_URL:http://127.0.0.1:9652/ext/bc/21Euii5No2ut9NyF7VWkkWhkeiDk2fcZkE1GkfMjNtTtgL3DWE/rpc}}
       chain-id: ${EU_L1_CHAIN_ID:1832}
       stablecoin-address: ${EU_STABLECOIN_ADDRESS:}
+      # Cross-currency: ariTRY deployed natively on EU L1
+      try-stablecoin-address: ${EU_TRY_STABLECOIN_ADDRESS:}
       multisig-address: ${EU_MULTISIG_ADDRESS:}
       timelock-address: ${EU_TIMELOCK_ADDRESS:}
     bridge:
+      # Burn-mint bridge contracts (same-currency cross-border)
+      tr-burn-mint-bridge-address: ${TR_BURN_MINT_BRIDGE_ADDRESS:}
+      eu-burn-mint-bridge-address: ${EU_BURN_MINT_BRIDGE_ADDRESS:}
       # ICTT bridge contracts - BridgeAdapter (high-level bridge orchestration)
       tr-bridge-adapter-address: ${TR_BRIDGE_ADAPTER_ADDRESS:}
       eu-bridge-adapter-address: ${EU_BRIDGE_ADAPTER_ADDRESS:}

@@ -46,6 +46,10 @@ class Web3jProvider(
         }
     }
 
+    fun getStablecoinAddress(chainId: Long, currency: String): String {
+        return config.getStablecoinAddress(chainId, currency)
+    }
+
     fun getChainIdForCurrency(currency: String): Long {
         return when (currency) {
             "TRY" -> config.trL1ChainId

@@ -52,3 +52,17 @@ class BurnRequested(
     aggregateId = paymentOrderId.toString(),
     eventType = "BurnRequested"
 )
+
+class CrossBorderBurnMintRequested(
+    val paymentOrderId: UUID,
+    val sourceAccountId: UUID,
+    val targetAccountId: UUID,
+    val amount: BigDecimal,
+    val currency: String,
+    val sourceChainId: Long,
+    val targetChainId: Long
+) : DomainEvent(
+    aggregateType = "payment",
+    aggregateId = paymentOrderId.toString(),
+    eventType = "CrossBorderBurnMintRequested"
+)

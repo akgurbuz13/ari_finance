@@ -22,7 +22,9 @@ class ContractFactory(
     private val config: BlockchainConfig
 ) {
     private val stablecoinContracts = ConcurrentHashMap<Long, AriStablecoinContract>()
+    private val stablecoinByChainCurrency = ConcurrentHashMap<Pair<Long, String>, AriStablecoinContract>()
     private val bridgeContracts = ConcurrentHashMap<Long, AriBridgeAdapterContract>()
+    private val burnMintBridgeContracts = ConcurrentHashMap<Long, AriBurnMintBridgeContract>()
     private val tokenHomeContracts = ConcurrentHashMap<Long, AriTokenHomeContract>()
     private val tokenRemoteContracts = ConcurrentHashMap<Long, AriTokenRemoteContract>()
 
@@ -42,6 +44,40 @@ class ContractFactory(
     fun getStablecoinForCurrency(currency: String, credentials: Credentials): AriStablecoinContract {
         val chainId = web3jProvider.getChainIdForCurrency(currency)
         return getStablecoin(chainId, credentials)
+    }
+
+    /**
+     * Get stablecoin for a specific currency on a specific chain.
+     * Supports cross-currency (e.g. ariTRY on EU L1).
+     */
+    fun getStablecoin(chainId: Long, currency: String, credentials: Credentials): AriStablecoinContract {
+        val key = Pair(chainId, currency)
+        return stablecoinByChainCurrency.computeIfAbsent(key) {
+            AriStablecoinContract(
+                web3j = web3jProvider.getWeb3j(chainId),
+                contractAddress = config.getStablecoinAddress(chainId, currency),
+                credentials = credentials,
+                gasProvider = web3jProvider.getGasProvider(),
+                chainId = chainId
+            )
+        }
+    }
+
+    /**
+     * Get burn-mint bridge contract for a chain.
+     */
+    fun getBurnMintBridge(chainId: Long, credentials: Credentials): AriBurnMintBridgeContract {
+        return burnMintBridgeContracts.computeIfAbsent(chainId) {
+            val address = config.getBurnMintBridgeAddress(chainId)
+            require(address.isNotBlank()) { "BurnMintBridge address not configured for chain $chainId" }
+            AriBurnMintBridgeContract(
+                web3j = web3jProvider.getWeb3j(chainId),
+                contractAddress = address,
+                credentials = credentials,
+                gasProvider = web3jProvider.getGasProvider(),
+                chainId = chainId
+            )
+        }
     }
 
     fun getBridgeAdapter(chainId: Long, credentials: Credentials): AriBridgeAdapterContract {

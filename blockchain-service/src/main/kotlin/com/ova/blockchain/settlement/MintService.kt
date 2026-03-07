@@ -30,10 +30,17 @@ class MintService(
         val error: String? = null
     )
 
-    fun mint(toAddress: String, amount: BigDecimal, currency: String, paymentOrderId: UUID? = null): MintResult {
-        log.info("Minting {} {} to address {}", amount, currency, toAddress)
+    fun mint(toAddress: String, amount: BigDecimal, currency: String, chainId: Long, paymentOrderId: UUID? = null): MintResult {
+        return mintOnChain(toAddress, amount, currency, chainId, paymentOrderId)
+    }
 
+    fun mint(toAddress: String, amount: BigDecimal, currency: String, paymentOrderId: UUID? = null): MintResult {
         val chainId = web3jProvider.getChainIdForCurrency(currency)
+        return mintOnChain(toAddress, amount, currency, chainId, paymentOrderId)
+    }
+
+    private fun mintOnChain(toAddress: String, amount: BigDecimal, currency: String, chainId: Long, paymentOrderId: UUID?): MintResult {
+        log.info("Minting {} {} to address {} on chain {}", amount, currency, toAddress, chainId)
         val amountWei = amount.multiply(BigDecimal.TEN.pow(18)).toBigInteger()
         val minterCredentials = walletService.getMinterCredentials()
 

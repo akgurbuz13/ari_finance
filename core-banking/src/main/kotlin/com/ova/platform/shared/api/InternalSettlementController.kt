@@ -1,5 +1,11 @@
 package com.ova.platform.shared.api
 
+import com.ova.platform.ledger.internal.model.AccountType
+import com.ova.platform.ledger.internal.model.EntryDirection
+import com.ova.platform.ledger.internal.model.PostingInstruction
+import com.ova.platform.ledger.internal.model.TransactionType
+import com.ova.platform.ledger.internal.service.AccountService
+import com.ova.platform.ledger.internal.service.LedgerService
 import com.ova.platform.payments.event.PaymentCompleted
 import com.ova.platform.payments.internal.model.PaymentStatus
 import com.ova.platform.payments.internal.model.PaymentType
@@ -27,6 +33,8 @@ class InternalSettlementController(
     private val statusHistoryRepository: PaymentStatusHistoryRepository,
     private val depositService: DepositService,
     private val withdrawalService: WithdrawalService,
+    private val ledgerService: LedgerService,
+    private val accountService: AccountService,
     private val outboxPublisher: OutboxPublisher,
     private val auditService: AuditService
 ) {
@@ -61,6 +69,12 @@ class InternalSettlementController(
                     // Cross-border has multiple settlement steps (burn + mint)
                     // Track completion per operation
                     handleCrossBorderSettlement(paymentOrderId, request.operation, request.txHash)
+                }
+                PaymentType.CROSS_BORDER_SAME_CCY -> {
+                    // Same-currency cross-border: single bridge_transfer operation
+                    if (order.status == PaymentStatus.SETTLING) {
+                        handleSameCcyCrossBorderSettlement(paymentOrderId, request.txHash)
+                    }
                 }
                 else -> {
                     log.debug("No settlement action for payment type={}", order.type)
@@ -152,6 +166,76 @@ class InternalSettlementController(
             log.info("Cross-border payment {} partially settled: burn={}, mint={}",
                 paymentOrderId, burnConfirmed, mintConfirmed)
         }
+    }
+    /**
+     * Handle settlement confirmation for same-currency cross-border transfers.
+     * This is the critical step: blockchain IS the settlement rail.
+     * Only now do we credit the receiver's account.
+     */
+    private fun handleSameCcyCrossBorderSettlement(paymentOrderId: UUID, txHash: String?) {
+        val order = paymentOrderRepository.findById(paymentOrderId) ?: return
+
+        // Update metadata with bridge tx hash
+        val metadata = order.metadata?.toMutableMap() ?: mutableMapOf()
+        metadata["bridge_tx_hash"] = txHash ?: ""
+        metadata["bridge_confirmed"] = "true"
+        paymentOrderRepository.updateMetadata(paymentOrderId, metadata)
+
+        // Credit receiver: debit transit -> credit receiver
+        val senderAccount = accountService.getAccountById(order.senderAccountId)
+        val transitAccount = accountService.getOrCreateSystemAccountWithRegion(
+            order.currency, AccountType.CROSS_BORDER_TRANSIT, senderAccount.region
+        )
+
+        val creditPostings = listOf(
+            PostingInstruction(
+                accountId = transitAccount.id,
+                direction = EntryDirection.DEBIT,
+                amount = order.amount,
+                currency = order.currency
+            ),
+            PostingInstruction(
+                accountId = order.receiverAccountId,
+                direction = EntryDirection.CREDIT,
+                amount = order.amount,
+                currency = order.currency
+            )
+        )
+
+        val creditTx = ledgerService.postEntries(
+            idempotencyKey = "payment:${paymentOrderId}:receiver_credit",
+            type = TransactionType.CROSS_BORDER,
+            postings = creditPostings,
+            referenceId = paymentOrderId.toString(),
+            metadata = mapOf(
+                "payment_type" to PaymentType.CROSS_BORDER_SAME_CCY.value,
+                "leg" to "transit_to_receiver",
+                "bridge_tx_hash" to (txHash ?: "")
+            )
+        )
+
+        // Mark payment completed
+        paymentOrderRepository.updateStatus(paymentOrderId, PaymentStatus.COMPLETED)
+        statusHistoryRepository.save(
+            PaymentStatusHistory(
+                paymentOrderId = paymentOrderId,
+                fromStatus = PaymentStatus.SETTLING,
+                toStatus = PaymentStatus.COMPLETED,
+                reason = "On-chain bridge transfer confirmed"
+            )
+        )
+
+        outboxPublisher.publish(
+            PaymentCompleted(
+                paymentOrderId = paymentOrderId,
+                paymentType = PaymentType.CROSS_BORDER_SAME_CCY.value,
+                ledgerTransactionId = creditTx.id,
+                amount = order.amount,
+                currency = order.currency
+            )
+        )
+
+        log.info("Same-ccy cross-border payment {} settled: transit -> receiver credited", paymentOrderId)
     }
 }
 

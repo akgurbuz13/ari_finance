@@ -30,10 +30,17 @@ class BurnService(
         val error: String? = null
     )
 
-    fun burn(fromAddress: String, amount: BigDecimal, currency: String, paymentOrderId: UUID? = null): BurnResult {
-        log.info("Burning {} {} from address {}", amount, currency, fromAddress)
+    fun burn(fromAddress: String, amount: BigDecimal, currency: String, chainId: Long, paymentOrderId: UUID? = null): BurnResult {
+        return burnOnChain(fromAddress, amount, currency, chainId, paymentOrderId)
+    }
 
+    fun burn(fromAddress: String, amount: BigDecimal, currency: String, paymentOrderId: UUID? = null): BurnResult {
         val chainId = web3jProvider.getChainIdForCurrency(currency)
+        return burnOnChain(fromAddress, amount, currency, chainId, paymentOrderId)
+    }
+
+    private fun burnOnChain(fromAddress: String, amount: BigDecimal, currency: String, chainId: Long, paymentOrderId: UUID?): BurnResult {
+        log.info("Burning {} {} from address {} on chain {}", amount, currency, fromAddress, chainId)
         val amountWei = amount.multiply(BigDecimal.TEN.pow(18)).toBigInteger()
         val minterCredentials = walletService.getMinterCredentials()
 
