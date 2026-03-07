@@ -65,3 +65,4 @@ contracts/typechain-types/
 .env.aws-test
 .env.fuji
 .demo-state
+.worktrees/
