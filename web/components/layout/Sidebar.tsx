@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, ArrowUpRight, Wallet, Clock, Settings, X } from 'lucide-react';
+import { Home, ArrowUpRight, Wallet, Clock, Settings, X, Car } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useAuth } from '../../lib/hooks/useAuth';
 
@@ -10,6 +10,7 @@ const mainNav = [
   { href: '/home' as const, label: 'Home', icon: Home },
   { href: '/transfer' as const, label: 'Transfer', icon: ArrowUpRight },
   { href: '/accounts' as const, label: 'Accounts', icon: Wallet },
+  { href: '/vehicles' as const, label: 'Vehicles', icon: Car },
   { href: '/history' as const, label: 'History', icon: Clock },
 ];
 

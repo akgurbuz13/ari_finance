@@ -77,6 +77,45 @@ export interface KycStatus {
   createdAt: string;
 }
 
+export interface Vehicle {
+  id: string;
+  tokenId: number | null;
+  ownerUserId: string;
+  vin: string;
+  plateNumber: string;
+  make: string;
+  model: string;
+  year: number;
+  color: string | null;
+  mileage: number | null;
+  fuelType: string | null;
+  transmission: string | null;
+  chainId: number;
+  mintTxHash: string | null;
+  status: 'PENDING' | 'MINTED' | 'IN_ESCROW' | 'TRANSFERRED';
+  createdAt: string;
+}
+
+export interface VehicleEscrow {
+  id: string;
+  onChainEscrowId: number | null;
+  vehicleRegistrationId: string;
+  sellerUserId: string;
+  buyerUserId: string | null;
+  saleAmount: string;
+  feeAmount: string;
+  currency: string;
+  state: string;
+  sellerConfirmed: boolean;
+  buyerConfirmed: boolean;
+  shareCode: string;
+  setupTxHash: string | null;
+  fundTxHash: string | null;
+  completeTxHash: string | null;
+  createdAt: string;
+  completedAt: string | null;
+}
+
 export interface FxRate {
   sourceCurrency: string;
   targetCurrency: string;
