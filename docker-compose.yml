@@ -3,24 +3,24 @@ version: "3.9"
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: ova-postgres
+    container_name: ari-postgres
     environment:
-      POSTGRES_DB: ova
-      POSTGRES_USER: ova
-      POSTGRES_PASSWORD: ova_dev_password
+      POSTGRES_DB: ari
+      POSTGRES_USER: ari
+      POSTGRES_PASSWORD: ari_dev_password
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ova"]
+      test: ["CMD-SHELL", "pg_isready -U ari"]
       interval: 5s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:7-alpine
-    container_name: ova-redis
+    container_name: ari-redis
     ports:
       - "6379:6379"
     volumes:

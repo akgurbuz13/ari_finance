@@ -11,10 +11,10 @@ RUN chmod +x gradlew && ./gradlew :blockchain-service:bootJar -x test --no-daemo
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-RUN addgroup -S ova && adduser -S ova -G ova
+RUN addgroup -S ari && adduser -S ari -G ari
 COPY --from=build /app/blockchain-service/build/libs/*.jar app.jar
-RUN chown -R ova:ova /app
-USER ova
+RUN chown -R ari:ari /app
+USER ari
 EXPOSE 8081
 HEALTHCHECK --interval=30s --timeout=3s CMD wget -q --spider http://localhost:8081/actuator/health || exit 1
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
