@@ -50,9 +50,9 @@ export default function AdminLoginPage() {
         {/* Brand */}
         <div className="text-center mb-8">
           <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center mx-auto mb-4">
-            <span className="text-black font-bold text-xl">O</span>
+            <span className="text-black font-bold text-xl">A</span>
           </div>
-          <h1 className="text-2xl font-bold text-white">Ova Admin</h1>
+          <h1 className="text-2xl font-bold text-white">ARI Admin</h1>
           <p className="text-gray-500 text-sm mt-1">Internal Console</p>
         </div>
 
@@ -72,7 +72,7 @@ export default function AdminLoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-gray-600"
-              placeholder="admin@ova.finance"
+              placeholder="admin@ari.finance"
             />
           </div>
 

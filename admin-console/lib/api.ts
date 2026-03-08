@@ -14,7 +14,7 @@ const adminApi: AxiosInstance = axios.create({
 adminApi.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     if (typeof window !== "undefined") {
-      const token = localStorage.getItem("ova_admin_token");
+      const token = localStorage.getItem("ari_admin_token");
       if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -30,7 +30,7 @@ adminApi.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       if (typeof window !== "undefined") {
-        localStorage.removeItem("ova_admin_token");
+        localStorage.removeItem("ari_admin_token");
         window.location.href = "/login";
       }
     }

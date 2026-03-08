@@ -7,8 +7,8 @@ import AdminShell from '../components/AdminShell';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Ova Admin Console',
-  description: 'Internal admin tool for Ova platform',
+  title: 'ARI Admin Console',
+  description: 'Internal admin tool for ARI platform',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

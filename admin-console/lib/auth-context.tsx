@@ -38,7 +38,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchUser = useCallback(async () => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('ova_admin_token') : null;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('ari_admin_token') : null;
     if (!token) {
       setIsLoading(false);
       return;
@@ -56,7 +56,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         role: data.role || 'admin',
       });
     } catch {
-      localStorage.removeItem('ova_admin_token');
+      localStorage.removeItem('ari_admin_token');
       setUser(null);
     } finally {
       setIsLoading(false);
@@ -73,7 +73,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
     const { data } = await axios.post(`${AUTH_API_URL}/api/v1/auth/login`, payload);
 
-    localStorage.setItem('ova_admin_token', data.accessToken);
+    localStorage.setItem('ari_admin_token', data.accessToken);
 
     const profileRes = await axios.get(`${AUTH_API_URL}/api/v1/users/me`, {
       headers: { Authorization: `Bearer ${data.accessToken}` },
@@ -89,7 +89,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
-    localStorage.removeItem('ova_admin_token');
+    localStorage.removeItem('ari_admin_token');
     setUser(null);
     if (typeof window !== 'undefined') {
       window.location.href = '/login';
