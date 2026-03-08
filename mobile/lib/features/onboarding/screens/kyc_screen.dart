@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/api/api_client.dart';
 import '../../../core/api/api_endpoints.dart';
-import '../../../shared/widgets/ova_button.dart';
+import '../../../shared/widgets/ari_button.dart';
 
 class KycScreen extends ConsumerStatefulWidget {
   const KycScreen({super.key});
@@ -85,7 +85,7 @@ class _KycScreenState extends ConsumerState<KycScreen> {
           iconColor: Colors.green,
           title: 'Verified',
           subtitle: 'Your identity has been verified. You have full access to all features.',
-          action: OvaButton(label: 'Continue', onPressed: () => context.go('/home')),
+          action: AriButton(label: 'Continue', onPressed: () => context.go('/home')),
         );
       case 'pending':
         return _StatusView(
@@ -93,7 +93,7 @@ class _KycScreenState extends ConsumerState<KycScreen> {
           iconColor: Colors.orange,
           title: 'Verification in Progress',
           subtitle: 'We are reviewing your documents. This usually takes a few minutes.',
-          action: OvaButton(label: 'Check Again', onPressed: _checkStatus, secondary: true),
+          action: AriButton(label: 'Check Again', onPressed: _checkStatus, secondary: true),
         );
       case 'rejected':
         return _StatusView(
@@ -101,7 +101,7 @@ class _KycScreenState extends ConsumerState<KycScreen> {
           iconColor: Colors.red,
           title: 'Verification Failed',
           subtitle: 'Your verification was rejected. Please try again with valid documents.',
-          action: OvaButton(
+          action: AriButton(
             label: _submitting ? 'Starting...' : 'Try Again',
             onPressed: _submitting ? null : _initiateKyc,
           ),
@@ -129,7 +129,7 @@ class _KycScreenState extends ConsumerState<KycScreen> {
             const SizedBox(height: 12),
             _StepRow(number: '3', text: 'Wait for automatic review'),
             const Spacer(),
-            OvaButton(
+            AriButton(
               label: _submitting ? 'Starting...' : 'Start Verification',
               onPressed: _submitting ? null : _initiateKyc,
             ),

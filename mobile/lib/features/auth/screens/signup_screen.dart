@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
-import '../../../shared/widgets/ova_button.dart';
-import '../../../shared/widgets/ova_text_field.dart';
+import '../../../shared/widgets/ari_button.dart';
+import '../../../shared/widgets/ari_text_field.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
@@ -44,7 +44,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             padding: const EdgeInsets.all(32),
             child: Column(
               children: [
-                const Text('Ova', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
+                const Text('ARI', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 Text('Create your account', style: TextStyle(color: Colors.grey[500])),
                 const SizedBox(height: 40),
@@ -56,11 +56,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   ),
                   const SizedBox(height: 16),
                 ],
-                OvaTextField(controller: _emailController, label: 'Email', keyboardType: TextInputType.emailAddress),
+                AriTextField(controller: _emailController, label: 'Email', keyboardType: TextInputType.emailAddress),
                 const SizedBox(height: 16),
-                OvaTextField(controller: _phoneController, label: 'Phone', keyboardType: TextInputType.phone),
+                AriTextField(controller: _phoneController, label: 'Phone', keyboardType: TextInputType.phone),
                 const SizedBox(height: 16),
-                OvaTextField(controller: _passwordController, label: 'Password', obscureText: true),
+                AriTextField(controller: _passwordController, label: 'Password', obscureText: true),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   value: _region,
@@ -75,7 +75,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   onChanged: (v) => setState(() => _region = v!),
                 ),
                 const SizedBox(height: 24),
-                OvaButton(label: _loading ? 'Creating...' : 'Create account', onPressed: _loading ? null : _signup),
+                AriButton(label: _loading ? 'Creating...' : 'Create account', onPressed: _loading ? null : _signup),
                 const SizedBox(height: 24),
                 TextButton(
                   onPressed: () => context.go('/login'),

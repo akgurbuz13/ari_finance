@@ -6,8 +6,8 @@ import '../../../core/api/api_endpoints.dart';
 import '../../../core/services/biometric_service.dart';
 import '../../../core/services/notification_service.dart';
 import '../../auth/providers/auth_provider.dart';
-import '../../../shared/widgets/ova_button.dart';
-import '../../../shared/widgets/ova_text_field.dart';
+import '../../../shared/widgets/ari_button.dart';
+import '../../../shared/widgets/ari_text_field.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -171,23 +171,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
               const SizedBox(height: 12),
             ],
-            OvaTextField(controller: _firstNameController, label: 'First Name'),
+            AriTextField(controller: _firstNameController, label: 'First Name'),
             const SizedBox(height: 12),
-            OvaTextField(controller: _lastNameController, label: 'Last Name'),
+            AriTextField(controller: _lastNameController, label: 'Last Name'),
             const SizedBox(height: 12),
-            OvaTextField(
+            AriTextField(
               label: 'Email',
               controller: TextEditingController(text: _user?['email'] ?? ''),
               enabled: false,
             ),
             const SizedBox(height: 12),
-            OvaTextField(
+            AriTextField(
               label: 'Phone',
               controller: TextEditingController(text: _user?['phone'] ?? ''),
               enabled: false,
             ),
             const SizedBox(height: 16),
-            OvaButton(
+            AriButton(
               label: _saving ? 'Saving...' : 'Save Changes',
               onPressed: _saving ? null : _saveProfile,
             ),
@@ -283,7 +283,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 32),
 
             // Logout
-            OvaButton(label: 'Log Out', onPressed: _logout, secondary: true),
+            AriButton(label: 'Log Out', onPressed: _logout, secondary: true),
             const SizedBox(height: 32),
           ],
         ),

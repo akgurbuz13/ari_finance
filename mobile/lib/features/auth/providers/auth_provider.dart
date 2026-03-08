@@ -70,7 +70,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<bool> authenticateWithBiometric() async {
     final biometricService = _ref.read(biometricServiceProvider);
     final authenticated = await biometricService.authenticate(
-      reason: 'Authenticate to access Ova',
+      reason: 'Authenticate to access ARI',
     );
 
     if (authenticated) {
