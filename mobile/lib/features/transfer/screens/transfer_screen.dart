@@ -8,8 +8,8 @@ import '../../../core/api/api_client.dart';
 import '../../../core/api/api_endpoints.dart';
 import '../../../core/models/account.dart';
 import '../../../core/models/fx_quote.dart';
-import '../../../shared/widgets/ova_button.dart';
-import '../../../shared/widgets/ova_text_field.dart';
+import '../../../shared/widgets/ari_button.dart';
+import '../../../shared/widgets/ari_text_field.dart';
 
 class TransferScreen extends ConsumerStatefulWidget {
   const TransferScreen({super.key});
@@ -287,13 +287,13 @@ class _TransferScreenState extends ConsumerState<TransferScreen> with SingleTick
             ),
             const SizedBox(height: 16),
           ],
-          OvaTextField(
+          AriTextField(
             controller: _receiverController,
             label: 'Recipient Account ID',
             hint: 'Enter recipient account ID',
           ),
           const SizedBox(height: 16),
-          OvaTextField(
+          AriTextField(
             controller: _domesticAmountController,
             label: 'Amount',
             keyboardType: TextInputType.number,
@@ -313,7 +313,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> with SingleTick
             onChanged: (v) => setState(() => _domesticCurrency = v!),
           ),
           const SizedBox(height: 24),
-          OvaButton(
+          AriButton(
             label: _domesticLoading ? 'Processing...' : 'Send Money',
             onPressed: _domesticLoading ? null : _sendDomestic,
           ),
@@ -364,13 +364,13 @@ class _TransferScreenState extends ConsumerState<TransferScreen> with SingleTick
             ),
             const SizedBox(height: 16),
           ],
-          OvaTextField(
+          AriTextField(
             controller: _crossBorderReceiverController,
             label: 'Recipient Account ID',
             hint: 'Enter recipient account ID',
           ),
           const SizedBox(height: 16),
-          OvaTextField(
+          AriTextField(
             controller: _crossBorderAmountController,
             label: 'Amount (${_getAccount(_crossBorderSourceAccountId)?.currency ?? 'TRY'})',
             keyboardType: TextInputType.number,
@@ -382,7 +382,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> with SingleTick
             style: TextStyle(color: Colors.grey[400], fontSize: 12),
           ),
           const SizedBox(height: 24),
-          OvaButton(
+          AriButton(
             label: _crossBorderLoading ? 'Getting Quote...' : 'Get FX Quote',
             onPressed: _crossBorderLoading ? null : _getQuote,
           ),
@@ -441,7 +441,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> with SingleTick
             ),
           ),
           const SizedBox(height: 24),
-          OvaButton(
+          AriButton(
             label: _crossBorderLoading ? 'Submitting...' : 'Confirm Transfer',
             onPressed: (_crossBorderLoading || _countdown <= 0) ? null : _confirmCrossBorder,
           ),
@@ -489,7 +489,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> with SingleTick
             ),
           ],
           const SizedBox(height: 32),
-          OvaButton(label: 'New Transfer', onPressed: _resetCrossBorder),
+          AriButton(label: 'New Transfer', onPressed: _resetCrossBorder),
         ],
       ),
     );

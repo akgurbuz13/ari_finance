@@ -20,7 +20,7 @@ void main() async {
   final notificationService = NotificationService();
   await notificationService.initialize();
 
-  runApp(const ProviderScope(child: OvaApp()));
+  runApp(const ProviderScope(child: AriApp()));
 }
 
 final _router = GoRouter(
@@ -42,13 +42,13 @@ final _router = GoRouter(
   ],
 );
 
-class OvaApp extends StatelessWidget {
-  const OvaApp({super.key});
+class AriApp extends StatelessWidget {
+  const AriApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Ova',
+      title: 'ARI',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.light,

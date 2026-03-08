@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class OvaTextField extends StatelessWidget {
+class AriTextField extends StatelessWidget {
   final TextEditingController? controller;
   final String label;
   final String? hint;
@@ -10,7 +10,7 @@ class OvaTextField extends StatelessWidget {
   final bool enabled;
   final ValueChanged<String>? onChanged;
 
-  const OvaTextField({
+  const AriTextField({
     super.key,
     this.controller,
     required this.label,

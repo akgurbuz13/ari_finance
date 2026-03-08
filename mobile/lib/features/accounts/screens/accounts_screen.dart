@@ -4,7 +4,7 @@ import '../../../core/api/api_client.dart';
 import '../../../core/api/api_endpoints.dart';
 import '../../../core/models/account.dart';
 import '../../../shared/widgets/balance_card.dart';
-import '../../../shared/widgets/ova_button.dart';
+import '../../../shared/widgets/ari_button.dart';
 
 class AccountsScreen extends ConsumerStatefulWidget {
   const AccountsScreen({super.key});
@@ -103,7 +103,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                             Row(
                               children: [
                                 Expanded(
-                                  child: OvaButton(
+                                  child: AriButton(
                                     label: '+ TRY',
                                     onPressed: _creating ? null : () => _createAccount('TRY'),
                                     secondary: true,
@@ -111,7 +111,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
-                                  child: OvaButton(
+                                  child: AriButton(
                                     label: '+ EUR',
                                     onPressed: _creating ? null : () => _createAccount('EUR'),
                                     secondary: true,

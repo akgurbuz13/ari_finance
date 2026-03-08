@@ -34,7 +34,7 @@ class BiometricService {
 
   /// Prompt the user for biometric authentication.
   /// Returns true if authentication succeeded, false otherwise.
-  Future<bool> authenticate({String reason = 'Authenticate to access Ova'}) async {
+  Future<bool> authenticate({String reason = 'Authenticate to access ARI'}) async {
     try {
       return await _localAuth.authenticate(
         localizedReason: reason,

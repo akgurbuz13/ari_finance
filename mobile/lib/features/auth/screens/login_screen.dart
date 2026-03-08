@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
-import '../../../shared/widgets/ova_button.dart';
-import '../../../shared/widgets/ova_text_field.dart';
+import '../../../shared/widgets/ari_button.dart';
+import '../../../shared/widgets/ari_text_field.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -46,7 +46,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Ova', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.black)),
+                const Text('ARI', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.black)),
                 const SizedBox(height: 8),
                 Text('Sign in to your account', style: TextStyle(color: Colors.grey[500])),
                 const SizedBox(height: 40),
@@ -58,13 +58,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   const SizedBox(height: 16),
                 ],
-                OvaTextField(controller: _emailController, label: 'Email', keyboardType: TextInputType.emailAddress),
+                AriTextField(controller: _emailController, label: 'Email', keyboardType: TextInputType.emailAddress),
                 const SizedBox(height: 16),
-                OvaTextField(controller: _passwordController, label: 'Password', obscureText: true),
+                AriTextField(controller: _passwordController, label: 'Password', obscureText: true),
                 const SizedBox(height: 16),
-                OvaTextField(controller: _totpController, label: '2FA Code (optional)', keyboardType: TextInputType.number),
+                AriTextField(controller: _totpController, label: '2FA Code (optional)', keyboardType: TextInputType.number),
                 const SizedBox(height: 24),
-                OvaButton(label: _loading ? 'Signing in...' : 'Sign in', onPressed: _loading ? null : _login),
+                AriButton(label: _loading ? 'Signing in...' : 'Sign in', onPressed: _loading ? null : _login),
                 const SizedBox(height: 24),
                 TextButton(
                   onPressed: () => context.go('/signup'),

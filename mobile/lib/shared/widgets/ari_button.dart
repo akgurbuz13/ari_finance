@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class OvaButton extends StatelessWidget {
+class AriButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
   final bool secondary;
   final double? width;
 
-  const OvaButton({
+  const AriButton({
     super.key,
     required this.label,
     this.onPressed,
