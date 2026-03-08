@@ -15,27 +15,27 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-ova-navy text-white hover:bg-ova-navy-light hover:shadow-sm disabled:bg-ova-300 disabled:text-ova-500 disabled:cursor-not-allowed",
+    "bg-ova-navy text-white hover:bg-ova-navy-light disabled:bg-ova-300 disabled:text-ova-500 disabled:cursor-not-allowed",
   secondary:
-    "bg-white text-ova-900 border border-ova-300 hover:bg-ova-50 hover:border-ova-400 active:bg-ova-100 disabled:bg-ova-50 disabled:text-ova-400 disabled:border-ova-200",
+    "bg-white text-ova-900 border border-ova-200 hover:bg-ova-50 hover:border-ova-300 active:bg-ova-100 disabled:bg-ova-50 disabled:text-ova-400 disabled:border-ova-200",
   ghost:
     "bg-transparent text-ova-700 hover:bg-ova-100 active:bg-ova-200 disabled:text-ova-400",
   danger:
     "bg-ova-red text-white hover:bg-ova-red/90 active:bg-ova-red/80 disabled:bg-ova-red/40",
   link:
-    "bg-transparent text-ova-blue hover:underline font-medium p-0 h-auto",
+    "bg-transparent text-ova-700 hover:text-ova-900 hover:underline font-medium p-0 h-auto",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: "px-4 h-10 text-body-sm",
-  md: "px-6 h-12 text-body-sm",
-  lg: "px-8 h-14 text-body",
+  sm: "px-4 h-9 text-body-sm gap-1.5",
+  md: "px-5 h-11 text-body-sm gap-2",
+  lg: "px-6 h-12 text-body gap-2",
 };
 
 function LoadingSpinner() {
   return (
     <svg
-      className="animate-spin -ml-1 mr-2 h-4 w-4"
+      className="animate-spin -ml-0.5 mr-1.5 h-4 w-4"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
@@ -76,8 +76,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={clsx(
-          "inline-flex items-center justify-center font-medium transition-all duration-base ease-out focus:outline-none focus:ring-2 focus:ring-ova-blue focus:ring-offset-2 cursor-pointer disabled:cursor-not-allowed active:scale-[0.98]",
-          variant === "primary" ? "rounded-full" : "rounded-xl",
+          "inline-flex items-center justify-center font-medium rounded-xl transition-all duration-base ease-out focus:outline-none focus:ring-2 focus:ring-ova-900/10 focus:ring-offset-2 cursor-pointer disabled:cursor-not-allowed active:scale-[0.98]",
           variant !== "link" && sizeStyles[size],
           variantStyles[variant],
           fullWidth && "w-full",

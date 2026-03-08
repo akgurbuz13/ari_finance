@@ -96,22 +96,24 @@ export default function HistoryPage() {
     <div className="max-w-dashboard mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-h2 text-ova-900">Transaction History</h1>
+        <h1 className="text-h2 font-display text-ova-900">Transaction History</h1>
         {accounts.length > 0 && (
-          <select
-            value={selectedAccount}
-            onChange={(e) => {
-              setSelectedAccount(e.target.value);
-              setLimit(50);
-            }}
-            className="h-12 px-4 bg-white border border-ova-300 rounded-xl text-body-sm text-ova-700 focus:outline-none focus:border-ova-blue focus:ring-2 focus:ring-ova-blue/20 transition-all duration-base"
-          >
+          <div className="inline-flex bg-ova-100 rounded-xl p-1 gap-1">
             {accounts.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.currency} Account
-              </option>
+              <button
+                key={a.id}
+                onClick={() => { setSelectedAccount(a.id); setLimit(50); }}
+                className={clsx(
+                  'px-4 py-2 rounded-lg text-body-sm font-medium transition-all duration-fast cursor-pointer',
+                  selectedAccount === a.id
+                    ? 'bg-white text-ova-900 shadow-sm'
+                    : 'text-ova-500 hover:text-ova-700'
+                )}
+              >
+                {a.currency === 'TRY' ? '🇹🇷' : '🇪🇺'} {a.currency}
+              </button>
             ))}
-          </select>
+          </div>
         )}
       </div>
 

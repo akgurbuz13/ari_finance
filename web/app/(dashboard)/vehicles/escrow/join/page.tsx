@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Car, Shield } from 'lucide-react';
+import { ArrowLeft, Car, Shield, Lock } from 'lucide-react';
 import api from '../../../../../lib/api/client';
 import type { VehicleEscrow } from '../../../../../lib/api/types';
 import Card from '../../../../../components/ui/Card';
 import Button from '../../../../../components/ui/Button';
 import Input from '../../../../../components/ui/Input';
+import AvalancheBadge from '../../../../../components/ui/AvalancheBadge';
 
 export default function JoinEscrowPage() {
   const router = useRouter();
@@ -55,68 +56,112 @@ export default function JoinEscrowPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <Link href="/vehicles" className="inline-flex items-center gap-2 text-body-sm text-ova-500 hover:text-ova-700 mb-6">
-        <ArrowLeft size={16} /> Back
+      {/* Back link */}
+      <Link
+        href="/vehicles"
+        className="inline-flex items-center gap-2 text-body-sm text-ova-500 hover:text-ova-900 transition-colors mb-8"
+      >
+        <ArrowLeft size={16} />
+        Back
       </Link>
 
-      <h1 className="text-h2 text-ova-900 mb-2">Join Vehicle Escrow</h1>
-      <p className="text-body-sm text-ova-500 mb-8">Enter the share code from the seller to review and join the deal</p>
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-h2 font-display text-ova-900 mb-2">Join Vehicle Escrow</h1>
+        <p className="text-body-sm text-ova-500">
+          Enter the share code from the seller to review and join the deal
+        </p>
+      </div>
 
+      {/* Lookup Form */}
       {!escrow && (
         <Card>
-          <form onSubmit={(e) => { e.preventDefault(); lookupEscrow(code); }} className="space-y-5">
-            <Input label="Share Code" value={code} onChange={e => setCode(e.target.value.toUpperCase())}
-              placeholder="ABCD1234" maxLength={8} required />
-            {error && <p className="text-body-sm text-ova-red">{error}</p>}
-            <Button type="submit" loading={loading} fullWidth>
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              lookupEscrow(code);
+            }}
+            className="space-y-5"
+          >
+            <Input
+              label="Share Code"
+              value={code}
+              onChange={e => setCode(e.target.value.toUpperCase())}
+              placeholder="ABCD1234"
+              maxLength={8}
+              required
+            />
+            {error && (
+              <div className="p-3 bg-ova-red-light rounded-xl border border-ova-red/10">
+                <p className="text-body-sm text-ova-red">{error}</p>
+              </div>
+            )}
+            <Button type="submit" loading={loading} fullWidth size="lg">
               Look Up Escrow
             </Button>
           </form>
         </Card>
       )}
 
+      {/* Escrow Preview */}
       {escrow && (
-        <div className="space-y-6">
+        <div className="space-y-4">
+          {/* Deal Card */}
           <Card>
             <div className="space-y-6">
+              {/* Vehicle Header */}
               <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-ova-100">
-                  <Car size={24} className="text-ova-navy" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-ova-50 border border-ova-200/60 shrink-0">
+                  <Car size={22} className="text-ova-navy" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-body font-semibold text-ova-900">Vehicle Escrow Deal</h3>
+                  <span className="text-caption text-ova-400 font-mono">Code: {escrow.shareCode}</span>
+                </div>
+                <AvalancheBadge size="sm" />
+              </div>
+
+              {/* Price Grid */}
+              <div className="grid grid-cols-2 gap-4 p-4 bg-ova-50 border border-ova-200/60 rounded-xl">
+                <div>
+                  <span className="micro-label block mb-1">Sale Price</span>
+                  <span className="text-h3 font-display text-ova-900">
+                    {parseFloat(escrow.saleAmount).toLocaleString('tr-TR')}
+                  </span>
+                  <span className="text-caption text-ova-500 ml-1">{escrow.currency}</span>
                 </div>
                 <div>
-                  <h3 className="text-body font-medium text-ova-900">Vehicle Escrow Deal</h3>
-                  <p className="text-body-sm text-ova-500">Code: {escrow.shareCode}</p>
+                  <span className="micro-label block mb-1">Platform Fee</span>
+                  <span className="text-body font-semibold text-ova-900">
+                    {parseFloat(escrow.feeAmount).toLocaleString('tr-TR')}
+                  </span>
+                  <span className="text-caption text-ova-500 ml-1">{escrow.currency}</span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <span className="text-caption text-ova-500 block">Sale Price</span>
-                  <span className="text-h3 text-ova-900">
-                    {parseFloat(escrow.saleAmount).toLocaleString('tr-TR')} {escrow.currency}
-                  </span>
+              {/* Security notice */}
+              <div className="flex items-start gap-3 p-4 bg-ova-50 border border-ova-200/60 rounded-xl">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white border border-ova-200/60 shrink-0">
+                  <Lock size={16} className="text-ova-navy" />
                 </div>
                 <div>
-                  <span className="text-caption text-ova-500 block">Platform Fee</span>
-                  <span className="text-body font-medium text-ova-900">
-                    {parseFloat(escrow.feeAmount).toLocaleString('tr-TR')} {escrow.currency}
-                  </span>
-                </div>
-              </div>
-
-              <div className="bg-ova-50 rounded-xl p-4 flex items-start gap-3">
-                <Shield size={20} className="text-ova-navy mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-body-sm text-ova-700 font-medium">Blockchain-Secured Escrow</p>
-                  <p className="text-caption text-ova-500 mt-1">
+                  <p className="text-body-sm font-medium text-ova-900">Blockchain-Secured Escrow</p>
+                  <p className="text-caption text-ova-500 mt-0.5 leading-relaxed">
                     Your payment is locked in a smart contract. The vehicle NFT transfers to you only after both parties confirm. Neither party can cheat.
                   </p>
                 </div>
               </div>
 
-              {error && <p className="text-body-sm text-ova-red">{error}</p>}
+              {/* Error */}
+              {error && (
+                <div className="p-3 bg-ova-red-light rounded-xl border border-ova-red/10">
+                  <p className="text-body-sm text-ova-red">{error}</p>
+                </div>
+              )}
 
+              {/* Join button */}
               <Button fullWidth size="lg" loading={joining} onClick={handleJoin}>
+                <Shield size={16} className="mr-1.5" />
                 Join & Review Deal
               </Button>
             </div>

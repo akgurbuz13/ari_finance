@@ -26,23 +26,25 @@ interface TransferProgressProps {
 function StepIndicator({ status }: { status: StepStatus }) {
   if (status === 'completed') {
     return (
-      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ova-green text-white">
-        <Check size={16} strokeWidth={2.5} />
+      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-ova-green text-white shrink-0">
+        <Check size={14} strokeWidth={3} />
       </div>
     );
   }
   if (status === 'active') {
     return (
-      <div className="relative">
-        <div className="absolute inset-0 rounded-full bg-ova-blue/20 animate-ping" style={{ animationDuration: '2s' }} />
-        <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-ova-blue">
-          <div className="h-2.5 w-2.5 rounded-full bg-white" />
+      <div className="relative shrink-0">
+        <div className="absolute -inset-1 rounded-full bg-ova-900/10 animate-pulse" />
+        <div className="relative flex h-7 w-7 items-center justify-center rounded-full bg-ova-navy">
+          <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
         </div>
       </div>
     );
   }
   return (
-    <div className="h-8 w-8 rounded-full bg-ova-300" />
+    <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-ova-200 bg-white shrink-0">
+      <div className="h-2 w-2 rounded-full bg-ova-200" />
+    </div>
   );
 }
 
@@ -53,17 +55,17 @@ function ExpandableDetails({ details }: { details: StepDetail[] }) {
     <div className="mt-2">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="inline-flex items-center gap-1 text-caption text-ova-blue cursor-pointer hover:underline"
+        className="inline-flex items-center gap-1 text-caption text-ova-700 cursor-pointer hover:text-ova-900 transition-colors"
       >
         <ChevronRight size={12} strokeWidth={2} className={clsx('transition-transform duration-fast', expanded && 'rotate-90')} />
-        {expanded ? 'Hide settlement details' : 'Show settlement details'}
+        {expanded ? 'Hide details' : 'View details'}
       </button>
       {expanded && (
-        <div className="mt-2 space-y-1.5 pl-1">
+        <div className="mt-2 space-y-1.5 pl-1 bg-ova-50 rounded-lg p-3">
           {details.map((detail) => (
-            <div key={detail.label} className="flex items-center gap-2">
-              <span className="text-caption text-ova-400">{detail.label}:</span>
-              <span className="font-mono text-caption text-ova-500">
+            <div key={detail.label} className="flex items-center justify-between gap-2">
+              <span className="text-caption text-ova-500">{detail.label}</span>
+              <span className="font-mono text-caption text-ova-700">
                 {detail.value}
               </span>
             </div>
@@ -80,39 +82,39 @@ export default function TransferProgress({ steps, className }: TransferProgressP
       {steps.map((step, index) => {
         const isLast = index === steps.length - 1;
         return (
-          <div key={step.label} className="flex gap-3">
+          <div key={step.label} className="flex gap-4">
             {/* Timeline column */}
             <div className="flex flex-col items-center">
               <StepIndicator status={step.status} />
               {!isLast && (
                 <div className={clsx(
-                  'w-0.5 flex-1 min-h-[28px]',
+                  'w-px flex-1 min-h-[32px] transition-colors duration-300',
                   step.status === 'completed' ? 'bg-ova-green' : 'bg-ova-200',
                 )} />
               )}
             </div>
 
             {/* Content column */}
-            <div className={clsx('pb-6', isLast && 'pb-0')}>
-              <div className="flex items-center gap-2 min-h-[24px]">
+            <div className={clsx('pb-7 pt-0.5', isLast && 'pb-0')}>
+              <div className="flex items-center gap-2.5">
                 <span className={clsx(
-                  'text-body-sm font-medium',
+                  'text-body-sm font-medium leading-none',
                   step.status === 'completed' ? 'text-ova-900' :
-                  step.status === 'active' ? 'text-ova-blue' : 'text-ova-400',
+                  step.status === 'active' ? 'text-ova-900' : 'text-ova-400',
                 )}>
                   {step.label}
                 </span>
                 {step.status === 'completed' && (
-                  <span className="text-caption text-ova-green">Complete</span>
+                  <span className="text-micro font-medium text-ova-green bg-ova-green/10 px-1.5 py-0.5 rounded-full">Done</span>
                 )}
                 {step.status === 'active' && (
-                  <span className="text-caption text-ova-blue">In progress</span>
+                  <span className="text-micro font-medium text-ova-navy bg-ova-navy/10 px-1.5 py-0.5 rounded-full">Processing</span>
                 )}
               </div>
               {step.timestamp && (
                 <p className={clsx(
-                  'text-caption mt-0.5',
-                  step.status === 'active' ? 'text-ova-blue' : 'text-ova-400',
+                  'text-caption mt-1 font-mono',
+                  step.status === 'active' ? 'text-ova-500' : 'text-ova-400',
                 )}>
                   {step.timestamp}
                 </p>

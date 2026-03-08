@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Copy, Check } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Car, Hash, ArrowRight } from 'lucide-react';
 import api from '../../../../../lib/api/client';
 import type { Vehicle, VehicleEscrow } from '../../../../../lib/api/types';
 import Card from '../../../../../components/ui/Card';
 import Button from '../../../../../components/ui/Button';
 import Input from '../../../../../components/ui/Input';
+import AvalancheBadge from '../../../../../components/ui/AvalancheBadge';
 
 export default function CreateEscrowPage() {
   const router = useRouter();
@@ -54,98 +55,165 @@ export default function CreateEscrowPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  /* --- Created State --- */
   if (created) {
     return (
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-h2 text-ova-900 mb-2">Escrow Created</h1>
-        <p className="text-body-sm text-ova-500 mb-8">Share this link with the buyer to start the deal</p>
+        {/* Success Header */}
+        <div className="text-center mb-8">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-ova-green/10 mx-auto mb-4">
+            <Check size={24} className="text-ova-green" />
+          </div>
+          <h1 className="text-h2 font-display text-ova-900 mb-1">Escrow Created</h1>
+          <p className="text-body-sm text-ova-500">Share this with the buyer to start the deal</p>
+        </div>
 
-        <Card>
-          <div className="space-y-6">
-            <div>
-              <span className="text-caption text-ova-500 block mb-1">Share Code</span>
-              <span className="text-h2 text-ova-navy font-mono tracking-widest">{created.shareCode}</span>
-            </div>
-
-            <div>
-              <span className="text-caption text-ova-500 block mb-2">Share Link</span>
-              <div className="flex items-center gap-2">
-                <input readOnly value={shareLink}
-                  className="flex-1 h-12 px-4 bg-ova-50 border border-ova-200 rounded-xl text-body-sm text-ova-700 font-mono" />
-                <Button variant="secondary" onClick={copyLink}>
-                  {copied ? <Check size={18} /> : <Copy size={18} />}
-                </Button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-ova-100">
-              <div>
-                <span className="text-caption text-ova-500 block">Sale Amount</span>
-                <span className="text-body font-medium text-ova-900">
-                  {parseFloat(created.saleAmount).toLocaleString('tr-TR')} {created.currency}
-                </span>
-              </div>
-              <div>
-                <span className="text-caption text-ova-500 block">Fee</span>
-                <span className="text-body font-medium text-ova-900">
-                  {parseFloat(created.feeAmount).toLocaleString('tr-TR')} {created.currency}
-                </span>
-              </div>
-            </div>
-
-            <Button fullWidth onClick={() => router.push(`/vehicles/escrow/${created.id}`)}>
-              View Escrow Details
-            </Button>
+        {/* Share Code Card */}
+        <Card className="mb-6">
+          <div className="text-center py-4">
+            <span className="micro-label block mb-3">Share Code</span>
+            <span className="text-h1 font-display text-ova-navy font-mono tracking-[0.2em]">
+              {created.shareCode}
+            </span>
           </div>
         </Card>
+
+        {/* Share Link */}
+        <Card className="mb-6">
+          <div className="space-y-4">
+            <span className="micro-label block">Share Link</span>
+            <div className="flex items-center gap-2">
+              <input
+                readOnly
+                value={shareLink}
+                className="flex-1 h-11 px-4 bg-ova-50 border border-ova-200/60 rounded-xl text-body-sm text-ova-700 font-mono truncate"
+              />
+              <Button variant="secondary" onClick={copyLink} size="md">
+                {copied ? <Check size={16} /> : <Copy size={16} />}
+              </Button>
+            </div>
+          </div>
+        </Card>
+
+        {/* Deal Summary */}
+        <Card className="mb-6">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <span className="micro-label block mb-1">Sale Amount</span>
+              <span className="text-body font-semibold text-ova-900">
+                {parseFloat(created.saleAmount).toLocaleString('tr-TR')} {created.currency}
+              </span>
+            </div>
+            <div>
+              <span className="micro-label block mb-1">Platform Fee</span>
+              <span className="text-body font-semibold text-ova-900">
+                {parseFloat(created.feeAmount).toLocaleString('tr-TR')} {created.currency}
+              </span>
+            </div>
+          </div>
+        </Card>
+
+        <Button fullWidth size="lg" onClick={() => router.push(`/vehicles/escrow/${created.id}`)}>
+          View Escrow Details
+          <ArrowRight size={16} className="ml-1.5" />
+        </Button>
       </div>
     );
   }
 
+  /* --- Create Form --- */
   return (
     <div className="max-w-2xl mx-auto">
-      <Link href="/vehicles" className="inline-flex items-center gap-2 text-body-sm text-ova-500 hover:text-ova-700 mb-6">
-        <ArrowLeft size={16} /> Back to vehicles
+      {/* Back link */}
+      <Link
+        href="/vehicles"
+        className="inline-flex items-center gap-2 text-body-sm text-ova-500 hover:text-ova-900 transition-colors mb-8"
+      >
+        <ArrowLeft size={16} />
+        Back to vehicles
       </Link>
 
-      <h1 className="text-h2 text-ova-900 mb-2">Create Escrow</h1>
-      <p className="text-body-sm text-ova-500 mb-8">Set a price and create a secure escrow for your vehicle sale</p>
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-h2 font-display text-ova-900 mb-2">Create Escrow</h1>
+        <p className="text-body-sm text-ova-500">
+          Set a price and create a secure, blockchain-backed escrow for your vehicle sale
+        </p>
+      </div>
 
+      {/* Vehicle Preview */}
       {vehicle && (
-        <Card className="mb-6">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-ova-100">
-              <span className="text-body font-bold text-ova-navy">{vehicle.year.toString().slice(-2)}</span>
-            </div>
-            <div>
-              <h3 className="text-body font-medium text-ova-900">{vehicle.make} {vehicle.model}</h3>
-              <p className="text-body-sm text-ova-500">{vehicle.plateNumber} · Token #{vehicle.tokenId}</p>
+        <div className="flex items-center gap-4 p-4 bg-ova-50 border border-ova-200/60 rounded-xl mb-6">
+          <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-white border border-ova-200/60 shrink-0">
+            <Car size={18} className="text-ova-navy" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-body-sm font-semibold text-ova-900">
+              {vehicle.make} {vehicle.model}
+            </h3>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-caption text-ova-500">{vehicle.plateNumber}</span>
+              {vehicle.tokenId != null && (
+                <span className="text-caption text-ova-400 font-mono flex items-center gap-1">
+                  <Hash size={10} />
+                  {vehicle.tokenId}
+                </span>
+              )}
             </div>
           </div>
-        </Card>
+          <AvalancheBadge size="sm" />
+        </div>
       )}
 
+      {/* Sale Form */}
       <Card>
-        <form onSubmit={handleCreate} className="space-y-5">
-          <Input label="Sale Amount (TRY)" type="number" value={saleAmount}
-            onChange={e => setSaleAmount(e.target.value)}
-            placeholder="150000" min={1} step="0.01" required />
-
-          <div className="bg-ova-50 rounded-xl p-4">
-            <div className="flex justify-between text-body-sm">
-              <span className="text-ova-500">Platform Fee</span>
-              <span className="text-ova-700 font-medium">50.00 TRY</span>
-            </div>
-            <div className="flex justify-between text-body-sm mt-2">
-              <span className="text-ova-500">Buyer pays total</span>
-              <span className="text-ova-900 font-medium">
-                {saleAmount ? `${(parseFloat(saleAmount) + 50).toLocaleString('tr-TR')} TRY` : '—'}
+        <form onSubmit={handleCreate} className="space-y-6">
+          {/* Amount input - display style */}
+          <div>
+            <span className="micro-label block mb-3">Sale Amount</span>
+            <div className="relative">
+              <input
+                type="number"
+                value={saleAmount}
+                onChange={e => setSaleAmount(e.target.value)}
+                placeholder="0"
+                min={1}
+                step="0.01"
+                required
+                className="w-full h-16 px-4 pr-16 bg-ova-50 border border-ova-200 rounded-xl text-h2 font-display text-ova-900 placeholder:text-ova-300 transition-all duration-base focus:outline-none focus:bg-white focus:border-ova-900 focus:ring-1 focus:ring-ova-900/10 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-body-sm font-medium text-ova-400">
+                TRY
               </span>
             </div>
           </div>
 
-          {error && <p className="text-body-sm text-ova-red">{error}</p>}
+          {/* Fee breakdown */}
+          <div className="bg-ova-50 border border-ova-200/60 rounded-xl p-4 space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-body-sm text-ova-500">Platform Fee</span>
+              <span className="text-body-sm font-medium text-ova-700">50.00 TRY</span>
+            </div>
+            <div className="border-t border-ova-200/60" />
+            <div className="flex justify-between items-center">
+              <span className="text-body-sm text-ova-700 font-medium">Buyer pays total</span>
+              <span className="text-body font-semibold text-ova-900">
+                {saleAmount
+                  ? `${(parseFloat(saleAmount) + 50).toLocaleString('tr-TR')} TRY`
+                  : '---'
+                }
+              </span>
+            </div>
+          </div>
 
+          {/* Error */}
+          {error && (
+            <div className="p-3 bg-ova-red-light rounded-xl border border-ova-red/10">
+              <p className="text-body-sm text-ova-red">{error}</p>
+            </div>
+          )}
+
+          {/* Submit */}
           <Button type="submit" loading={loading} fullWidth size="lg">
             Create Escrow
           </Button>

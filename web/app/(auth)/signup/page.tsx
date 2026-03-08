@@ -49,7 +49,7 @@ export default function SignupPage() {
         </div>
 
         {/* Card shell */}
-        <div className="bg-white border border-ova-200 rounded-2xl shadow-card p-8 sm:p-10">
+        <div className="bg-white border border-ova-200/60 rounded-2xl p-8 sm:p-10">
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <AnimatePresence>
@@ -145,7 +145,7 @@ export default function SignupPage() {
           <div className="border-t border-ova-200 mt-6 pt-6">
             <p className="text-center text-body-sm text-ova-500">
               Already have an account?{' '}
-              <Link href="/login" className="text-ova-blue font-medium hover:underline">
+              <Link href="/login" className="text-ova-700 font-medium hover:underline">
                 Sign in
               </Link>
             </p>

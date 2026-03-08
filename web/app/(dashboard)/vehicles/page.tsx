@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Car, Plus, ArrowRight } from 'lucide-react';
+import { Car, Plus, ArrowRight, ChevronRight } from 'lucide-react';
 import api from '../../../lib/api/client';
 import type { Vehicle } from '../../../lib/api/types';
-import Card from '../../../components/ui/Card';
 import Button from '../../../components/ui/Button';
 import Skeleton from '../../../components/ui/Skeleton';
-import { STATUS_COLORS, STATUS_LABELS } from './constants';
+import StatusPill from '../../../components/ui/StatusPill';
+import AvalancheBadge from '../../../components/ui/AvalancheBadge';
+import { STATUS_VARIANT, STATUS_LABELS } from './constants';
 
 export default function VehiclesPage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -23,64 +24,96 @@ export default function VehiclesPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-10">
         <div>
-          <h1 className="text-h2 text-ova-900">My Vehicles</h1>
-          <p className="text-body-sm text-ova-500 mt-1">Register and manage your vehicle NFTs</p>
+          <h1 className="text-h2 font-display text-ova-900">My Vehicles</h1>
+          <p className="text-body-sm text-ova-500 mt-1">
+            Your vehicles registered as NFTs on Avalanche
+          </p>
         </div>
         <Link href="/vehicles/register">
-          <Button>
-            <Plus size={18} className="mr-2" />
+          <Button size="md">
+            <Plus size={16} className="mr-1.5" />
             Register Vehicle
           </Button>
         </Link>
       </div>
 
+      {/* Loading */}
       {loading ? (
-        <div className="space-y-4">
-          {[1, 2].map(i => (
-            <Card key={i}><Skeleton className="h-24 w-full" /></Card>
+        <div className="space-y-3">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="bg-white border border-ova-200/60 rounded-2xl p-5">
+              <div className="flex items-center gap-4">
+                <Skeleton variant="rectangular" className="h-12 w-12 rounded-xl" />
+                <div className="flex-1">
+                  <Skeleton className="h-4 w-48 mb-2" />
+                  <Skeleton className="h-3 w-32" />
+                </div>
+                <Skeleton className="h-6 w-20 rounded-full" />
+              </div>
+            </div>
           ))}
         </div>
       ) : vehicles.length === 0 ? (
-        <Card>
-          <div className="text-center py-12">
-            <Car size={48} className="mx-auto text-ova-300 mb-4" />
-            <h3 className="text-h3 text-ova-700 mb-2">No vehicles registered</h3>
-            <p className="text-body-sm text-ova-500 mb-6">Register your first vehicle to mint an NFT on the blockchain</p>
+        /* Empty State */
+        <div className="bg-white border border-ova-200/60 rounded-2xl">
+          <div className="text-center py-16 px-6">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-ova-50 border border-ova-200/60 mx-auto mb-5">
+              <Car size={28} className="text-ova-400" />
+            </div>
+            <h3 className="text-h3 font-display text-ova-900 mb-2">No vehicles registered</h3>
+            <p className="text-body-sm text-ova-500 mb-8 max-w-sm mx-auto">
+              Register your first vehicle to mint it as an NFT on the Avalanche blockchain
+            </p>
             <Link href="/vehicles/register">
-              <Button>Register Your First Vehicle</Button>
+              <Button size="lg">
+                <Plus size={16} className="mr-1.5" />
+                Register Your First Vehicle
+              </Button>
             </Link>
           </div>
-        </Card>
+        </div>
       ) : (
-        <div className="space-y-4">
+        /* Vehicle List */
+        <div className="space-y-3">
           {vehicles.map(vehicle => (
             <Link key={vehicle.id} href={`/vehicles/${vehicle.id}`}>
-              <Card hover className="mb-4">
+              <div className="bg-white border border-ova-200/60 rounded-2xl p-5 hover:border-ova-300 hover:shadow-card-hover transition-all duration-base cursor-pointer group mb-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-ova-100">
-                      <Car size={24} className="text-ova-navy" />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-ova-50 border border-ova-200/60">
+                      <Car size={22} className="text-ova-navy" />
                     </div>
                     <div>
-                      <h3 className="text-body font-medium text-ova-900">
+                      <h3 className="text-body font-semibold text-ova-900">
                         {vehicle.year} {vehicle.make} {vehicle.model}
                       </h3>
-                      <p className="text-body-sm text-ova-500">
-                        {vehicle.plateNumber}
-                        {vehicle.tokenId != null && ` · Token #${vehicle.tokenId}`}
-                      </p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-body-sm text-ova-500">{vehicle.plateNumber}</span>
+                        {vehicle.tokenId != null && (
+                          <span className="text-caption text-ova-400 font-mono">
+                            Token #{vehicle.tokenId}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className={`px-3 py-1 rounded-full text-caption font-medium ${STATUS_COLORS[vehicle.status] || 'bg-ova-100 text-ova-600'}`}>
+                    <StatusPill
+                      variant={STATUS_VARIANT[vehicle.status] || 'neutral'}
+                      dot
+                    >
                       {STATUS_LABELS[vehicle.status] || vehicle.status}
-                    </span>
-                    <ArrowRight size={16} className="text-ova-400" />
+                    </StatusPill>
+                    {vehicle.tokenId != null && (
+                      <AvalancheBadge size="sm" />
+                    )}
+                    <ChevronRight size={16} className="text-ova-300 group-hover:text-ova-500 transition-colors" />
                   </div>
                 </div>
-              </Card>
+              </div>
             </Link>
           ))}
         </div>

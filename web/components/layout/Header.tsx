@@ -3,24 +3,24 @@
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Bell, Menu } from 'lucide-react';
+import { Bell, Settings, Menu, X, Home, ArrowUpRight, Wallet, Car, Clock } from 'lucide-react';
+import { clsx } from 'clsx';
 import { useAuth } from '../../lib/hooks/useAuth';
 
-const pageTitle: Record<string, string> = {
-  '/home': 'Dashboard',
-  '/transfer': 'Transfer',
-  '/accounts': 'Accounts',
-  '/history': 'History',
-  '/settings': 'Settings',
-};
+const navItems = [
+  { href: '/home' as const, label: 'Dashboard', icon: Home },
+  { href: '/transfer' as const, label: 'Transfer', icon: ArrowUpRight },
+  { href: '/accounts' as const, label: 'Accounts', icon: Wallet },
+  { href: '/vehicles' as const, label: 'Vehicles', icon: Car },
+  { href: '/history' as const, label: 'History', icon: Clock },
+];
 
-export default function Header({ onMenuToggle }: { onMenuToggle?: () => void }) {
+export default function Header() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  const title = pageTitle[pathname || ''] || 'Dashboard';
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -31,6 +31,8 @@ export default function Header({ onMenuToggle }: { onMenuToggle?: () => void }) 
     ? `${(user.firstName || user.email)?.[0] || ''}`.toUpperCase()
     : '?';
 
+  const displayName = user?.firstName || user?.email?.split('@')[0] || '';
+
   useEffect(() => {
     const handleClickOutside = () => {
       if (dropdownOpen) setDropdownOpen(false);
@@ -39,63 +41,157 @@ export default function Header({ onMenuToggle }: { onMenuToggle?: () => void }) 
     return () => document.removeEventListener('click', handleClickOutside);
   }, [dropdownOpen]);
 
+  // Close mobile menu on navigation
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
   return (
-    <header className="fixed top-0 left-0 lg:left-60 right-0 z-10 flex h-16 items-center justify-between border-b border-ova-200 bg-white px-4 sm:px-6">
-      {/* Left side: hamburger + page title */}
-      <div className="flex items-center gap-3">
-        {onMenuToggle && (
-          <button
-            className="lg:hidden flex h-9 w-9 items-center justify-center rounded-full hover:bg-ova-100 transition-colors duration-fast"
-            onClick={onMenuToggle}
-            aria-label="Open menu"
-          >
-            <Menu size={20} strokeWidth={1.5} className="text-ova-500" />
-          </button>
-        )}
-        <span className="text-h3 text-ova-900">{title}</span>
-      </div>
+    <>
+      <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-white/95 backdrop-blur-sm border-b border-ova-200/60">
+        <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between">
+          {/* Left: Logo */}
+          <div className="flex items-center gap-8">
+            <Link href="/home" className="ova-logo text-xl !text-ova-navy" aria-label="ARI dashboard">
+              ARI
+            </Link>
 
-      {/* Right side */}
-      <div className="flex items-center gap-3">
-        {/* Notification bell */}
-        <button
-          className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-ova-100 transition-colors duration-fast"
-          aria-label="Notifications"
-        >
-          <Bell size={18} strokeWidth={1.5} className="text-ova-500" />
-        </button>
+            {/* Desktop nav */}
+            <nav className="hidden lg:flex items-center gap-1">
+              {navItems.map((item) => {
+                const isActive = pathname?.startsWith(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={clsx(
+                      "relative px-3.5 py-2 text-body-sm font-medium rounded-lg transition-colors duration-fast",
+                      isActive
+                        ? "text-ova-900 bg-ova-100"
+                        : "text-ova-500 hover:text-ova-900 hover:bg-ova-50"
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
 
-        {/* Avatar dropdown */}
-        <div className="relative">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setDropdownOpen(!dropdownOpen);
-            }}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-ova-navy text-caption font-medium text-white"
-            title={user?.email || 'User'}
-            aria-label="User menu"
-          >
-            {initials}
-          </button>
-          {dropdownOpen && (
-            <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-ova-200 rounded-xl shadow-md py-1 z-50 animate-scale-in">
+          {/* Right: Actions */}
+          <div className="flex items-center gap-2">
+            {/* Notification bell */}
+            <button
+              className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-ova-100 transition-colors duration-fast"
+              aria-label="Notifications"
+            >
+              <Bell size={18} strokeWidth={1.5} className="text-ova-400" />
+            </button>
+
+            {/* Settings */}
+            <Link
+              href="/settings"
+              className="hidden sm:flex h-9 w-9 items-center justify-center rounded-lg hover:bg-ova-100 transition-colors duration-fast"
+              aria-label="Settings"
+            >
+              <Settings size={18} strokeWidth={1.5} className="text-ova-400" />
+            </Link>
+
+            {/* Divider */}
+            <div className="hidden sm:block w-px h-6 bg-ova-200 mx-1" />
+
+            {/* Avatar dropdown */}
+            <div className="relative">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDropdownOpen(!dropdownOpen);
+                }}
+                className="flex items-center gap-2.5 rounded-full pl-1 pr-3 py-1 hover:bg-ova-50 transition-colors duration-fast"
+                title={user?.email || 'User'}
+                aria-label="User menu"
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ova-navy text-micro text-white font-semibold">
+                  {initials}
+                </div>
+                <span className="hidden sm:block text-body-sm font-medium text-ova-700">{displayName}</span>
+              </button>
+              {dropdownOpen && (
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-ova-200/60 rounded-xl shadow-md py-1.5 z-50 animate-scale-in">
+                  <div className="px-4 py-2 border-b border-ova-100">
+                    <p className="text-body-sm font-medium text-ova-900 truncate">{displayName}</p>
+                    <p className="text-caption text-ova-400 truncate">{user?.email}</p>
+                  </div>
+                  <Link
+                    href="/settings"
+                    className="block px-4 py-2.5 text-body-sm text-ova-700 hover:bg-ova-50"
+                  >
+                    Settings
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2.5 text-body-sm text-ova-red hover:bg-ova-red-light"
+                  >
+                    Log out
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile menu toggle */}
+            <button
+              className="lg:hidden flex h-9 w-9 items-center justify-center rounded-lg hover:bg-ova-100 transition-colors duration-fast ml-1"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? (
+                <X size={20} strokeWidth={1.5} className="text-ova-500" />
+              ) : (
+                <Menu size={20} strokeWidth={1.5} className="text-ova-500" />
+              )}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile menu */}
+      {mobileMenuOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/20 z-40 lg:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div className="fixed top-16 left-0 right-0 z-40 lg:hidden bg-white border-b border-ova-200 shadow-lg animate-fade-in">
+            <nav className="max-w-7xl mx-auto px-4 py-3 space-y-1">
+              {navItems.map((item) => {
+                const isActive = pathname?.startsWith(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={clsx(
+                      "flex items-center gap-3 px-4 py-3 rounded-xl text-body-sm font-medium transition-colors duration-fast",
+                      isActive
+                        ? "bg-ova-100 text-ova-900"
+                        : "text-ova-500 hover:bg-ova-50 hover:text-ova-900"
+                    )}
+                  >
+                    <item.icon size={20} strokeWidth={1.5} />
+                    {item.label}
+                  </Link>
+                );
+              })}
               <Link
                 href="/settings"
-                className="block px-4 py-2.5 text-body-sm text-ova-700 hover:bg-ova-50"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-body-sm font-medium text-ova-500 hover:bg-ova-50 hover:text-ova-900 transition-colors duration-fast"
               >
+                <Settings size={20} strokeWidth={1.5} />
                 Settings
               </Link>
-              <button
-                onClick={handleLogout}
-                className="block w-full text-left px-4 py-2.5 text-body-sm text-ova-red hover:bg-ova-red-light"
-              >
-                Logout
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    </header>
+            </nav>
+          </div>
+        </>
+      )}
+    </>
   );
 }

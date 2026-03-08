@@ -264,7 +264,7 @@ function PreferencesTab() {
             <label className="block text-body-sm font-medium text-ova-700 mb-3">Language</label>
             <select
               defaultValue="en"
-              className="h-12 w-full px-4 bg-white border border-ova-300 rounded-xl text-body-sm text-ova-700 focus:outline-none focus:border-ova-blue focus:ring-2 focus:ring-ova-blue/20 transition-all duration-base"
+              className="h-11 w-full px-4 bg-ova-50 border border-ova-200 rounded-xl text-body-sm text-ova-900 focus:outline-none focus:bg-white focus:border-ova-900 focus:ring-1 focus:ring-ova-900/10 transition-all duration-base appearance-none cursor-pointer"
             >
               <option value="en">English</option>
               <option value="tr">Turkish</option>
@@ -276,7 +276,7 @@ function PreferencesTab() {
             <label className="block text-body-sm font-medium text-ova-700 mb-3">Currency Display</label>
             <select
               defaultValue="symbol"
-              className="h-12 w-full px-4 bg-white border border-ova-300 rounded-xl text-body-sm text-ova-700 focus:outline-none focus:border-ova-blue focus:ring-2 focus:ring-ova-blue/20 transition-all duration-base"
+              className="h-11 w-full px-4 bg-ova-50 border border-ova-200 rounded-xl text-body-sm text-ova-900 focus:outline-none focus:bg-white focus:border-ova-900 focus:ring-1 focus:ring-ova-900/10 transition-all duration-base appearance-none cursor-pointer"
             >
               <option value="symbol">Symbol (₺, €)</option>
               <option value="code">Code (TRY, EUR)</option>
@@ -297,19 +297,19 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-form mx-auto space-y-6">
-      <h1 className="text-h2 text-ova-900">Settings</h1>
+      <h1 className="text-h2 font-display text-ova-900">Settings</h1>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-ova-200">
+      <div className="inline-flex bg-ova-100 rounded-xl p-1 gap-1">
         {tabs.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             onClick={() => setActiveTab(id)}
             className={clsx(
-              'flex items-center gap-2 px-4 py-3 text-body-sm font-medium border-b-2 transition-colors duration-fast cursor-pointer',
+              'flex items-center gap-2 px-4 py-2.5 rounded-lg text-body-sm font-medium transition-all duration-fast cursor-pointer',
               activeTab === id
-                ? 'border-ova-navy text-ova-900'
-                : 'border-transparent text-ova-500 hover:text-ova-700',
+                ? 'bg-white text-ova-900 shadow-sm'
+                : 'text-ova-500 hover:text-ova-700',
             )}
           >
             <Icon size={16} strokeWidth={1.5} />

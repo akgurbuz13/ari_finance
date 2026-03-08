@@ -1,8 +1,8 @@
-export const STATUS_COLORS: Record<string, string> = {
-  PENDING: 'bg-yellow-100 text-yellow-800',
-  MINTED: 'bg-green-100 text-green-800',
-  IN_ESCROW: 'bg-blue-100 text-blue-800',
-  TRANSFERRED: 'bg-purple-100 text-purple-800',
+export const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'error' | 'info' | 'neutral'> = {
+  PENDING: 'warning',
+  MINTED: 'success',
+  IN_ESCROW: 'info',
+  TRANSFERRED: 'neutral',
 };
 
 export const STATUS_LABELS: Record<string, string> = {
@@ -10,4 +10,18 @@ export const STATUS_LABELS: Record<string, string> = {
   MINTED: 'Ready',
   IN_ESCROW: 'In Escrow',
   TRANSFERRED: 'Transferred',
+};
+
+export const ESCROW_STATE_LABELS: Record<string, string> = {
+  CREATED: 'Escrow Created',
+  JOINING: 'Buyer Joining',
+  SETUP_COMPLETE: 'On-chain Setup',
+  FUNDING: 'Funding',
+  FUNDED: 'Funded',
+  SELLER_CONFIRMED: 'Seller Confirmed',
+  BUYER_CONFIRMED: 'Buyer Confirmed',
+  COMPLETING: 'Completing',
+  COMPLETED: 'Completed',
+  CANCELLING: 'Cancelling',
+  CANCELLED: 'Cancelled',
 };
