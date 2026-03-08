@@ -166,9 +166,9 @@ This is the main backend service that handles auth, accounts, transfers, and ser
 
 1. Click **New** → **Web Service**
 2. Click **Build and deploy from a Git repository** → **Next**
-3. Connect your GitHub repo `akgurbuz13/ova_finance`
+3. Connect your GitHub repo `akgurbuz13/ari_finance`
    - If you don't see it, click **Configure account** on GitHub to grant access
-4. Click **Connect** next to `ova_finance`
+4. Click **Connect** next to `ari_finance`
 
 #### Configure the service:
 
@@ -244,7 +244,7 @@ curl https://ari-core-banking.onrender.com/actuator/health
 
 1. Go back to Render Dashboard
 2. Click **New** → **Web Service**
-3. Connect the **same repo** (`ova_finance`)
+3. Connect the **same repo** (`ari_finance`)
 
 #### Configure:
 
@@ -318,7 +318,7 @@ Now that both services have URLs, update the references:
 ### Step 2: Deploy Web App (`app.arifinance.co`)
 
 1. From Vercel dashboard, click **Add New...** → **Project**
-2. Click **Import** next to `ova_finance` repo
+2. Click **Import** next to `ari_finance` repo
    - If you don't see it, click **Adjust GitHub App Permissions** and grant access
 
 #### Configure:
@@ -356,7 +356,7 @@ Vercel gives you a URL like `ari-web.vercel.app`. Open it — you should see the
 ### Step 3: Deploy Admin Console (`admin.arifinance.co`)
 
 1. Go back to Vercel dashboard → **Add New...** → **Project**
-2. **Import** the same `ova_finance` repo again (Vercel creates a separate project)
+2. **Import** the same `ari_finance` repo again (Vercel creates a separate project)
 
 #### Configure:
 

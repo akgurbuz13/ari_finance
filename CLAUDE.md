@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ARI is a regulated fintech platform (Turkey + EU) with a Kotlin/Spring Boot modular monolith backend, a separate blockchain settlement service, customer web app, admin console, Flutter mobile app, and Solidity smart contracts on Avalanche L1.
 
-**Repository**: https://github.com/akgurbuz13/ova_finance
+**Repository**: https://github.com/akgurbuz13/ari_finance
 **Brand name**: ARI (uppercase, no dot, no period)
 **Logo CSS**: `.ari-logo` in `web/app/globals.css` must use `text-transform: uppercase`. NEVER set it to lowercase.
 
