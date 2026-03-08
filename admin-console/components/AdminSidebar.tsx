@@ -82,10 +82,10 @@ export default function AdminSidebar() {
       {/* Brand */}
       <div className="flex items-center gap-3 px-6 h-16 border-b border-gray-700 shrink-0">
         <div className="w-8 h-8 rounded-lg bg-admin-accent flex items-center justify-center">
-          <span className="text-white font-bold text-sm">O</span>
+          <span className="text-white font-bold text-sm">A</span>
         </div>
         <div>
-          <h1 className="text-white font-semibold text-lg leading-tight">Ova Admin</h1>
+          <h1 className="text-white font-semibold text-lg leading-tight">ARI Admin</h1>
           <p className="text-gray-500 text-[10px] uppercase tracking-wider font-medium">Internal Console</p>
         </div>
       </div>
