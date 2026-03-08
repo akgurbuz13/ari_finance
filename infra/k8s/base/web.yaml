@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: web
-  namespace: ova
+  namespace: ari
   labels:
     app: web
 spec:
@@ -17,14 +17,14 @@ spec:
     spec:
       containers:
         - name: web
-          image: ova-web:latest
+          image: ari-web:latest
           ports:
             - containerPort: 3000
           env:
             - name: NEXT_PUBLIC_API_URL
               valueFrom:
                 configMapKeyRef:
-                  name: ova-config
+                  name: ari-config
                   key: api.url
           resources:
             requests:
@@ -44,7 +44,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: web
-  namespace: ova
+  namespace: ari
 spec:
   selector:
     app: web

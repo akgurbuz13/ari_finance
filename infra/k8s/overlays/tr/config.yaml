@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: core-banking
-  namespace: ova
+  namespace: ari
 spec:
   replicas: 3
   template:
@@ -20,17 +20,18 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ova-ingress
-  namespace: ova
+  name: ari-ingress
+  namespace: ari
 spec:
+  # TODO: needs DNS update (renamed from ova.com.tr)
   tls:
     - hosts:
-        - api.ova.com.tr
-        - app.ova.com.tr
-        - admin.ova.com.tr
-      secretName: ova-tr-tls
+        - api.ari.com.tr
+        - app.ari.com.tr
+        - admin.ari.com.tr
+      secretName: ari-tr-tls
   rules:
-    - host: api.ova.com.tr
+    - host: api.ari.com.tr
       http:
         paths:
           - path: /
@@ -40,7 +41,7 @@ spec:
                 name: core-banking
                 port:
                   number: 8080
-    - host: app.ova.com.tr
+    - host: app.ari.com.tr
       http:
         paths:
           - path: /
@@ -50,7 +51,7 @@ spec:
                 name: web
                 port:
                   number: 3000
-    - host: admin.ova.com.tr
+    - host: admin.ari.com.tr
       http:
         paths:
           - path: /

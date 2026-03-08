@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: ova
+namespace: ari
 
 resources:
   - ../../base
@@ -10,28 +10,29 @@ patchesStrategicMerge:
   - config.yaml
 
 commonLabels:
-  ova.region: eu
+  ari.region: eu
 
 configMapGenerator:
-  - name: ova-config
+  - name: ari-config
     literals:
       - spring.profiles.active=eu
-      - ova.region=EU
       - ari.region=EU
-      - redis.host=ova-redis.abcdef.euc1.cache.amazonaws.com
-      - cors.allowed-origins=https://app.ova.app,https://admin.ova.app
-      - api.url=https://api.ova.app
+      # TODO: needs DNS update (renamed from ova-redis.abcdef.euc1.cache.amazonaws.com)
+      - redis.host=ari-redis.abcdef.euc1.cache.amazonaws.com
+      # TODO: needs DNS update (renamed from ova.app)
+      - cors.allowed-origins=https://app.ari.app,https://admin.ari.app
+      - api.url=https://api.ari.app
 
 images:
   - name: core-banking
-    newName: 123456789.dkr.ecr.eu-central-1.amazonaws.com/ova/core-banking
+    newName: 123456789.dkr.ecr.eu-central-1.amazonaws.com/ari/core-banking
     newTag: latest
   - name: blockchain-service
-    newName: 123456789.dkr.ecr.eu-central-1.amazonaws.com/ova/blockchain-service
+    newName: 123456789.dkr.ecr.eu-central-1.amazonaws.com/ari/blockchain-service
     newTag: latest
-  - name: ova-web
-    newName: 123456789.dkr.ecr.eu-central-1.amazonaws.com/ova/web
+  - name: ari-web
+    newName: 123456789.dkr.ecr.eu-central-1.amazonaws.com/ari/web
     newTag: latest
-  - name: ova-admin-console
-    newName: 123456789.dkr.ecr.eu-central-1.amazonaws.com/ova/admin-console
+  - name: ari-admin-console
+    newName: 123456789.dkr.ecr.eu-central-1.amazonaws.com/ari/admin-console
     newTag: latest

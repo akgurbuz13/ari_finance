@@ -1,12 +1,12 @@
 ---
-# Network Policies for Ova Platform
+# Network Policies for ARI Platform
 # Implements defense-in-depth by restricting pod-to-pod communication
 
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: default-deny-all
-  namespace: ova
+  namespace: ari
 spec:
   podSelector: {}
   policyTypes:
@@ -18,7 +18,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: core-banking-ingress
-  namespace: ova
+  namespace: ari
 spec:
   podSelector:
     matchLabels:
@@ -56,7 +56,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: core-banking-egress
-  namespace: ova
+  namespace: ari
 spec:
   podSelector:
     matchLabels:
@@ -119,7 +119,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: blockchain-service-ingress
-  namespace: ova
+  namespace: ari
 spec:
   podSelector:
     matchLabels:
@@ -157,7 +157,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: blockchain-service-egress
-  namespace: ova
+  namespace: ari
 spec:
   podSelector:
     matchLabels:
@@ -233,7 +233,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: web-ingress
-  namespace: ova
+  namespace: ari
 spec:
   podSelector:
     matchLabels:
@@ -265,7 +265,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: admin-console-ingress
-  namespace: ova
+  namespace: ari
 spec:
   podSelector:
     matchLabels:

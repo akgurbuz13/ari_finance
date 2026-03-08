@@ -1,12 +1,12 @@
 ---
-# Pod Disruption Budgets for Ova Platform
+# Pod Disruption Budgets for ARI Platform
 # Ensures minimum availability during voluntary disruptions (upgrades, node drains)
 
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: core-banking-pdb
-  namespace: ova
+  namespace: ari
 spec:
   minAvailable: 1
   selector:
@@ -17,7 +17,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: blockchain-service-pdb
-  namespace: ova
+  namespace: ari
 spec:
   minAvailable: 1
   selector:
@@ -28,7 +28,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: web-pdb
-  namespace: ova
+  namespace: ari
 spec:
   minAvailable: 1
   selector:
@@ -39,7 +39,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: admin-console-pdb
-  namespace: ova
+  namespace: ari
 spec:
   maxUnavailable: 1
   selector:

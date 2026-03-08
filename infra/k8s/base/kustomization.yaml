@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: ova
+namespace: ari
 
 resources:
   - namespace.yaml
@@ -17,7 +17,7 @@ resources:
   - external-secrets.yaml
 
 commonLabels:
-  app.kubernetes.io/part-of: ova-platform
+  app.kubernetes.io/part-of: ari-platform
   app.kubernetes.io/managed-by: kustomize
 
 # Security-related patches applied to all deployments
@@ -27,5 +27,5 @@ patches:
       kind: Deployment
     patch: |-
       - op: add
-        path: /metadata/labels/security.ova.io~1compliance
+        path: /metadata/labels/security.ari.io~1compliance
         value: "required"
