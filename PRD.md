@@ -1,15 +1,15 @@
-# PRD.md — Ova Fintech MVP (Turkey + EU, Avalanche-native, user-abstracted)
+# PRD.md — ARI Fintech MVP (Turkey + EU, Avalanche-native, user-abstracted)
 
 **Status:** Draft for build
 
-This PRD defines a compliant, scalable MVP for **Ova**, a multi-region fintech that starts as a regulated **e-money + payment account** provider and expands into a fully digital bank.
+This PRD defines a compliant, scalable MVP for **ARI**, a multi-region fintech that starts as a regulated **e-money + payment account** provider and expands into a fully digital bank.
 
 ---
 
 ## 1) Product vision
 
 ### 1.1 What we’re building
-Ova is a **global-first money platform** designed for:
+ARI is a **global-first money platform** designed for:
 - **Commissionless user transfers** (user-facing fee = 0)
 - **Instant cross-border value movement** (Turkey ↔ EU first; expandable to other regions)
 - **Multi-currency accounts** with bank connectivity (IBAN-based deposits/withdrawals)

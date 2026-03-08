@@ -41,7 +41,7 @@ class ChainEventListener(
         )
     )
 
-    // OvaStablecoin custom events
+    // AriStablecoin custom events
     private val tokensMintedEvent = Event(
         "TokensMinted",
         listOf(

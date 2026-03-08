@@ -221,7 +221,7 @@ Scroll down and click **Advanced**:
 
 - The first build takes **5-10 minutes** (downloads Gradle, JDK, compiles Kotlin)
 - Watch the **Logs** tab for progress
-- You'll see `Started OvaPlatformApplication` when it's ready
+- You'll see `Started AriPlatformApplication` when it's ready
 - Render assigns a URL like `ari-core-banking.onrender.com`
 
 #### Save the Render URL:

@@ -1,6 +1,6 @@
 # Avalanche L1 Validator Module
 
-This Terraform module deploys self-hosted Avalanche validators for Ova's permissioned L1 chains.
+This Terraform module deploys self-hosted Avalanche validators for ARI's permissioned L1 chains.
 
 ## Architecture
 
@@ -42,7 +42,7 @@ As of Avalanche Etna upgrade (December 2024):
 
 1. **AWS Secrets Manager secrets** for each validator:
    ```
-   ova/{environment}/validator/{instance-id}
+   ari/{environment}/validator/{instance-id}
    {
      "staker_key": "...",
      "staker_cert": "...",
@@ -62,7 +62,7 @@ module "avalanche_validators_eu" {
 
   environment            = "prod"
   region                 = "EU"
-  l1_name                = "ova-eu"
+  l1_name                = "ari-eu"
   l1_chain_id            = 99998
   validator_count        = 3
   validator_instance_type = "m5.xlarge"
@@ -70,13 +70,13 @@ module "avalanche_validators_eu" {
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnet_ids
-  ssh_key_name = "ova-prod-key"
+  ssh_key_name = "ari-prod-key"
 
   enable_monitoring = true
-  alert_email       = "ops@ova.finance"
+  alert_email       = "ops@ari.finance"
 
   tags = {
-    Project = "Ova"
+    Project = "ARI"
   }
 }
 ```
@@ -86,8 +86,8 @@ module "avalanche_validators_eu" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | environment | Environment name | string | - | yes |
-| region | Ova region (TR or EU) | string | - | yes |
-| l1_name | L1 chain name | string | "ova-l1" | no |
+| region | ARI region (TR or EU) | string | - | yes |
+| l1_name | L1 chain name | string | "ari-l1" | no |
 | l1_chain_id | Chain ID | number | - | yes |
 | validator_count | Number of validators | number | 3 | no |
 | validator_instance_type | EC2 instance type | string | "m5.xlarge" | no |

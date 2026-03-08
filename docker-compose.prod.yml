@@ -12,9 +12,9 @@ services:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ova
-      SPRING_DATASOURCE_USERNAME: ova
-      SPRING_DATASOURCE_PASSWORD: ova_secret
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ari
+      SPRING_DATASOURCE_USERNAME: ari
+      SPRING_DATASOURCE_PASSWORD: ari_secret
       SPRING_DATA_REDIS_HOST: redis
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env or environment}
       ARI_JWT_SECRET: ${ARI_JWT_SECRET:?Set ARI_JWT_SECRET in .env or environment}
@@ -41,9 +41,9 @@ services:
       - "8081:8081"
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ova
-      SPRING_DATASOURCE_USERNAME: ova
-      SPRING_DATASOURCE_PASSWORD: ova_secret
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ari
+      SPRING_DATASOURCE_USERNAME: ari
+      SPRING_DATASOURCE_PASSWORD: ari_secret
       CORE_BANKING_URL: http://core-banking:8080
       INTERNAL_API_KEY: ${INTERNAL_API_KEY:?Set INTERNAL_API_KEY in .env or environment}
       ARI_BLOCKCHAIN_CORE_BANKING_URL: http://core-banking:8080
@@ -74,13 +74,13 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: ova
-      POSTGRES_USER: ova
-      POSTGRES_PASSWORD: ova_secret
+      POSTGRES_DB: ari
+      POSTGRES_USER: ari
+      POSTGRES_PASSWORD: ari_secret
     volumes:
       - postgres_prod_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ova -d ova"]
+      test: ["CMD-SHELL", "pg_isready -U ari -d ari"]
       interval: 10s
       timeout: 5s
       retries: 5

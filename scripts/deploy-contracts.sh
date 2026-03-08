@@ -103,7 +103,7 @@ EOF
         --config hardhat.config.ts 2>&1 | tee /dev/tty)
 
     # Extract addresses from deployment output
-    TR_STABLECOIN_ADDRESS=$(echo "$TR_DEPLOYMENT" | grep "OvaTRY deployed" | awk '{print $NF}')
+    TR_STABLECOIN_ADDRESS=$(echo "$TR_DEPLOYMENT" | grep "ariTRY deployed" | awk '{print $NF}')
     TR_TOKEN_HOME_ADDRESS=$(echo "$TR_DEPLOYMENT" | grep "TokenHome deployed" | awk '{print $NF}')
     TR_TOKEN_REMOTE_ADDRESS=$(echo "$TR_DEPLOYMENT" | grep "TokenRemote deployed" | awk '{print $NF}')
     TR_BRIDGE_ADAPTER_ADDRESS=$(echo "$TR_DEPLOYMENT" | grep "BridgeAdapter deployed" | awk '{print $NF}')
@@ -149,7 +149,7 @@ EOF
         --config hardhat.config.ts 2>&1 | tee /dev/tty)
 
     # Extract addresses from deployment output
-    EU_STABLECOIN_ADDRESS=$(echo "$EU_DEPLOYMENT" | grep "OvaEUR deployed" | awk '{print $NF}')
+    EU_STABLECOIN_ADDRESS=$(echo "$EU_DEPLOYMENT" | grep "ariEUR deployed" | awk '{print $NF}')
     EU_TOKEN_HOME_ADDRESS=$(echo "$EU_DEPLOYMENT" | grep "TokenHome deployed" | awk '{print $NF}')
     EU_TOKEN_REMOTE_ADDRESS=$(echo "$EU_DEPLOYMENT" | grep "TokenRemote deployed" | awk '{print $NF}')
     EU_BRIDGE_ADAPTER_ADDRESS=$(echo "$EU_DEPLOYMENT" | grep "BridgeAdapter deployed" | awk '{print $NF}')

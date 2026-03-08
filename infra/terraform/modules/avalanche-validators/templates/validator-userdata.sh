@@ -45,15 +45,15 @@ chown -R avalanche:avalanche /opt/avalanchego
 echo "=== Fetching validator keys from Secrets Manager ==="
 INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
 aws secretsmanager get-secret-value \
-    --secret-id "ova/$ENVIRONMENT/validator/$INSTANCE_ID" \
+    --secret-id "ari/$ENVIRONMENT/validator/$INSTANCE_ID" \
     --query 'SecretString' \
     --output text | jq -r '.staker_key' > /home/avalanche/.avalanchego/staking/staker.key
 aws secretsmanager get-secret-value \
-    --secret-id "ova/$ENVIRONMENT/validator/$INSTANCE_ID" \
+    --secret-id "ari/$ENVIRONMENT/validator/$INSTANCE_ID" \
     --query 'SecretString' \
     --output text | jq -r '.staker_cert' > /home/avalanche/.avalanchego/staking/staker.crt
 aws secretsmanager get-secret-value \
-    --secret-id "ova/$ENVIRONMENT/validator/$INSTANCE_ID" \
+    --secret-id "ari/$ENVIRONMENT/validator/$INSTANCE_ID" \
     --query 'SecretString' \
     --output text | jq -r '.bls_key' > /home/avalanche/.avalanchego/staking/signer.key
 
@@ -151,7 +151,7 @@ if [ "$ENABLE_MONITORING" = "true" ]; then
     cat > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json << EOF
 {
   "metrics": {
-    "namespace": "Ova/Avalanche",
+    "namespace": "ARI/Avalanche",
     "metrics_collected": {
       "cpu": {
         "measurement": ["cpu_usage_active"],
@@ -177,7 +177,7 @@ if [ "$ENABLE_MONITORING" = "true" ]; then
         "collect_list": [
           {
             "file_path": "/home/avalanche/.avalanchego/logs/main.log",
-            "log_group_name": "/ova/avalanche/$ENVIRONMENT/$REGION",
+            "log_group_name": "/ari/avalanche/$ENVIRONMENT/$REGION",
             "log_stream_name": "{instance_id}/main"
           }
         ]

@@ -50,7 +50,7 @@ Build a regulated fintech platform (ARI) launching in Turkey + EU simultaneously
               ┌─────────────────────┼────────────────────┐
               │                     │                     │
     ┌─────────▼──────────┐  ┌──────▼─────────┐  ┌───────▼─────────┐
-    │  OVA CORE BANKING  │  │ BLOCKCHAIN SVC │  │  ADMIN CONSOLE  │
+    │  ARI CORE BANKING  │  │ BLOCKCHAIN SVC │  │  ADMIN CONSOLE  │
     │  (Modular Monolith)│  │ (Separate)     │  │  (Next.js)      │
     │                    │  │                │  │                 │
     │ ┌────────────────┐ │  │ ┌────────────┐ │  │ KYC Decisions   │

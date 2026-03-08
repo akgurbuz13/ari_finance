@@ -76,13 +76,13 @@ Required change:
 
 Evidence:
 - App expects `JWT_SECRET`: `core-banking/src/main/resources/application.yml:51`
-- K8s sets `OVA_JWT_SECRET`: `infra/k8s/base/core-banking.yaml:97`
+- K8s sets `OVA_JWT_SECRET` (now `ARI_JWT_SECRET`): `infra/k8s/base/core-banking.yaml:97`
 - App expects `BLOCKCHAIN_SERVICE_URL`: `core-banking/src/main/resources/application.yml:58`
-- Compose sets `OVA_BLOCKCHAIN_SERVICE_URL`: `docker-compose.prod.yml:21`
+- Compose sets `OVA_BLOCKCHAIN_SERVICE_URL` (now `ARI_BLOCKCHAIN_SERVICE_URL`): `docker-compose.prod.yml:21`
 - Blockchain app expects `CORE_BANKING_URL`: `blockchain-service/src/main/resources/application.yml:24`
-- Compose sets `OVA_BLOCKCHAIN_CORE_BANKING_URL`: `docker-compose.prod.yml:44`
+- Compose sets `OVA_BLOCKCHAIN_CORE_BANKING_URL` (now `ARI_BLOCKCHAIN_CORE_BANKING_URL`): `docker-compose.prod.yml:44`
 - App expects `INTERNAL_API_KEY`: `core-banking/src/main/resources/application.yml:62`
-- K8s sets `OVA_INTERNAL_API_KEY`: `infra/k8s/base/core-banking.yaml:102`
+- K8s sets `OVA_INTERNAL_API_KEY` (now `ARI_INTERNAL_API_KEY`): `infra/k8s/base/core-banking.yaml:102`
 
 Why this is critical:
 - Misbound secrets/URLs can cause startup failure or service misrouting (`localhost` fallbacks).
