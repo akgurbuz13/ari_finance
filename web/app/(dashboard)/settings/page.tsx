@@ -34,13 +34,13 @@ function CopyableSecret({ value, label }: { value: string; label: string }) {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-caption text-ova-400">{label}:</span>
-      <code className="font-mono text-body-sm text-ova-700 bg-ova-100 px-2 py-1 rounded-xl select-all break-all">
+      <span className="text-caption text-ari-400">{label}:</span>
+      <code className="font-mono text-body-sm text-ari-700 bg-ari-100 px-2 py-1 rounded-xl select-all break-all">
         {value}
       </code>
       <button
         onClick={handleCopy}
-        className="inline-flex items-center gap-1 text-caption text-ova-blue hover:underline cursor-pointer"
+        className="inline-flex items-center gap-1 text-caption text-ari-blue hover:underline cursor-pointer"
       >
         {copied ? <Check size={12} strokeWidth={2} /> : <Copy size={12} strokeWidth={2} />}
         {copied ? 'Copied' : 'Copy'}
@@ -79,8 +79,8 @@ function ProfileTab() {
             <div role="alert" className={clsx(
               'p-3 rounded-xl text-body-sm border',
               message.type === 'success'
-                ? 'bg-ova-green-light border-ova-green/20 text-ova-green'
-                : 'bg-ova-red-light border-ova-red/20 text-ova-red',
+                ? 'bg-ari-green-light border-ari-green/20 text-ari-green'
+                : 'bg-ari-red-light border-ari-red/20 text-ari-red',
             )}>
               {message.text}
             </div>
@@ -94,7 +94,7 @@ function ProfileTab() {
           <div className="grid grid-cols-2 gap-4">
             <Input label="Region" value={user?.region || ''} disabled />
             <div className="w-full">
-              <label className="block text-body-sm font-medium text-ova-700 mb-3">KYC Status</label>
+              <label className="block text-body-sm font-medium text-ari-700 mb-3">KYC Status</label>
               <div className="h-12 flex items-center">
                 <StatusPill variant={user?.status === 'active' ? 'success' : 'warning'}>
                   {user?.status === 'active' ? 'Verified' : 'Pending Verification'}
@@ -159,12 +159,12 @@ function SecurityTab() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-ova-100">
-                <ShieldCheck size={20} strokeWidth={1.5} className="text-ova-500" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-ari-100">
+                <ShieldCheck size={20} strokeWidth={1.5} className="text-ari-500" />
               </div>
               <div>
-                <p className="text-body-sm font-medium text-ova-900">Two-Factor Authentication</p>
-                <p className="text-caption text-ova-400">
+                <p className="text-body-sm font-medium text-ari-900">Two-Factor Authentication</p>
+                <p className="text-caption text-ari-400">
                   {user?.totpEnabled ? 'Your account is protected with 2FA' : 'Add an extra layer of security'}
                 </p>
               </div>
@@ -182,23 +182,23 @@ function SecurityTab() {
           </div>
 
           {error2fa && (
-            <div role="alert" className="p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red">
+            <div role="alert" className="p-3 bg-ari-red-light border border-ari-red/20 rounded-xl text-body-sm text-ari-red">
               {error2fa}
             </div>
           )}
 
           {totpData && (
-            <div className="mt-4 p-4 bg-ova-50 border border-ova-200 rounded-xl space-y-4">
+            <div className="mt-4 p-4 bg-ari-50 border border-ari-200 rounded-xl space-y-4">
               <div className="flex items-center justify-between">
-                <h4 className="text-body-sm font-medium text-ova-900">Set up your authenticator app</h4>
+                <h4 className="text-body-sm font-medium text-ari-900">Set up your authenticator app</h4>
                 <button
                   onClick={dismiss2FA}
-                  className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-ova-200 transition-colors duration-fast cursor-pointer"
+                  className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-ari-200 transition-colors duration-fast cursor-pointer"
                 >
-                  <X size={14} strokeWidth={2} className="text-ova-400" />
+                  <X size={14} strokeWidth={2} className="text-ari-400" />
                 </button>
               </div>
-              <ol className="list-decimal list-inside space-y-2 text-body-sm text-ova-700">
+              <ol className="list-decimal list-inside space-y-2 text-body-sm text-ari-700">
                 <li>Open your authenticator app (Google Authenticator, Authy, etc.)</li>
                 <li>Copy the secret key below and add it as a new account</li>
                 <li>Enter the 6-digit code from the app on your next login</li>
@@ -216,12 +216,12 @@ function SecurityTab() {
       <Card>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-ova-100">
-              <Shield size={20} strokeWidth={1.5} className="text-ova-500" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-ari-100">
+              <Shield size={20} strokeWidth={1.5} className="text-ari-500" />
             </div>
             <div>
-              <p className="text-body-sm font-medium text-ova-900">Password</p>
-              <p className="text-caption text-ova-400">Change your account password</p>
+              <p className="text-body-sm font-medium text-ari-900">Password</p>
+              <p className="text-caption text-ari-400">Change your account password</p>
             </div>
           </div>
           {!changingPassword && (
@@ -232,8 +232,8 @@ function SecurityTab() {
           <div className={clsx(
             'mt-4 p-3 rounded-xl text-body-sm border',
             passwordMessage.type === 'success'
-              ? 'bg-ova-green-light border-ova-green/20 text-ova-green'
-              : 'bg-ova-red-light border-ova-red/20 text-ova-red',
+              ? 'bg-ari-green-light border-ari-green/20 text-ari-green'
+              : 'bg-ari-red-light border-ari-red/20 text-ari-red',
           )}>
             {passwordMessage.text}
           </div>
@@ -261,10 +261,10 @@ function PreferencesTab() {
         <div className="space-y-6">
           {/* Language */}
           <div>
-            <label className="block text-body-sm font-medium text-ova-700 mb-3">Language</label>
+            <label className="block text-body-sm font-medium text-ari-700 mb-3">Language</label>
             <select
               defaultValue="en"
-              className="h-11 w-full px-4 bg-ova-50 border border-ova-200 rounded-xl text-body-sm text-ova-900 focus:outline-none focus:bg-white focus:border-ova-900 focus:ring-1 focus:ring-ova-900/10 transition-all duration-base appearance-none cursor-pointer"
+              className="h-11 w-full px-4 bg-ari-50 border border-ari-200 rounded-xl text-body-sm text-ari-900 focus:outline-none focus:bg-white focus:border-ari-900 focus:ring-1 focus:ring-ari-900/10 transition-all duration-base appearance-none cursor-pointer"
             >
               <option value="en">English</option>
               <option value="tr">Turkish</option>
@@ -273,10 +273,10 @@ function PreferencesTab() {
 
           {/* Currency Display */}
           <div>
-            <label className="block text-body-sm font-medium text-ova-700 mb-3">Currency Display</label>
+            <label className="block text-body-sm font-medium text-ari-700 mb-3">Currency Display</label>
             <select
               defaultValue="symbol"
-              className="h-11 w-full px-4 bg-ova-50 border border-ova-200 rounded-xl text-body-sm text-ova-900 focus:outline-none focus:bg-white focus:border-ova-900 focus:ring-1 focus:ring-ova-900/10 transition-all duration-base appearance-none cursor-pointer"
+              className="h-11 w-full px-4 bg-ari-50 border border-ari-200 rounded-xl text-body-sm text-ari-900 focus:outline-none focus:bg-white focus:border-ari-900 focus:ring-1 focus:ring-ari-900/10 transition-all duration-base appearance-none cursor-pointer"
             >
               <option value="symbol">Symbol (₺, €)</option>
               <option value="code">Code (TRY, EUR)</option>
@@ -285,7 +285,7 @@ function PreferencesTab() {
         </div>
       </Card>
 
-      <p className="text-caption text-ova-400 text-center">
+      <p className="text-caption text-ari-400 text-center">
         Preference changes will apply on next page load.
       </p>
     </div>
@@ -297,10 +297,10 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-form mx-auto space-y-6">
-      <h1 className="text-h2 font-display text-ova-900">Settings</h1>
+      <h1 className="text-h2 font-display text-ari-900">Settings</h1>
 
       {/* Tabs */}
-      <div className="inline-flex bg-ova-100 rounded-xl p-1 gap-1">
+      <div className="inline-flex bg-ari-100 rounded-xl p-1 gap-1">
         {tabs.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -308,8 +308,8 @@ export default function SettingsPage() {
             className={clsx(
               'flex items-center gap-2 px-4 py-2.5 rounded-lg text-body-sm font-medium transition-all duration-fast cursor-pointer',
               activeTab === id
-                ? 'bg-white text-ova-900 shadow-sm'
-                : 'text-ova-500 hover:text-ova-700',
+                ? 'bg-white text-ari-900 shadow-sm'
+                : 'text-ari-500 hover:text-ari-700',
             )}
           >
             <Icon size={16} strokeWidth={1.5} />

@@ -11,25 +11,25 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-body-sm font-medium text-ova-700 mb-2">
+          <label className="block text-body-sm font-medium text-ari-700 mb-2">
             {label}
           </label>
         )}
         <input
           ref={ref}
           className={clsx(
-            "w-full h-11 px-4 bg-ova-50 border rounded-xl text-ova-900 placeholder:text-ova-400 transition-all duration-base ease-out",
-            "focus:outline-none focus:bg-white focus:border-ova-900 focus:ring-1 focus:ring-ova-900/10",
+            "w-full h-11 px-4 bg-ari-50 border rounded-xl text-ari-900 placeholder:text-ari-400 transition-all duration-base ease-out",
+            "focus:outline-none focus:bg-white focus:border-ari-900 focus:ring-1 focus:ring-ari-900/10",
             error
-              ? "border-ova-red bg-ova-red-light/30 ring-1 ring-ova-red/20"
-              : "border-ova-200",
-            props.disabled && "bg-ova-100 text-ova-400 cursor-not-allowed",
+              ? "border-ari-red bg-ari-red-light/30 ring-1 ring-ari-red/20"
+              : "border-ari-200",
+            props.disabled && "bg-ari-100 text-ari-400 cursor-not-allowed",
             className,
           )}
           {...props}
         />
         {error && (
-          <p className="mt-1.5 text-body-sm text-ova-red">{error}</p>
+          <p className="mt-1.5 text-body-sm text-ari-red">{error}</p>
         )}
       </div>
     );

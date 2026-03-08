@@ -41,18 +41,18 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-ova-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-ari-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-10">
-          <Link href="/" className="ova-logo text-4xl" aria-label="ARI home">
+          <Link href="/" className="ari-logo text-4xl" aria-label="ARI home">
             ARI
           </Link>
-          <p className="mt-3 text-body-sm text-ova-500">Sign in to your account</p>
+          <p className="mt-3 text-body-sm text-ari-500">Sign in to your account</p>
         </div>
 
         {/* Card shell */}
-        <div className="bg-white border border-ova-200/60 rounded-2xl p-8 sm:p-10">
+        <div className="bg-white border border-ari-200/60 rounded-2xl p-8 sm:p-10">
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <AnimatePresence>
@@ -61,7 +61,7 @@ export default function LoginPage() {
                   initial={{ opacity: 0, y: -8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
-                  className="p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red"
+                  className="p-3 bg-ari-red-light border border-ari-red/20 rounded-xl text-body-sm text-ari-red"
                   role="alert"
                 >
                   {error}
@@ -114,16 +114,16 @@ export default function LoginPage() {
           </form>
 
           {/* Divider + links */}
-          <div className="border-t border-ova-200 mt-6 pt-6">
+          <div className="border-t border-ari-200 mt-6 pt-6">
             <div className="text-center">
-              <Link href="/forgot-password" className="text-body-sm text-ova-700 hover:underline">
+              <Link href="/forgot-password" className="text-body-sm text-ari-700 hover:underline">
                 Forgot your password?
               </Link>
             </div>
 
-            <p className="mt-4 text-center text-body-sm text-ova-500">
+            <p className="mt-4 text-center text-body-sm text-ari-500">
               Don&apos;t have an account?{' '}
-              <Link href="/signup" className="text-ova-700 font-medium hover:underline">
+              <Link href="/signup" className="text-ari-700 font-medium hover:underline">
                 Sign up
               </Link>
             </p>
@@ -131,7 +131,7 @@ export default function LoginPage() {
         </div>
 
         {/* Trust signal */}
-        <div className="mt-8 flex items-center justify-center gap-2 text-caption text-ova-400">
+        <div className="mt-8 flex items-center justify-center gap-2 text-caption text-ari-400">
           <ShieldCheck size={14} strokeWidth={1.5} />
           <span>Encrypted end-to-end · Identity verified</span>
         </div>

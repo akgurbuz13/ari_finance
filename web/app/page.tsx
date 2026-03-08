@@ -44,7 +44,7 @@ function HeroVisual() {
   return (
     <div className="relative w-full h-[480px] flex items-center justify-center">
       {/* Ambient glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-gradient-radial from-ova-blue/[0.06] to-transparent blur-3xl" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-gradient-radial from-ari-blue/[0.06] to-transparent blur-3xl" />
 
       {/* Tight card cluster */}
       <div className="relative w-[420px] h-[440px]">
@@ -59,20 +59,20 @@ function HeroVisual() {
         <motion.div
           animate={{ y: [-3, 5, -3] }}
           transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-          className="rounded-2xl bg-white border border-ova-200/80 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
+          className="rounded-2xl bg-white border border-ari-200/80 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
         >
           <div className="flex items-center gap-2.5 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-ova-navy flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-ari-navy flex items-center justify-center">
               <Wallet size={15} className="text-white" />
             </div>
-            <span className="text-body-sm text-ova-500">TRY Account</span>
+            <span className="text-body-sm text-ari-500">TRY Account</span>
           </div>
-          <p className="text-[1.75rem] font-semibold text-ova-900 tracking-tight leading-none" style={{ fontVariantNumeric: 'tabular-nums' }}>
-            ₺24,350<span className="text-ova-300">.00</span>
+          <p className="text-[1.75rem] font-semibold text-ari-900 tracking-tight leading-none" style={{ fontVariantNumeric: 'tabular-nums' }}>
+            ₺24,350<span className="text-ari-300">.00</span>
           </p>
           <div className="mt-3 flex items-center gap-1.5">
-            <TrendingUp size={13} className="text-ova-green" />
-            <span className="text-caption text-ova-green font-medium">+₺2,100 this month</span>
+            <TrendingUp size={13} className="text-ari-green" />
+            <span className="text-caption text-ari-green font-medium">+₺2,100 this month</span>
           </div>
         </motion.div>
       </motion.div>
@@ -87,19 +87,19 @@ function HeroVisual() {
         <motion.div
           animate={{ y: [4, -4, 4] }}
           transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-          className="rounded-2xl bg-white border border-ova-200/80 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
+          className="rounded-2xl bg-white border border-ari-200/80 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
         >
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-6 h-6 rounded-full bg-ova-green-light flex items-center justify-center">
-              <Check size={13} className="text-ova-green" />
+            <div className="w-6 h-6 rounded-full bg-ari-green-light flex items-center justify-center">
+              <Check size={13} className="text-ari-green" />
             </div>
-            <span className="text-caption text-ova-green font-medium">Transfer complete</span>
+            <span className="text-caption text-ari-green font-medium">Transfer complete</span>
           </div>
-          <p className="text-h3 font-semibold text-ova-900">€500.00</p>
-          <p className="text-caption text-ova-500 mt-1">Istanbul → Berlin</p>
+          <p className="text-h3 font-semibold text-ari-900">€500.00</p>
+          <p className="text-caption text-ari-500 mt-1">Istanbul → Berlin</p>
           <div className="mt-3 flex items-center gap-1.5">
-            <Clock size={11} className="text-ova-400" />
-            <span className="text-[10px] text-ova-400">Arrived in 47 seconds</span>
+            <Clock size={11} className="text-ari-400" />
+            <span className="text-[10px] text-ari-400">Arrived in 47 seconds</span>
           </div>
         </motion.div>
       </motion.div>
@@ -114,34 +114,34 @@ function HeroVisual() {
         <motion.div
           animate={{ y: [-4, 3, -4] }}
           transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-          className="rounded-2xl bg-white border border-ova-200/80 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
+          className="rounded-2xl bg-white border border-ari-200/80 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-ova-blue-light flex items-center justify-center">
-                <Car size={15} className="text-ova-blue" />
+              <div className="w-8 h-8 rounded-lg bg-ari-blue-light flex items-center justify-center">
+                <Car size={15} className="text-ari-blue" />
               </div>
               <div>
-                <p className="text-body-sm font-medium text-ova-900 leading-tight">Honda Civic 2024</p>
-                <p className="text-[10px] text-ova-400">34 ABC 456</p>
+                <p className="text-body-sm font-medium text-ari-900 leading-tight">Honda Civic 2024</p>
+                <p className="text-[10px] text-ari-400">34 ABC 456</p>
               </div>
             </div>
-            <span className="text-[10px] bg-ova-green-light text-ova-green px-2 py-0.5 rounded-full font-medium">
+            <span className="text-[10px] bg-ari-green-light text-ari-green px-2 py-0.5 rounded-full font-medium">
               Protected
             </span>
           </div>
-          <p className="text-h3 font-semibold text-ova-900">₺485,000</p>
-          <div className="mt-3 w-full bg-ova-100 rounded-full h-1.5 overflow-hidden">
+          <p className="text-h3 font-semibold text-ari-900">₺485,000</p>
+          <div className="mt-3 w-full bg-ari-100 rounded-full h-1.5 overflow-hidden">
             <motion.div
-              className="bg-ova-blue h-full rounded-full"
+              className="bg-ari-blue h-full rounded-full"
               initial={{ width: '0%' }}
               animate={{ width: '75%' }}
               transition={{ duration: 1.5, delay: 1.8, ease: 'easeOut' }}
             />
           </div>
           <div className="mt-1.5 flex justify-between">
-            <span className="text-[10px] text-ova-400">Sale in progress</span>
-            <span className="text-[10px] text-ova-blue font-medium">Both parties confirmed</span>
+            <span className="text-[10px] text-ari-400">Sale in progress</span>
+            <span className="text-[10px] text-ari-blue font-medium">Both parties confirmed</span>
           </div>
         </motion.div>
       </motion.div>
@@ -172,43 +172,43 @@ export default function LandingPage() {
       <nav className={clsx(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-200',
         scrolled
-          ? 'bg-white/80 backdrop-blur-md border-b border-ova-200/50 shadow-[0_1px_3px_rgba(0,0,0,0.04)]'
+          ? 'bg-white/80 backdrop-blur-md border-b border-ari-200/50 shadow-[0_1px_3px_rgba(0,0,0,0.04)]'
           : 'bg-white border-b border-transparent',
       )}>
         <div className="mx-auto flex h-16 max-w-landing items-center justify-between px-6">
-          <Link href="/" className="ova-logo text-2xl shrink-0" aria-label="ARI home">ARI</Link>
+          <Link href="/" className="ari-logo text-2xl shrink-0" aria-label="ARI home">ARI</Link>
 
           {/* Desktop: nav + CTA grouped right */}
           <div className="hidden md:flex items-center">
             <div className="flex items-center gap-7">
-              <a href="#products" className="text-body-sm font-medium text-ova-500 hover:text-ova-900 transition-colors">Features</a>
-              <a href="#vehicles" className="text-body-sm font-medium text-ova-500 hover:text-ova-900 transition-colors">Vehicle Sales</a>
-              <a href="#transfers" className="text-body-sm font-medium text-ova-500 hover:text-ova-900 transition-colors">Transfers</a>
-              <a href="#trust" className="text-body-sm font-medium text-ova-500 hover:text-ova-900 transition-colors">Security</a>
+              <a href="#products" className="text-body-sm font-medium text-ari-500 hover:text-ari-900 transition-colors">Features</a>
+              <a href="#vehicles" className="text-body-sm font-medium text-ari-500 hover:text-ari-900 transition-colors">Vehicle Sales</a>
+              <a href="#transfers" className="text-body-sm font-medium text-ari-500 hover:text-ari-900 transition-colors">Transfers</a>
+              <a href="#trust" className="text-body-sm font-medium text-ari-500 hover:text-ari-900 transition-colors">Security</a>
             </div>
-            <div className="flex items-center gap-3 ml-8 pl-8 border-l border-ova-200">
-              <Link href="/login" className="text-body-sm font-medium text-ova-700 hover:text-ova-900 transition-colors">Sign in</Link>
-              <Link href="/signup" className="inline-flex h-9 items-center rounded-lg bg-ova-navy px-4 text-body-sm font-medium text-white hover:bg-ova-navy-light transition-colors">
+            <div className="flex items-center gap-3 ml-8 pl-8 border-l border-ari-200">
+              <Link href="/login" className="text-body-sm font-medium text-ari-700 hover:text-ari-900 transition-colors">Sign in</Link>
+              <Link href="/signup" className="inline-flex h-9 items-center rounded-lg bg-ari-navy px-4 text-body-sm font-medium text-white hover:bg-ari-navy-light transition-colors">
                 Open an account
               </Link>
             </div>
           </div>
 
-          <button className="md:hidden p-2 text-ova-700" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          <button className="md:hidden p-2 text-ari-700" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}>
             {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
 
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-ova-200 bg-white px-6 py-4 space-y-3 animate-fade-in">
-            <a href="#products" onClick={() => setMobileMenuOpen(false)} className="block text-body-sm font-medium text-ova-700 py-2">Features</a>
-            <a href="#vehicles" onClick={() => setMobileMenuOpen(false)} className="block text-body-sm font-medium text-ova-700 py-2">Vehicle Sales</a>
-            <a href="#transfers" onClick={() => setMobileMenuOpen(false)} className="block text-body-sm font-medium text-ova-700 py-2">Transfers</a>
-            <a href="#trust" onClick={() => setMobileMenuOpen(false)} className="block text-body-sm font-medium text-ova-700 py-2">Security</a>
-            <div className="border-t border-ova-200 pt-3 flex flex-col gap-3">
-              <Link href="/login" className="text-body-sm font-medium text-ova-700">Sign in</Link>
-              <Link href="/signup" className="inline-flex h-10 items-center justify-center rounded-lg bg-ova-navy px-5 text-body-sm font-medium text-white">Open an account</Link>
+          <div className="md:hidden border-t border-ari-200 bg-white px-6 py-4 space-y-3 animate-fade-in">
+            <a href="#products" onClick={() => setMobileMenuOpen(false)} className="block text-body-sm font-medium text-ari-700 py-2">Features</a>
+            <a href="#vehicles" onClick={() => setMobileMenuOpen(false)} className="block text-body-sm font-medium text-ari-700 py-2">Vehicle Sales</a>
+            <a href="#transfers" onClick={() => setMobileMenuOpen(false)} className="block text-body-sm font-medium text-ari-700 py-2">Transfers</a>
+            <a href="#trust" onClick={() => setMobileMenuOpen(false)} className="block text-body-sm font-medium text-ari-700 py-2">Security</a>
+            <div className="border-t border-ari-200 pt-3 flex flex-col gap-3">
+              <Link href="/login" className="text-body-sm font-medium text-ari-700">Sign in</Link>
+              <Link href="/signup" className="inline-flex h-10 items-center justify-center rounded-lg bg-ari-navy px-5 text-body-sm font-medium text-white">Open an account</Link>
             </div>
           </div>
         )}
@@ -217,8 +217,8 @@ export default function LandingPage() {
       {/* ─── HERO ─── */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-32 right-0 w-[600px] h-[600px] rounded-full bg-gradient-radial from-ova-blue/[0.03] to-transparent" />
-          <div className="absolute -bottom-48 -left-24 w-[500px] h-[500px] rounded-full bg-gradient-radial from-ova-navy/[0.02] to-transparent" />
+          <div className="absolute -top-32 right-0 w-[600px] h-[600px] rounded-full bg-gradient-radial from-ari-blue/[0.03] to-transparent" />
+          <div className="absolute -bottom-48 -left-24 w-[500px] h-[500px] rounded-full bg-gradient-radial from-ari-navy/[0.02] to-transparent" />
         </div>
 
         <div className="relative mx-auto max-w-landing px-6">
@@ -227,15 +227,15 @@ export default function LandingPage() {
             <div className="max-w-xl">
               <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.12 }}
-                className="text-[2.75rem] md:text-[3.25rem] font-semibold text-ova-navy leading-[1.08] tracking-tight">
+                className="text-[2.75rem] md:text-[3.25rem] font-semibold text-ari-navy leading-[1.08] tracking-tight">
                 All your finances.
                 <br />
-                <span className="text-ova-blue">One powerful platform.</span>
+                <span className="text-ari-blue">One powerful platform.</span>
               </motion.h1>
 
               <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.22 }}
-                className="mt-6 text-body-lg text-ova-500 max-w-md leading-relaxed">
+                className="mt-6 text-body-lg text-ari-500 max-w-md leading-relaxed">
                 Manage your accounts, send money across borders in seconds, and sell your car safely — all from your phone.
               </motion.p>
 
@@ -243,11 +243,11 @@ export default function LandingPage() {
                 transition={{ duration: 0.5, delay: 0.32 }}
                 className="mt-8 flex flex-wrap items-center gap-3">
                 <Link href="/signup"
-                  className="inline-flex h-12 items-center gap-2 rounded-xl bg-ova-navy px-6 text-body font-medium text-white transition-all hover:bg-ova-navy-light hover:shadow-md active:scale-[0.98]">
+                  className="inline-flex h-12 items-center gap-2 rounded-xl bg-ari-navy px-6 text-body font-medium text-white transition-all hover:bg-ari-navy-light hover:shadow-md active:scale-[0.98]">
                   Get started <ArrowRight size={18} />
                 </Link>
                 <a href="#products"
-                  className="inline-flex h-12 items-center gap-2 rounded-xl border border-ova-300 px-6 text-body font-medium text-ova-700 transition-all hover:bg-ova-50 hover:border-ova-400">
+                  className="inline-flex h-12 items-center gap-2 rounded-xl border border-ari-300 px-6 text-body font-medium text-ari-700 transition-all hover:bg-ari-50 hover:border-ari-400">
                   Explore features
                 </a>
               </motion.div>
@@ -264,11 +264,11 @@ export default function LandingPage() {
       </section>
 
       {/* ─── TRUST BAR ─── */}
-      <section className="border-y border-ova-100 bg-ova-50/50 py-4">
-        <div className="mx-auto flex max-w-landing flex-wrap items-center justify-center gap-x-8 gap-y-2 px-6 text-caption text-ova-400">
+      <section className="border-y border-ari-100 bg-ari-50/50 py-4">
+        <div className="mx-auto flex max-w-landing flex-wrap items-center justify-center gap-x-8 gap-y-2 px-6 text-caption text-ari-400">
           {['Bank-Grade Encryption', 'Identity Verified', 'GDPR Compliant', 'Protected Transactions', 'Always Available'].map(label => (
             <span key={label} className="flex items-center gap-1.5">
-              <Shield size={12} strokeWidth={1.5} className="text-ova-300" />{label}
+              <Shield size={12} strokeWidth={1.5} className="text-ari-300" />{label}
             </span>
           ))}
         </div>
@@ -279,8 +279,8 @@ export default function LandingPage() {
         <div className="mx-auto max-w-landing px-6">
           <AnimatedSection>
             <motion.div variants={fadeUp} className="text-center mb-16">
-              <h2 className="text-h1 text-ova-navy">Everything you need in one place</h2>
-              <p className="mt-3 text-body-lg text-ova-500 max-w-lg mx-auto">
+              <h2 className="text-h1 text-ari-navy">Everything you need in one place</h2>
+              <p className="mt-3 text-body-lg text-ari-500 max-w-lg mx-auto">
                 Accounts, transfers, and vehicle sales — designed to work together seamlessly.
               </p>
             </motion.div>
@@ -289,32 +289,32 @@ export default function LandingPage() {
           <AnimatedSection className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {
-                icon: CreditCard, color: 'bg-ova-navy', badge: 'Accounts',
+                icon: CreditCard, color: 'bg-ari-navy', badge: 'Accounts',
                 title: 'Multi-Currency Accounts',
                 desc: 'Hold TRY and EUR side by side. Track your balance, view transaction history, and manage everything from one dashboard.',
               },
               {
-                icon: Send, color: 'bg-ova-blue', badge: 'Transfers',
+                icon: Send, color: 'bg-ari-blue', badge: 'Transfers',
                 title: 'Instant Transfers',
                 desc: 'Send money across borders in under 2 minutes. Real-time tracking, transparent fees, competitive exchange rates.',
               },
               {
-                icon: Car, color: 'bg-ova-green', badge: 'Vehicles',
+                icon: Car, color: 'bg-ari-green', badge: 'Vehicles',
                 title: 'Protected Vehicle Sales',
                 desc: 'Buy or sell a car without the hassle. Payment is held securely until both parties agree, then everything transfers at once.',
               },
             ].map((product, i) => (
               <motion.div key={product.title} variants={fadeUp} custom={i}
-                className="group rounded-2xl border border-ova-200 bg-white p-7 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:border-ova-300 transition-all duration-200 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-radial from-ova-blue/[0.03] to-transparent rounded-full -translate-y-1/2 translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                className="group rounded-2xl border border-ari-200 bg-white p-7 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:border-ari-300 transition-all duration-200 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-radial from-ari-blue/[0.03] to-transparent rounded-full -translate-y-1/2 translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative">
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-ova-400">{product.badge}</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-ari-400">{product.badge}</span>
                   <div className={clsx('flex h-11 w-11 items-center justify-center rounded-xl mt-3', product.color)}>
                     <product.icon size={20} strokeWidth={1.5} className="text-white" />
                   </div>
-                  <h3 className="mt-5 text-h3 text-ova-900">{product.title}</h3>
-                  <p className="mt-2 text-body-sm text-ova-500 leading-relaxed">{product.desc}</p>
-                  <div className="mt-5 flex items-center gap-1.5 text-body-sm font-medium text-ova-blue opacity-0 group-hover:opacity-100 transition-opacity">
+                  <h3 className="mt-5 text-h3 text-ari-900">{product.title}</h3>
+                  <p className="mt-2 text-body-sm text-ari-500 leading-relaxed">{product.desc}</p>
+                  <div className="mt-5 flex items-center gap-1.5 text-body-sm font-medium text-ari-blue opacity-0 group-hover:opacity-100 transition-opacity">
                     Learn more <ChevronRight size={15} />
                   </div>
                 </div>
@@ -325,16 +325,16 @@ export default function LandingPage() {
       </section>
 
       {/* ─── VEHICLE SALES ─── */}
-      <section id="vehicles" className="py-24 bg-ova-50 scroll-mt-20 relative">
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-ova-200 to-transparent" />
+      <section id="vehicles" className="py-24 bg-ari-50 scroll-mt-20 relative">
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-ari-200 to-transparent" />
         <div className="mx-auto max-w-landing px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             {/* Steps */}
             <AnimatedSection>
               <motion.div variants={fadeUp}>
-                <span className="text-body-sm font-medium text-ova-blue uppercase tracking-wider">Vehicle Sales</span>
-                <h2 className="mt-3 text-h1 text-ova-navy">The safest way to sell your car.</h2>
-                <p className="mt-4 text-body-lg text-ova-500 leading-relaxed max-w-md">
+                <span className="text-body-sm font-medium text-ari-blue uppercase tracking-wider">Vehicle Sales</span>
+                <h2 className="mt-3 text-h1 text-ari-navy">The safest way to sell your car.</h2>
+                <p className="mt-4 text-body-lg text-ari-500 leading-relaxed max-w-md">
                   No more standing in line. No more hoping the buyer actually pays. ARI holds the payment securely until both sides agree.
                 </p>
               </motion.div>
@@ -346,12 +346,12 @@ export default function LandingPage() {
                   { num: '3', title: 'Both confirm. Done.', desc: 'Payment is held securely until you both agree. Then money and ownership transfer simultaneously. Neither side can be cheated.' },
                 ].map((step, i) => (
                   <motion.div key={step.num} variants={fadeUp} custom={i} className="flex gap-4">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ova-navy text-caption font-semibold text-white">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ari-navy text-caption font-semibold text-white">
                       {step.num}
                     </div>
                     <div>
-                      <h4 className="text-body font-medium text-ova-900">{step.title}</h4>
-                      <p className="mt-1 text-body-sm text-ova-500">{step.desc}</p>
+                      <h4 className="text-body font-medium text-ari-900">{step.title}</h4>
+                      <p className="mt-1 text-body-sm text-ari-500">{step.desc}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -360,12 +360,12 @@ export default function LandingPage() {
 
             {/* Comparison */}
             <AnimatedSection>
-              <motion.div variants={fadeUp} className="rounded-2xl border border-ova-200 bg-white overflow-hidden shadow-sm">
+              <motion.div variants={fadeUp} className="rounded-2xl border border-ari-200 bg-white overflow-hidden shadow-sm">
                 <div className="grid grid-cols-2">
-                  <div className="px-5 py-4 bg-ova-100/50 border-b border-ova-200">
-                    <span className="text-body-sm font-semibold text-ova-500">The old way</span>
+                  <div className="px-5 py-4 bg-ari-100/50 border-b border-ari-200">
+                    <span className="text-body-sm font-semibold text-ari-500">The old way</span>
                   </div>
-                  <div className="px-5 py-4 bg-ova-navy border-b border-ova-navy">
+                  <div className="px-5 py-4 bg-ari-navy border-b border-ari-navy">
                     <span className="text-body-sm font-semibold text-white">With ARI</span>
                   </div>
                 </div>
@@ -377,14 +377,14 @@ export default function LandingPage() {
                   { old: 'Fraud is common', ari: 'Fraud is impossible' },
                   { old: 'Business hours only', ari: 'Available 24/7' },
                 ].map((row, i, arr) => (
-                  <div key={i} className={clsx('grid grid-cols-2', i < arr.length - 1 && 'border-b border-ova-100')}>
+                  <div key={i} className={clsx('grid grid-cols-2', i < arr.length - 1 && 'border-b border-ari-100')}>
                     <div className="px-5 py-3.5 flex items-start gap-2.5">
-                      <XCircle size={15} className="text-ova-red/60 shrink-0 mt-0.5" />
-                      <span className="text-body-sm text-ova-500">{row.old}</span>
+                      <XCircle size={15} className="text-ari-red/60 shrink-0 mt-0.5" />
+                      <span className="text-body-sm text-ari-500">{row.old}</span>
                     </div>
-                    <div className="px-5 py-3.5 flex items-start gap-2.5 bg-ova-50/50">
-                      <CheckCircle2 size={15} className="text-ova-green shrink-0 mt-0.5" />
-                      <span className="text-body-sm text-ova-700 font-medium">{row.ari}</span>
+                    <div className="px-5 py-3.5 flex items-start gap-2.5 bg-ari-50/50">
+                      <CheckCircle2 size={15} className="text-ari-green shrink-0 mt-0.5" />
+                      <span className="text-body-sm text-ari-700 font-medium">{row.ari}</span>
                     </div>
                   </div>
                 ))}
@@ -399,11 +399,11 @@ export default function LandingPage() {
         <div className="mx-auto max-w-landing px-6">
           <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-16 items-start">
             <AnimatedSection>
-              <motion.p variants={fadeUp} className="text-body-sm font-medium text-ova-blue uppercase tracking-wider">Transfers</motion.p>
-              <motion.h2 variants={fadeUp} className="mt-3 text-h1 text-ova-navy">
+              <motion.p variants={fadeUp} className="text-body-sm font-medium text-ari-blue uppercase tracking-wider">Transfers</motion.p>
+              <motion.h2 variants={fadeUp} className="mt-3 text-h1 text-ari-navy">
                 Move money across borders. Instantly.
               </motion.h2>
-              <motion.p variants={fadeUp} className="mt-4 text-body-lg text-ova-500 max-w-md">
+              <motion.p variants={fadeUp} className="mt-4 text-body-lg text-ari-500 max-w-md">
                 Competitive exchange rates, transparent fees, and real-time tracking. Your money arrives in seconds, not days.
               </motion.p>
               <motion.div variants={fadeUp} className="mt-8 grid grid-cols-2 gap-6">
@@ -421,13 +421,13 @@ export default function LandingPage() {
       </section>
 
       {/* ─── TRUST ─── */}
-      <section id="trust" className="py-24 bg-ova-50 scroll-mt-20 relative">
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-ova-200 to-transparent" />
+      <section id="trust" className="py-24 bg-ari-50 scroll-mt-20 relative">
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-ari-200 to-transparent" />
         <div className="mx-auto max-w-landing px-6">
           <AnimatedSection>
             <motion.div variants={fadeUp} className="text-center mb-14">
-              <h2 className="text-h1 text-ova-navy">Built for trust</h2>
-              <p className="mt-3 text-body-lg text-ova-500 max-w-md mx-auto">
+              <h2 className="text-h1 text-ari-navy">Built for trust</h2>
+              <p className="mt-3 text-body-lg text-ari-500 max-w-md mx-auto">
                 Your money and your data are protected at every level.
               </p>
             </motion.div>
@@ -443,12 +443,12 @@ export default function LandingPage() {
               { icon: Zap, title: 'Real-Time Settlement', desc: 'No waiting days for money to arrive. Transfers and vehicle sales settle in seconds.' },
             ].map((f, i) => (
               <motion.div key={f.title} variants={fadeUp} custom={i}
-                className="rounded-2xl border border-ova-200 bg-white p-6 hover:shadow-sm transition-shadow">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-ova-100 text-ova-navy">
+                className="rounded-2xl border border-ari-200 bg-white p-6 hover:shadow-sm transition-shadow">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-ari-100 text-ari-navy">
                   <f.icon size={20} strokeWidth={1.5} />
                 </div>
-                <h4 className="mt-4 text-h3 text-ova-900">{f.title}</h4>
-                <p className="mt-2 text-body-sm text-ova-500 leading-relaxed">{f.desc}</p>
+                <h4 className="mt-4 text-h3 text-ari-900">{f.title}</h4>
+                <p className="mt-2 text-body-sm text-ari-500 leading-relaxed">{f.desc}</p>
               </motion.div>
             ))}
           </AnimatedSection>
@@ -456,7 +456,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── STATS ─── */}
-      <section className="py-16 bg-ova-navy relative overflow-hidden">
+      <section className="py-16 bg-ari-navy relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04]">
           <svg width="100%" height="100%"><defs>
             <pattern id="stats-grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -489,13 +489,13 @@ export default function LandingPage() {
       {/* ─── CTA ─── */}
       <section className="py-24">
         <div className="mx-auto max-w-form px-6 text-center">
-          <h2 className="text-h1 text-ova-navy text-balance">Ready to take control of your finances?</h2>
-          <p className="mt-4 text-body-lg text-ova-500 max-w-md mx-auto">
+          <h2 className="text-h1 text-ari-navy text-balance">Ready to take control of your finances?</h2>
+          <p className="mt-4 text-body-lg text-ari-500 max-w-md mx-auto">
             Open an account in minutes. No paperwork, no branch visits.
           </p>
           <div className="mt-8">
             <Link href="/signup"
-              className="inline-flex h-12 items-center gap-2 rounded-xl bg-ova-navy px-8 text-body font-medium text-white transition-all hover:bg-ova-navy-light hover:shadow-md active:scale-[0.98]">
+              className="inline-flex h-12 items-center gap-2 rounded-xl bg-ari-navy px-8 text-body font-medium text-white transition-all hover:bg-ari-navy-light hover:shadow-md active:scale-[0.98]">
               Open an account <ArrowRight size={18} />
             </Link>
           </div>
@@ -503,44 +503,44 @@ export default function LandingPage() {
       </section>
 
       {/* ─── FOOTER ─── */}
-      <footer className="border-t border-ova-200 py-12 bg-ova-50/50">
+      <footer className="border-t border-ari-200 py-12 bg-ari-50/50">
         <div className="mx-auto max-w-landing px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="col-span-2 md:col-span-1">
-              <p className="ova-logo text-2xl">ARI</p>
-              <p className="mt-2 text-body-sm text-ova-500">The financial platform<br />built for the modern world.</p>
+              <p className="ari-logo text-2xl">ARI</p>
+              <p className="mt-2 text-body-sm text-ari-500">The financial platform<br />built for the modern world.</p>
             </div>
             <div>
-              <h4 className="text-caption text-ova-400 uppercase tracking-wide">Product</h4>
+              <h4 className="text-caption text-ari-400 uppercase tracking-wide">Product</h4>
               <ul className="mt-3 space-y-2">
-                <li><a href="#products" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors">Features</a></li>
-                <li><a href="#vehicles" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors">Vehicle Sales</a></li>
-                <li><a href="#transfers" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors">Transfers</a></li>
-                <li><a href="#trust" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors">Security</a></li>
+                <li><a href="#products" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors">Features</a></li>
+                <li><a href="#vehicles" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors">Vehicle Sales</a></li>
+                <li><a href="#transfers" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors">Transfers</a></li>
+                <li><a href="#trust" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors">Security</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-caption text-ova-400 uppercase tracking-wide">Company</h4>
+              <h4 className="text-caption text-ari-400 uppercase tracking-wide">Company</h4>
               <ul className="mt-3 space-y-2">
-                <li><a href="#" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors">About</a></li>
-                <li><a href="#" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors">Careers</a></li>
-                <li><a href="#" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors">Contact</a></li>
+                <li><a href="#" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors">About</a></li>
+                <li><a href="#" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors">Careers</a></li>
+                <li><a href="#" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors">Contact</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-caption text-ova-400 uppercase tracking-wide">Legal</h4>
+              <h4 className="text-caption text-ari-400 uppercase tracking-wide">Legal</h4>
               <ul className="mt-3 space-y-2">
-                <li><a href="#" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors">Terms</a></li>
-                <li><a href="#" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors">Privacy</a></li>
-                <li><a href="#" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors">Compliance</a></li>
+                <li><a href="#" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors">Terms</a></li>
+                <li><a href="#" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors">Privacy</a></li>
+                <li><a href="#" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors">Compliance</a></li>
               </ul>
             </div>
           </div>
-          <div className="mt-10 border-t border-ova-200 pt-6">
-            <p className="text-caption text-ova-400">
+          <div className="mt-10 border-t border-ari-200 pt-6">
+            <p className="text-caption text-ari-400">
               ARI Financial Services. Your money is protected by bank-grade encryption and verified identity checks.
             </p>
-            <p className="mt-2 text-caption text-ova-400">&copy; {new Date().getFullYear()} ARI Financial Services. All rights reserved.</p>
+            <p className="mt-2 text-caption text-ari-400">&copy; {new Date().getFullYear()} ARI Financial Services. All rights reserved.</p>
           </div>
         </div>
       </footer>
@@ -555,9 +555,9 @@ export default function LandingPage() {
 function FeatureItem({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
   return (
     <div>
-      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-ova-100 text-ova-navy">{icon}</div>
-      <h4 className="mt-3 text-body font-medium text-ova-900">{title}</h4>
-      <p className="mt-1 text-body-sm text-ova-500">{desc}</p>
+      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-ari-100 text-ari-navy">{icon}</div>
+      <h4 className="mt-3 text-body font-medium text-ari-900">{title}</h4>
+      <p className="mt-1 text-body-sm text-ari-500">{desc}</p>
     </div>
   );
 }

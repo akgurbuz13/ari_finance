@@ -28,10 +28,10 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const displayName = user?.firstName || user?.email?.split('@')[0] || '';
 
   return (
-    <aside className="flex h-screen w-60 flex-col bg-ova-navy">
+    <aside className="flex h-screen w-60 flex-col bg-ari-navy">
       {/* Logo + close button */}
       <div className="px-6 py-6 flex items-center justify-between">
-        <Link href="/home" className="ova-logo text-2xl !text-white" aria-label="ARI dashboard">
+        <Link href="/home" className="ari-logo text-2xl !text-white" aria-label="ARI dashboard">
           ARI
         </Link>
         {onClose && (

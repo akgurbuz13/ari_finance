@@ -10,7 +10,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-ova-50">
+      <div className="min-h-screen bg-ari-50">
         <Header />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-12">
           <motion.div

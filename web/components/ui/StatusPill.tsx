@@ -10,19 +10,19 @@ interface StatusPillProps {
 }
 
 const variantStyles: Record<StatusPillVariant, string> = {
-  success: "bg-ova-green/10 text-ova-green",
-  warning: "bg-ova-amber/10 text-ova-amber",
-  error: "bg-ova-red/10 text-ova-red",
-  info: "bg-ova-900/5 text-ova-700",
-  neutral: "bg-ova-100 text-ova-500",
+  success: "bg-ari-green/10 text-ari-green",
+  warning: "bg-ari-amber/10 text-ari-amber",
+  error: "bg-ari-red/10 text-ari-red",
+  info: "bg-ari-900/5 text-ari-700",
+  neutral: "bg-ari-100 text-ari-500",
 };
 
 const dotColors: Record<StatusPillVariant, string> = {
-  success: "bg-ova-green",
-  warning: "bg-ova-amber",
-  error: "bg-ova-red",
-  info: "bg-ova-700",
-  neutral: "bg-ova-400",
+  success: "bg-ari-green",
+  warning: "bg-ari-amber",
+  error: "bg-ari-red",
+  info: "bg-ari-700",
+  neutral: "bg-ari-400",
 };
 
 export default function StatusPill({ variant, children, className, dot }: StatusPillProps) {

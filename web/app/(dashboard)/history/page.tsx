@@ -96,9 +96,9 @@ export default function HistoryPage() {
     <div className="max-w-dashboard mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-h2 font-display text-ova-900">Transaction History</h1>
+        <h1 className="text-h2 font-display text-ari-900">Transaction History</h1>
         {accounts.length > 0 && (
-          <div className="inline-flex bg-ova-100 rounded-xl p-1 gap-1">
+          <div className="inline-flex bg-ari-100 rounded-xl p-1 gap-1">
             {accounts.map((a) => (
               <button
                 key={a.id}
@@ -106,8 +106,8 @@ export default function HistoryPage() {
                 className={clsx(
                   'px-4 py-2 rounded-lg text-body-sm font-medium transition-all duration-fast cursor-pointer',
                   selectedAccount === a.id
-                    ? 'bg-white text-ova-900 shadow-sm'
-                    : 'text-ova-500 hover:text-ova-700'
+                    ? 'bg-white text-ari-900 shadow-sm'
+                    : 'text-ari-500 hover:text-ari-700'
                 )}
               >
                 {a.currency === 'TRY' ? '🇹🇷' : '🇪🇺'} {a.currency}
@@ -127,8 +127,8 @@ export default function HistoryPage() {
               className={clsx(
                 'px-3 py-1.5 rounded-full text-caption font-medium transition-colors duration-fast cursor-pointer',
                 typeFilter === type
-                  ? 'bg-ova-navy text-white'
-                  : 'bg-ova-100 text-ova-500 hover:bg-ova-200'
+                  ? 'bg-ari-navy text-white'
+                  : 'bg-ari-100 text-ari-500 hover:bg-ari-200'
               )}
             >
               {type === 'all' ? 'All' : type.replace(/_/g, ' ')}
@@ -154,39 +154,39 @@ export default function HistoryPage() {
           </div>
         ) : transactions.length === 0 ? (
           <div className="text-center py-8">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ova-100 mx-auto mb-4">
-              <Clock size={28} strokeWidth={1.5} className="text-ova-400" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ari-100 mx-auto mb-4">
+              <Clock size={28} strokeWidth={1.5} className="text-ari-400" />
             </div>
-            <p className="text-body-sm text-ova-400">No transactions found</p>
+            <p className="text-body-sm text-ari-400">No transactions found</p>
           </div>
         ) : (
           <>
-            <div className="divide-y divide-ova-200">
+            <div className="divide-y divide-ari-200">
               {(typeFilter === 'all' ? transactions : transactions.filter(tx => tx.type === typeFilter)).map((tx) => {
                 const Icon = txTypeIcons[tx.type] || ArrowUpRight;
                 return (
                   <div
                     key={tx.id}
-                    className="cursor-pointer hover:bg-ova-50 transition-colors duration-fast -mx-6 px-6"
+                    className="cursor-pointer hover:bg-ari-50 transition-colors duration-fast -mx-6 px-6"
                     onClick={() => setExpandedTx(expandedTx === tx.id ? null : tx.id)}
                   >
                     <div className="flex items-center justify-between py-3">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ova-100">
-                          <Icon size={16} strokeWidth={1.5} className="text-ova-500" />
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ari-100">
+                          <Icon size={16} strokeWidth={1.5} className="text-ari-500" />
                         </div>
                         <div>
-                          <p className="text-body-sm font-medium text-ova-900 capitalize">
+                          <p className="text-body-sm font-medium text-ari-900 capitalize">
                             {tx.type.replace(/_/g, ' ')}
                           </p>
                           <div className="flex items-center gap-2">
-                            <span className="text-caption text-ova-400">
+                            <span className="text-caption text-ari-400">
                               {formatDate(tx.createdAt)}
                             </span>
                             {tx.referenceId && (
                               <>
-                                <span className="text-caption text-ova-300">&middot;</span>
-                                <span className="font-mono text-caption text-ova-400">
+                                <span className="text-caption text-ari-300">&middot;</span>
+                                <span className="font-mono text-caption text-ari-400">
                                   {tx.referenceId}
                                 </span>
                               </>
@@ -206,15 +206,15 @@ export default function HistoryPage() {
                     </div>
                     {expandedTx === tx.id && (
                       <div className="mt-2 pb-3 pl-11 space-y-1">
-                        <p className="text-caption text-ova-400">
-                          Transaction ID: <span className="font-mono text-ova-500">{tx.id}</span>
+                        <p className="text-caption text-ari-400">
+                          Transaction ID: <span className="font-mono text-ari-500">{tx.id}</span>
                         </p>
                         {tx.referenceId && (
-                          <p className="text-caption text-ova-400">
-                            Reference: <span className="font-mono text-ova-500">{tx.referenceId}</span>
+                          <p className="text-caption text-ari-400">
+                            Reference: <span className="font-mono text-ari-500">{tx.referenceId}</span>
                           </p>
                         )}
-                        <p className="text-caption text-ova-400">
+                        <p className="text-caption text-ari-400">
                           Date: {new Date(tx.createdAt).toLocaleString('en-GB')}
                         </p>
                       </div>
@@ -226,7 +226,7 @@ export default function HistoryPage() {
             {hasMore && (
               <button
                 onClick={loadMore}
-                className="block w-full mt-4 text-center text-body-sm text-ova-blue hover:underline cursor-pointer py-2"
+                className="block w-full mt-4 text-center text-body-sm text-ari-blue hover:underline cursor-pointer py-2"
               >
                 Load more transactions
               </button>

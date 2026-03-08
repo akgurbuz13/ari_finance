@@ -15,15 +15,15 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-ova-navy text-white hover:bg-ova-navy-light disabled:bg-ova-300 disabled:text-ova-500 disabled:cursor-not-allowed",
+    "bg-ari-navy text-white hover:bg-ari-navy-light disabled:bg-ari-300 disabled:text-ari-500 disabled:cursor-not-allowed",
   secondary:
-    "bg-white text-ova-900 border border-ova-200 hover:bg-ova-50 hover:border-ova-300 active:bg-ova-100 disabled:bg-ova-50 disabled:text-ova-400 disabled:border-ova-200",
+    "bg-white text-ari-900 border border-ari-200 hover:bg-ari-50 hover:border-ari-300 active:bg-ari-100 disabled:bg-ari-50 disabled:text-ari-400 disabled:border-ari-200",
   ghost:
-    "bg-transparent text-ova-700 hover:bg-ova-100 active:bg-ova-200 disabled:text-ova-400",
+    "bg-transparent text-ari-700 hover:bg-ari-100 active:bg-ari-200 disabled:text-ari-400",
   danger:
-    "bg-ova-red text-white hover:bg-ova-red/90 active:bg-ova-red/80 disabled:bg-ova-red/40",
+    "bg-ari-red text-white hover:bg-ari-red/90 active:bg-ari-red/80 disabled:bg-ari-red/40",
   link:
-    "bg-transparent text-ova-700 hover:text-ova-900 hover:underline font-medium p-0 h-auto",
+    "bg-transparent text-ari-700 hover:text-ari-900 hover:underline font-medium p-0 h-auto",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -76,7 +76,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={clsx(
-          "inline-flex items-center justify-center font-medium rounded-xl transition-all duration-base ease-out focus:outline-none focus:ring-2 focus:ring-ova-900/10 focus:ring-offset-2 cursor-pointer disabled:cursor-not-allowed active:scale-[0.98]",
+          "inline-flex items-center justify-center font-medium rounded-xl transition-all duration-base ease-out focus:outline-none focus:ring-2 focus:ring-ari-900/10 focus:ring-offset-2 cursor-pointer disabled:cursor-not-allowed active:scale-[0.98]",
           variant !== "link" && sizeStyles[size],
           variantStyles[variant],
           fullWidth && "w-full",

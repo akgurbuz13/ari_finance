@@ -20,14 +20,14 @@ export default function Card({ children, header, className, padding = "standard"
   return (
     <div
       className={clsx(
-        "bg-white border border-ova-200/60 rounded-2xl",
-        hover && "hover:border-ova-300 hover:shadow-card-hover cursor-pointer transition-all duration-base",
+        "bg-white border border-ari-200/60 rounded-2xl",
+        hover && "hover:border-ari-300 hover:shadow-card-hover cursor-pointer transition-all duration-base",
         className,
       )}
     >
       {header && (
-        <div className="px-6 py-4 border-b border-ova-100">
-          <h3 className="text-body-sm font-semibold text-ova-900 font-display">{header}</h3>
+        <div className="px-6 py-4 border-b border-ari-100">
+          <h3 className="text-body-sm font-semibold text-ari-900 font-display">{header}</h3>
         </div>
       )}
       <div className={
@@ -42,17 +42,17 @@ export function BalanceCard({ currency, amount, subtitle = "Available balance", 
   return (
     <div
       className={clsx(
-        "bg-white border border-ova-200/60 rounded-2xl p-6 hover:border-ova-300 hover:shadow-card-hover transition-all duration-base cursor-pointer group",
+        "bg-white border border-ari-200/60 rounded-2xl p-6 hover:border-ari-300 hover:shadow-card-hover transition-all duration-base cursor-pointer group",
         className,
       )}
     >
       <span className="micro-label">
         {currency}
       </span>
-      <p className="text-h1 font-display text-ova-900 mt-2 tracking-tight">
+      <p className="text-h1 font-display text-ari-900 mt-2 tracking-tight">
         {amount}
       </p>
-      <span className="text-body-sm text-ova-400 mt-1 block">
+      <span className="text-body-sm text-ari-400 mt-1 block">
         {subtitle}
       </span>
     </div>

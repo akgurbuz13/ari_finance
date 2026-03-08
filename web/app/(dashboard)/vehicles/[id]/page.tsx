@@ -32,7 +32,7 @@ export default function VehicleDetailPage() {
     return (
       <div className="max-w-2xl mx-auto">
         <Skeleton className="h-6 w-32 mb-8" />
-        <div className="bg-white border border-ova-200/60 rounded-2xl p-6">
+        <div className="bg-white border border-ari-200/60 rounded-2xl p-6">
           <Skeleton variant="rectangular" className="h-48 w-full rounded-xl mb-4" />
           <Skeleton className="h-5 w-64 mb-2" />
           <Skeleton className="h-4 w-40" />
@@ -44,11 +44,11 @@ export default function VehicleDetailPage() {
   if (!vehicle) {
     return (
       <div className="max-w-2xl mx-auto text-center py-16">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-ova-50 border border-ova-200/60 mx-auto mb-4">
-          <Car size={28} className="text-ova-400" />
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-ari-50 border border-ari-200/60 mx-auto mb-4">
+          <Car size={28} className="text-ari-400" />
         </div>
-        <h3 className="text-h3 font-display text-ova-900 mb-1">Vehicle not found</h3>
-        <p className="text-body-sm text-ova-500">This vehicle may have been removed or does not exist</p>
+        <h3 className="text-h3 font-display text-ari-900 mb-1">Vehicle not found</h3>
+        <p className="text-body-sm text-ari-500">This vehicle may have been removed or does not exist</p>
       </div>
     );
   }
@@ -62,7 +62,7 @@ export default function VehicleDetailPage() {
       {/* Back link */}
       <Link
         href="/vehicles"
-        className="inline-flex items-center gap-2 text-body-sm text-ova-500 hover:text-ova-900 transition-colors mb-8"
+        className="inline-flex items-center gap-2 text-body-sm text-ari-500 hover:text-ari-900 transition-colors mb-8"
       >
         <ArrowLeft size={16} />
         Back to vehicles
@@ -103,7 +103,7 @@ export default function VehicleDetailPage() {
           {/* Pending indicator */}
           {vehicle.status === 'PENDING' && (
             <div className="flex items-center gap-2 mt-6 pt-5 border-t border-white/10">
-              <div className="h-2 w-2 rounded-full bg-ova-amber animate-pulse-subtle" />
+              <div className="h-2 w-2 rounded-full bg-ari-amber animate-pulse-subtle" />
               <span className="text-body-sm text-white/60">Minting NFT on blockchain...</span>
             </div>
           )}
@@ -118,19 +118,19 @@ export default function VehicleDetailPage() {
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 <div>
                   <span className="micro-label block mb-1">Token ID</span>
-                  <span className="text-body font-semibold text-ova-900 font-mono">
+                  <span className="text-body font-semibold text-ari-900 font-mono">
                     #{vehicle.tokenId}
                   </span>
                 </div>
                 <div>
                   <span className="micro-label block mb-1">Chain ID</span>
-                  <span className="text-body font-semibold text-ova-900 font-mono">
+                  <span className="text-body font-semibold text-ari-900 font-mono">
                     {vehicle.chainId}
                   </span>
                 </div>
                 <div>
                   <span className="micro-label block mb-1">VIN</span>
-                  <span className="text-caption text-ova-700 font-mono truncate block">
+                  <span className="text-caption text-ari-700 font-mono truncate block">
                     {vehicle.vin}
                   </span>
                 </div>
@@ -140,7 +140,7 @@ export default function VehicleDetailPage() {
                 href={`${explorerBase}/tx/${vehicle.mintTxHash}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-body-sm text-ova-700 hover:text-ova-900 font-medium transition-colors"
+                className="inline-flex items-center gap-1.5 text-body-sm text-ari-700 hover:text-ari-900 font-medium transition-colors"
               >
                 View on Explorer
                 <ExternalLink size={14} />
@@ -198,13 +198,13 @@ function DetailItem({
   return (
     <div className="flex items-start gap-3">
       {Icon && (
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ova-50 shrink-0 mt-0.5">
-          <Icon size={14} className="text-ova-400" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ari-50 shrink-0 mt-0.5">
+          <Icon size={14} className="text-ari-400" />
         </div>
       )}
       <div>
         <span className="micro-label block mb-0.5">{label}</span>
-        <span className="text-body-sm font-medium text-ova-900">{value}</span>
+        <span className="text-body-sm font-medium text-ari-900">{value}</span>
       </div>
     </div>
   );

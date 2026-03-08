@@ -31,18 +31,18 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-ova-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-ari-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-10">
-          <Link href="/" className="ova-logo text-4xl" aria-label="Ova home">
-            ova
+          <Link href="/" className="ari-logo text-4xl" aria-label="ARI home">
+            ARI
           </Link>
-          <p className="mt-3 text-body-sm text-ova-500">Reset your password</p>
+          <p className="mt-3 text-body-sm text-ari-500">Reset your password</p>
         </div>
 
         {/* Card shell */}
-        <div className="bg-white border border-ova-200 rounded-2xl shadow-card p-8 sm:p-10">
+        <div className="bg-white border border-ari-200 rounded-2xl shadow-card p-8 sm:p-10">
           <AnimatePresence mode="wait">
             {submitted ? (
               <motion.div
@@ -53,17 +53,17 @@ export default function ForgotPasswordPage() {
                 className="space-y-6"
               >
                 <div className="text-center">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ova-green-light mx-auto mb-4">
-                    <Mail size={28} strokeWidth={1.5} className="text-ova-green" />
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ari-green-light mx-auto mb-4">
+                    <Mail size={28} strokeWidth={1.5} className="text-ari-green" />
                   </div>
-                  <h2 className="text-h3 text-ova-900">Check your email</h2>
-                  <p className="mt-2 text-body-sm text-ova-500">
+                  <h2 className="text-h3 text-ari-900">Check your email</h2>
+                  <p className="mt-2 text-body-sm text-ari-500">
                     If an account exists with this email, we&apos;ve sent a reset link. Please check your
                     inbox and spam folder.
                   </p>
                 </div>
                 <div className="text-center">
-                  <Link href="/login" className="text-body-sm text-ova-blue font-medium hover:underline">
+                  <Link href="/login" className="text-body-sm text-ari-blue font-medium hover:underline">
                     Back to sign in
                   </Link>
                 </div>
@@ -82,7 +82,7 @@ export default function ForgotPasswordPage() {
                         initial={{ opacity: 0, y: -8 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -8 }}
-                        className="p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red"
+                        className="p-3 bg-ari-red-light border border-ari-red/20 rounded-xl text-body-sm text-ari-red"
                         role="alert"
                       >
                         {error}
@@ -90,7 +90,7 @@ export default function ForgotPasswordPage() {
                     )}
                   </AnimatePresence>
 
-                  <p className="text-body-sm text-ova-500">
+                  <p className="text-body-sm text-ari-500">
                     Enter the email address associated with your account and we&apos;ll send you a link
                     to reset your password.
                   </p>
@@ -109,10 +109,10 @@ export default function ForgotPasswordPage() {
                   </Button>
                 </form>
 
-                <div className="border-t border-ova-200 mt-6 pt-6">
-                  <p className="text-center text-body-sm text-ova-500">
+                <div className="border-t border-ari-200 mt-6 pt-6">
+                  <p className="text-center text-body-sm text-ari-500">
                     Remember your password?{' '}
-                    <Link href="/login" className="text-ova-blue font-medium hover:underline">
+                    <Link href="/login" className="text-ari-blue font-medium hover:underline">
                       Sign in
                     </Link>
                   </p>
@@ -123,7 +123,7 @@ export default function ForgotPasswordPage() {
         </div>
 
         {/* Trust signal */}
-        <div className="mt-8 flex items-center justify-center gap-2 text-caption text-ova-400">
+        <div className="mt-8 flex items-center justify-center gap-2 text-caption text-ari-400">
           <ShieldCheck size={14} strokeWidth={1.5} />
           <span>Encrypted end-to-end · Identity verified</span>
         </div>

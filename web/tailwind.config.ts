@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ova: {
+        ari: {
           // Brand
           navy: "#0D1B2A",
           "navy-light": "#1B2D3E",

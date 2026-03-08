@@ -28,7 +28,7 @@ function CountdownRing({ seconds, total }: { seconds: number; total: number }) {
   const circumference = 2 * Math.PI * radius;
   const progress = total > 0 ? seconds / total : 0;
   const offset = circumference * (1 - progress);
-  const color = seconds > 10 ? 'text-ova-green' : seconds > 5 ? 'text-ova-amber' : 'text-ova-red';
+  const color = seconds > 10 ? 'text-ari-green' : seconds > 5 ? 'text-ari-amber' : 'text-ari-red';
 
   return (
     <div className="relative flex items-center justify-center">
@@ -38,7 +38,7 @@ function CountdownRing({ seconds, total }: { seconds: number; total: number }) {
           fill="none"
           stroke="currentColor"
           strokeWidth="2.5"
-          className="text-ova-100"
+          className="text-ari-100"
         />
         <circle
           cx="24" cy="24" r={radius}
@@ -63,7 +63,7 @@ function ChainVisualization({ sourceCurrency, targetCurrency, sameCurrency }: { 
     : (targetCurrency === 'TRY' ? 'Turkey L1' : 'Europe L1');
 
   return (
-    <div className="flex items-center justify-between bg-ova-navy rounded-xl px-5 py-4">
+    <div className="flex items-center justify-between bg-ari-navy rounded-xl px-5 py-4">
       <div className="text-center">
         <p className="text-micro font-medium text-white/50 uppercase tracking-wider">Source</p>
         <p className="text-body-sm font-semibold text-white mt-0.5">{sourceLabel}</p>
@@ -437,26 +437,26 @@ export default function TransferPage() {
   }
 
   const sourceAccount = getSourceAccount();
-  const selectClassName = "w-full h-11 px-4 bg-ova-50 border border-ova-200 rounded-xl text-ova-900 transition-all duration-base focus:outline-none focus:bg-white focus:border-ova-900 focus:ring-1 focus:ring-ova-900/10 appearance-none cursor-pointer text-body-sm";
+  const selectClassName = "w-full h-11 px-4 bg-ari-50 border border-ari-200 rounded-xl text-ari-900 transition-all duration-base focus:outline-none focus:bg-white focus:border-ari-900 focus:ring-1 focus:ring-ari-900/10 appearance-none cursor-pointer text-body-sm";
 
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       {/* Page header */}
       <div>
-        <h1 className="text-h2 font-display text-ova-900">Transfer</h1>
-        <p className="text-body-sm text-ova-500 mt-1">Send money domestically or across borders</p>
+        <h1 className="text-h2 font-display text-ari-900">Transfer</h1>
+        <p className="text-body-sm text-ari-500 mt-1">Send money domestically or across borders</p>
       </div>
 
       {/* Pill-style tab toggle */}
-      <div className="inline-flex bg-ova-100 rounded-xl p-1 gap-1">
+      <div className="inline-flex bg-ari-100 rounded-xl p-1 gap-1">
         {(['domestic', 'crossBorder'] as Tab[]).map((t) => (
           <button
             key={t}
             onClick={() => { setTab(t); setSuccess(''); setError(''); setCbError(''); }}
             className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-body-sm font-medium transition-all duration-base cursor-pointer ${
               tab === t
-                ? 'bg-white text-ova-900 shadow-sm'
-                : 'text-ova-500 hover:text-ova-700'
+                ? 'bg-white text-ari-900 shadow-sm'
+                : 'text-ari-500 hover:text-ari-700'
             }`}
           >
             {t === 'domestic' ? (
@@ -474,7 +474,7 @@ export default function TransferPage() {
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           role="alert"
-          className="p-4 bg-ova-green/5 border border-ova-green/20 rounded-2xl text-body-sm text-ova-green flex items-center gap-2"
+          className="p-4 bg-ari-green/5 border border-ari-green/20 rounded-2xl text-body-sm text-ari-green flex items-center gap-2"
         >
           <CheckCircle2 size={16} strokeWidth={1.5} />
           {success}
@@ -485,7 +485,7 @@ export default function TransferPage() {
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           role="alert"
-          className="p-4 bg-ova-red/5 border border-ova-red/20 rounded-2xl text-body-sm text-ova-red"
+          className="p-4 bg-ari-red/5 border border-ari-red/20 rounded-2xl text-body-sm text-ari-red"
         >
           {error}
         </motion.div>
@@ -554,7 +554,7 @@ export default function TransferPage() {
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               role="alert"
-              className="mb-5 p-4 bg-ova-red/5 border border-ova-red/20 rounded-xl text-body-sm text-ova-red"
+              className="mb-5 p-4 bg-ari-red/5 border border-ari-red/20 rounded-xl text-body-sm text-ari-red"
             >
               {cbError}
             </motion.div>
@@ -585,14 +585,14 @@ export default function TransferPage() {
                   onClick={() => setCbSameCurrency(!cbSameCurrency)}
                   className={`flex items-center gap-3 w-full p-3.5 rounded-xl border transition-all duration-base text-left cursor-pointer ${
                     cbSameCurrency
-                      ? 'border-ova-900 bg-ova-50'
-                      : 'border-ova-200 hover:border-ova-300'
+                      ? 'border-ari-900 bg-ari-50'
+                      : 'border-ari-200 hover:border-ari-300'
                   }`}
                 >
                   <div className={`flex h-5 w-5 items-center justify-center rounded-md border-2 transition-all ${
                     cbSameCurrency
-                      ? 'bg-ova-navy border-ova-navy'
-                      : 'border-ova-300'
+                      ? 'bg-ari-navy border-ari-navy'
+                      : 'border-ari-300'
                   }`}>
                     {cbSameCurrency && (
                       <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
@@ -601,21 +601,21 @@ export default function TransferPage() {
                     )}
                   </div>
                   <div className="flex-1">
-                    <p className="text-body-sm font-medium text-ova-900">Same currency transfer</p>
-                    <p className="text-caption text-ova-500">Send to a different region without FX conversion</p>
+                    <p className="text-body-sm font-medium text-ari-900">Same currency transfer</p>
+                    <p className="text-caption text-ari-500">Send to a different region without FX conversion</p>
                   </div>
-                  <ArrowRightLeft size={16} className="text-ova-400" />
+                  <ArrowRightLeft size={16} className="text-ari-400" />
                 </button>
 
                 {/* Target currency display */}
-                <div className="flex items-center justify-between p-3.5 bg-ova-50 rounded-xl">
-                  <span className="text-caption text-ova-500 uppercase tracking-wide font-medium">Target currency</span>
+                <div className="flex items-center justify-between p-3.5 bg-ari-50 rounded-xl">
+                  <span className="text-caption text-ari-500 uppercase tracking-wide font-medium">Target currency</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-body-sm font-semibold text-ova-900">
+                    <span className="text-body-sm font-semibold text-ari-900">
                       {getTargetCurrency()} ({getTargetCurrency() === 'TRY' ? '\u20BA' : '\u20AC'})
                     </span>
                     {cbSameCurrency && (
-                      <span className="text-micro text-ova-400 bg-ova-100 px-2 py-0.5 rounded-full">different region</span>
+                      <span className="text-micro text-ari-400 bg-ari-100 px-2 py-0.5 rounded-full">different region</span>
                     )}
                   </div>
                 </div>
@@ -636,7 +636,7 @@ export default function TransferPage() {
                 You send ({sourceAccount?.currency || 'TRY'})
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-h3 text-ova-400 font-display">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-h3 text-ari-400 font-display">
                   {sourceAccount?.currency === 'EUR' ? '\u20AC' : '\u20BA'}
                 </span>
                 <input
@@ -645,17 +645,17 @@ export default function TransferPage() {
                   value={cbAmount}
                   onChange={(e) => setCbAmount(e.target.value.replace(/[^0-9.]/g, ''))}
                   placeholder="0.00"
-                  className="w-full h-16 pl-10 pr-4 bg-ova-50 border border-ova-200 rounded-xl text-h2 text-ova-900 font-display transition-all duration-base focus:outline-none focus:bg-white focus:border-ova-900 focus:ring-1 focus:ring-ova-900/10"
+                  className="w-full h-16 pl-10 pr-4 bg-ari-50 border border-ari-200 rounded-xl text-h2 text-ari-900 font-display transition-all duration-base focus:outline-none focus:bg-white focus:border-ari-900 focus:ring-1 focus:ring-ari-900/10"
                   required
                 />
               </div>
               {sourceAccount && (
-                <p className="mt-2 text-caption text-ova-400">
+                <p className="mt-2 text-caption text-ari-400">
                   Available: {formatAmount(sourceAccount.balance, sourceAccount.currency)}
                 </p>
               )}
               {cbAmount && sourceAccount && parseFloat(cbAmount) > parseFloat(sourceAccount.balance) && (
-                <p className="mt-1 text-caption text-ova-red">Insufficient balance</p>
+                <p className="mt-1 text-caption text-ari-red">Insufficient balance</p>
               )}
             </div>
 
@@ -674,7 +674,7 @@ export default function TransferPage() {
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               role="alert"
-              className="mb-5 p-4 bg-ova-red/5 border border-ova-red/20 rounded-xl text-body-sm text-ova-red"
+              className="mb-5 p-4 bg-ari-red/5 border border-ari-red/20 rounded-xl text-body-sm text-ari-red"
             >
               {cbError}
             </motion.div>
@@ -684,54 +684,54 @@ export default function TransferPage() {
             {/* Quote header with countdown ring */}
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-h3 font-display text-ova-900">FX Quote</h3>
-                <p className="text-caption text-ova-500 mt-0.5">Review and confirm your transfer</p>
+                <h3 className="text-h3 font-display text-ari-900">FX Quote</h3>
+                <p className="text-caption text-ari-500 mt-0.5">Review and confirm your transfer</p>
               </div>
               <CountdownRing seconds={cbQuoteCountdown} total={cbQuoteTotal} />
             </div>
 
             {/* Quote amounts — large typography */}
-            <div className="bg-ova-50 rounded-2xl p-6">
+            <div className="bg-ari-50 rounded-2xl p-6">
               <div className="grid grid-cols-[1fr,auto,1fr] items-center gap-4">
                 <div>
                   <p className="micro-label">You send</p>
-                  <p className="text-h2 font-display text-ova-900 mt-2 tracking-tight">
+                  <p className="text-h2 font-display text-ari-900 mt-2 tracking-tight">
                     {formatAmount(cbQuote.sourceAmount, cbQuote.sourceCurrency)}
                   </p>
-                  <p className="text-caption text-ova-400 mt-1">{cbQuote.sourceCurrency}</p>
+                  <p className="text-caption text-ari-400 mt-1">{cbQuote.sourceCurrency}</p>
                 </div>
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white border border-ova-200">
-                  <ArrowRight size={16} className="text-ova-500" />
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white border border-ari-200">
+                  <ArrowRight size={16} className="text-ari-500" />
                 </div>
                 <div className="text-right">
                   <p className="micro-label">They receive</p>
-                  <p className="text-h2 font-display text-ova-900 mt-2 tracking-tight">
+                  <p className="text-h2 font-display text-ari-900 mt-2 tracking-tight">
                     {formatAmount(cbQuote.targetAmount, cbQuote.targetCurrency)}
                   </p>
-                  <p className="text-caption text-ova-400 mt-1">{cbQuote.targetCurrency}</p>
+                  <p className="text-caption text-ari-400 mt-1">{cbQuote.targetCurrency}</p>
                 </div>
               </div>
             </div>
 
             {/* Quote details table */}
-            <div className="space-y-0 divide-y divide-ova-100">
+            <div className="space-y-0 divide-y divide-ari-100">
               <div className="flex justify-between py-3">
-                <span className="text-body-sm text-ova-500">Exchange rate</span>
-                <span className="text-body-sm text-ova-900 font-medium font-mono">
+                <span className="text-body-sm text-ari-500">Exchange rate</span>
+                <span className="text-body-sm text-ari-900 font-medium font-mono">
                   1 {cbQuote.sourceCurrency} = {parseFloat(cbQuote.customerRate).toFixed(6)} {cbQuote.targetCurrency}
                 </span>
               </div>
               <div className="flex justify-between py-3">
-                <span className="text-body-sm text-ova-500">Spread</span>
-                <span className="text-body-sm text-ova-900 font-medium">{cbQuote.spread}%</span>
+                <span className="text-body-sm text-ari-500">Spread</span>
+                <span className="text-body-sm text-ari-900 font-medium">{cbQuote.spread}%</span>
               </div>
               <div className="flex justify-between py-3">
-                <span className="text-body-sm text-ova-500">Estimated delivery</span>
-                <span className="text-body-sm text-ova-900 font-medium">~2 minutes</span>
+                <span className="text-body-sm text-ari-500">Estimated delivery</span>
+                <span className="text-body-sm text-ari-900 font-medium">~2 minutes</span>
               </div>
               <div className="flex justify-between py-3">
-                <span className="text-body-sm text-ova-700 font-medium">Total cost</span>
-                <span className="text-body-sm text-ova-900 font-semibold">
+                <span className="text-body-sm text-ari-700 font-medium">Total cost</span>
+                <span className="text-body-sm text-ari-900 font-semibold">
                   {formatAmount(
                     parseFloat(cbQuote.sourceAmount) * (1 + parseFloat(cbQuote.spread) / 100),
                     cbQuote.sourceCurrency
@@ -741,7 +741,7 @@ export default function TransferPage() {
             </div>
 
             {/* Trust signal */}
-            <p className="text-caption text-ova-400 text-center">
+            <p className="text-caption text-ari-400 text-center">
               Secured by bank-grade encryption
             </p>
 
@@ -789,8 +789,8 @@ export default function TransferPage() {
           <Card>
             <div className="space-y-6">
               {cbQuote && (
-                <div className="text-center pb-4 border-b border-ova-100">
-                  <p className="text-body-sm text-ova-500">
+                <div className="text-center pb-4 border-b border-ari-100">
+                  <p className="text-body-sm text-ari-500">
                     Sending {formatAmount(cbQuote.sourceAmount, cbQuote.sourceCurrency)} &rarr; {formatAmount(cbQuote.targetAmount, cbQuote.targetCurrency)}
                   </p>
                 </div>
@@ -812,20 +812,20 @@ export default function TransferPage() {
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
-              className="w-20 h-20 bg-ova-green/10 rounded-full flex items-center justify-center mx-auto"
+              className="w-20 h-20 bg-ari-green/10 rounded-full flex items-center justify-center mx-auto"
             >
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.3, type: 'spring', stiffness: 300 }}
               >
-                <CheckCircle2 size={40} strokeWidth={1.5} className="text-ova-green" />
+                <CheckCircle2 size={40} strokeWidth={1.5} className="text-ari-green" />
               </motion.div>
             </motion.div>
 
             <div>
-              <h3 className="text-h1 font-display text-ova-900 tracking-tight">Transfer complete</h3>
-              <p className="text-body-sm text-ova-500 mt-2">
+              <h3 className="text-h1 font-display text-ari-900 tracking-tight">Transfer complete</h3>
+              <p className="text-body-sm text-ari-500 mt-2">
                 {cbQuote
                   ? `${formatAmount(cbQuote.targetAmount, cbQuote.targetCurrency)} delivered`
                   : cbAmount
@@ -835,9 +835,9 @@ export default function TransferPage() {
             </div>
 
             {cbPaymentId && (
-              <div className="inline-flex items-center gap-2 bg-ova-50 px-4 py-2 rounded-xl">
-                <span className="text-caption text-ova-500">Payment ID</span>
-                <span className="text-caption text-ova-900 font-mono font-medium">{cbPaymentId}</span>
+              <div className="inline-flex items-center gap-2 bg-ari-50 px-4 py-2 rounded-xl">
+                <span className="text-caption text-ari-500">Payment ID</span>
+                <span className="text-caption text-ari-900 font-mono font-medium">{cbPaymentId}</span>
               </div>
             )}
 
@@ -845,14 +845,14 @@ export default function TransferPage() {
               <AvalancheBadge label="Settled on Avalanche" size="md" />
             </div>
 
-            <p className="text-caption text-ova-400">
+            <p className="text-caption text-ari-400">
               {new Date().toLocaleDateString('en-GB', { month: 'short', day: 'numeric', year: 'numeric' })},{' '}
               {new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
             </p>
 
             {/* Settlement details (collapsed by default) */}
             {progressSteps.length > 0 && (
-              <div className="mt-6 text-left border-t border-ova-100 pt-6">
+              <div className="mt-6 text-left border-t border-ari-100 pt-6">
                 <TransferProgress steps={progressSteps} />
               </div>
             )}
@@ -863,7 +863,7 @@ export default function TransferPage() {
               </Button>
               <Link
                 href={"/history" as const}
-                className="flex-1 inline-flex items-center justify-center rounded-xl px-4 h-12 text-body-sm font-medium text-ova-700 border border-ova-200 hover:bg-ova-50 hover:border-ova-300 transition-all duration-base focus:outline-none focus:ring-2 focus:ring-ova-900/10 focus:ring-offset-2"
+                className="flex-1 inline-flex items-center justify-center rounded-xl px-4 h-12 text-body-sm font-medium text-ari-700 border border-ari-200 hover:bg-ari-50 hover:border-ari-300 transition-all duration-base focus:outline-none focus:ring-2 focus:ring-ari-900/10 focus:ring-offset-2"
               >
                 View in history
               </Link>

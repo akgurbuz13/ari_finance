@@ -44,8 +44,8 @@ function CopyButton({ text }: { text: string }) {
       className={clsx(
         'inline-flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-base cursor-pointer',
         copied
-          ? 'bg-ova-green/10 text-ova-green'
-          : 'hover:bg-ova-100 text-ova-400 hover:text-ova-700'
+          ? 'bg-ari-green/10 text-ari-green'
+          : 'hover:bg-ari-100 text-ari-400 hover:text-ari-700'
       )}
       title="Copy account ID"
     >
@@ -60,12 +60,12 @@ function AccountCard({ account }: { account: Account }) {
   const regionLabel = account.region === 'TR' ? 'Turkey' : 'Europe';
 
   return (
-    <div className="bg-white border border-ova-200/60 rounded-2xl p-6 hover:border-ova-300 hover:shadow-card-hover transition-all duration-base group">
+    <div className="bg-white border border-ari-200/60 rounded-2xl p-6 hover:border-ari-300 hover:shadow-card-hover transition-all duration-base group">
       {/* Top: Currency name + flag + region badge + status */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <span className="text-xl leading-none">{flag}</span>
-          <span className="text-body-sm font-semibold text-ova-900">{account.currency}</span>
+          <span className="text-body-sm font-semibold text-ari-900">{account.currency}</span>
           <StatusPill variant="neutral">
             {regionLabel}
           </StatusPill>
@@ -83,27 +83,27 @@ function AccountCard({ account }: { account: Account }) {
 
       {/* Middle: Large balance */}
       <div className="mt-5 mb-5">
-        <p className="text-h1 font-display text-ova-900 tracking-tight leading-none">
+        <p className="text-h1 font-display text-ari-900 tracking-tight leading-none">
           {formatCurrency(account.balance, account.currency)}
         </p>
-        <span className="text-caption text-ova-400 mt-1.5 block">Available balance</span>
+        <span className="text-caption text-ari-400 mt-1.5 block">Available balance</span>
       </div>
 
       {/* Bottom: IBAN + details */}
-      <div className="pt-4 border-t border-ova-100 space-y-3">
+      <div className="pt-4 border-t border-ari-100 space-y-3">
         {/* IBAN row */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-caption text-ova-400 uppercase tracking-wide font-medium">IBAN</span>
-            <span className="font-mono text-body-sm text-ova-700">{iban}</span>
+            <span className="text-caption text-ari-400 uppercase tracking-wide font-medium">IBAN</span>
+            <span className="font-mono text-body-sm text-ari-700">{iban}</span>
           </div>
           <CopyButton text={account.id} />
         </div>
 
         {/* Created date */}
         <div className="flex items-center gap-2">
-          <span className="text-caption text-ova-400 uppercase tracking-wide font-medium">Opened</span>
-          <span className="text-caption text-ova-500">
+          <span className="text-caption text-ari-400 uppercase tracking-wide font-medium">Opened</span>
+          <span className="text-caption text-ari-500">
             {new Date(account.createdAt).toLocaleDateString('en-GB', {
               day: 'numeric',
               month: 'short',
@@ -115,7 +115,7 @@ function AccountCard({ account }: { account: Account }) {
         {/* View transactions link */}
         <Link
           href="/history"
-          className="inline-flex items-center gap-1.5 text-body-sm font-medium text-ova-700 hover:text-ova-900 transition-colors mt-1 group/link"
+          className="inline-flex items-center gap-1.5 text-body-sm font-medium text-ari-700 hover:text-ari-900 transition-colors mt-1 group/link"
         >
           View transactions
           <ArrowRight size={14} strokeWidth={1.5} className="transition-transform group-hover/link:translate-x-0.5" />
@@ -129,15 +129,15 @@ function CreateAccountCard({ onCreate }: { onCreate: (currency: string) => void 
   return (
     <button
       onClick={() => onCreate('TRY')}
-      className="border-2 border-dashed border-ova-200 rounded-2xl p-6 flex flex-col items-center justify-center hover:border-ova-300 transition-colors cursor-pointer min-h-[220px] w-full group"
+      className="border-2 border-dashed border-ari-200 rounded-2xl p-6 flex flex-col items-center justify-center hover:border-ari-300 transition-colors cursor-pointer min-h-[220px] w-full group"
     >
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ova-100 group-hover:bg-ova-200 transition-colors">
-        <Plus size={24} strokeWidth={1.5} className="text-ova-400 group-hover:text-ova-600 transition-colors" />
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ari-100 group-hover:bg-ari-200 transition-colors">
+        <Plus size={24} strokeWidth={1.5} className="text-ari-400 group-hover:text-ari-600 transition-colors" />
       </div>
-      <p className="text-body-sm font-medium text-ova-500 mt-3 group-hover:text-ova-700 transition-colors">
+      <p className="text-body-sm font-medium text-ari-500 mt-3 group-hover:text-ari-700 transition-colors">
         Create new account
       </p>
-      <p className="text-caption text-ova-400 mt-1">
+      <p className="text-caption text-ari-400 mt-1">
         TRY or EUR
       </p>
     </button>
@@ -200,9 +200,9 @@ export default function AccountsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h1 className="text-h2 font-display text-ova-900">Accounts</h1>
+          <h1 className="text-h2 font-display text-ari-900">Accounts</h1>
           {accounts.length > 0 && (
-            <span className="inline-flex items-center justify-center min-w-[24px] h-6 px-2 rounded-full bg-ova-100 text-caption font-semibold text-ova-700">
+            <span className="inline-flex items-center justify-center min-w-[24px] h-6 px-2 rounded-full bg-ari-100 text-caption font-semibold text-ari-700">
               {accounts.length}
             </span>
           )}
@@ -223,11 +223,11 @@ export default function AccountsPage() {
       {accounts.length === 0 ? (
         <Card padding="generous">
           <div className="text-center py-8 space-y-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-ova-100 mx-auto">
-              <Wallet size={32} strokeWidth={1.5} className="text-ova-400" />
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-ari-100 mx-auto">
+              <Wallet size={32} strokeWidth={1.5} className="text-ari-400" />
             </div>
-            <h2 className="text-h3 font-display text-ova-900">No accounts yet</h2>
-            <p className="text-body-sm text-ova-400 max-w-sm mx-auto">
+            <h2 className="text-h3 font-display text-ari-900">No accounts yet</h2>
+            <p className="text-body-sm text-ari-400 max-w-sm mx-auto">
               Create a TRY or EUR account to start sending and receiving money between Turkey and Europe.
             </p>
             <div className="flex justify-center gap-3 pt-2">
