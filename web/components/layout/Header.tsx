@@ -48,11 +48,11 @@ export default function Header() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-white/95 backdrop-blur-sm border-b border-ova-200/60">
+      <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-white/95 backdrop-blur-sm border-b border-ari-200/60">
         <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between">
           {/* Left: Logo */}
           <div className="flex items-center gap-8">
-            <Link href="/home" className="ova-logo text-xl !text-ova-navy" aria-label="ARI dashboard">
+            <Link href="/home" className="ari-logo text-xl !text-ari-navy" aria-label="ARI dashboard">
               ARI
             </Link>
 
@@ -67,8 +67,8 @@ export default function Header() {
                     className={clsx(
                       "relative px-3.5 py-2 text-body-sm font-medium rounded-lg transition-colors duration-fast",
                       isActive
-                        ? "text-ova-900 bg-ova-100"
-                        : "text-ova-500 hover:text-ova-900 hover:bg-ova-50"
+                        ? "text-ari-900 bg-ari-100"
+                        : "text-ari-500 hover:text-ari-900 hover:bg-ari-50"
                     )}
                   >
                     {item.label}
@@ -82,23 +82,23 @@ export default function Header() {
           <div className="flex items-center gap-2">
             {/* Notification bell */}
             <button
-              className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-ova-100 transition-colors duration-fast"
+              className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-ari-100 transition-colors duration-fast"
               aria-label="Notifications"
             >
-              <Bell size={18} strokeWidth={1.5} className="text-ova-400" />
+              <Bell size={18} strokeWidth={1.5} className="text-ari-400" />
             </button>
 
             {/* Settings */}
             <Link
               href="/settings"
-              className="hidden sm:flex h-9 w-9 items-center justify-center rounded-lg hover:bg-ova-100 transition-colors duration-fast"
+              className="hidden sm:flex h-9 w-9 items-center justify-center rounded-lg hover:bg-ari-100 transition-colors duration-fast"
               aria-label="Settings"
             >
-              <Settings size={18} strokeWidth={1.5} className="text-ova-400" />
+              <Settings size={18} strokeWidth={1.5} className="text-ari-400" />
             </Link>
 
             {/* Divider */}
-            <div className="hidden sm:block w-px h-6 bg-ova-200 mx-1" />
+            <div className="hidden sm:block w-px h-6 bg-ari-200 mx-1" />
 
             {/* Avatar dropdown */}
             <div className="relative">
@@ -107,30 +107,30 @@ export default function Header() {
                   e.stopPropagation();
                   setDropdownOpen(!dropdownOpen);
                 }}
-                className="flex items-center gap-2.5 rounded-full pl-1 pr-3 py-1 hover:bg-ova-50 transition-colors duration-fast"
+                className="flex items-center gap-2.5 rounded-full pl-1 pr-3 py-1 hover:bg-ari-50 transition-colors duration-fast"
                 title={user?.email || 'User'}
                 aria-label="User menu"
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ova-navy text-micro text-white font-semibold">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ari-navy text-micro text-white font-semibold">
                   {initials}
                 </div>
-                <span className="hidden sm:block text-body-sm font-medium text-ova-700">{displayName}</span>
+                <span className="hidden sm:block text-body-sm font-medium text-ari-700">{displayName}</span>
               </button>
               {dropdownOpen && (
-                <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-ova-200/60 rounded-xl shadow-md py-1.5 z-50 animate-scale-in">
-                  <div className="px-4 py-2 border-b border-ova-100">
-                    <p className="text-body-sm font-medium text-ova-900 truncate">{displayName}</p>
-                    <p className="text-caption text-ova-400 truncate">{user?.email}</p>
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-ari-200/60 rounded-xl shadow-md py-1.5 z-50 animate-scale-in">
+                  <div className="px-4 py-2 border-b border-ari-100">
+                    <p className="text-body-sm font-medium text-ari-900 truncate">{displayName}</p>
+                    <p className="text-caption text-ari-400 truncate">{user?.email}</p>
                   </div>
                   <Link
                     href="/settings"
-                    className="block px-4 py-2.5 text-body-sm text-ova-700 hover:bg-ova-50"
+                    className="block px-4 py-2.5 text-body-sm text-ari-700 hover:bg-ari-50"
                   >
                     Settings
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2.5 text-body-sm text-ova-red hover:bg-ova-red-light"
+                    className="block w-full text-left px-4 py-2.5 text-body-sm text-ari-red hover:bg-ari-red-light"
                   >
                     Log out
                   </button>
@@ -140,14 +140,14 @@ export default function Header() {
 
             {/* Mobile menu toggle */}
             <button
-              className="lg:hidden flex h-9 w-9 items-center justify-center rounded-lg hover:bg-ova-100 transition-colors duration-fast ml-1"
+              className="lg:hidden flex h-9 w-9 items-center justify-center rounded-lg hover:bg-ari-100 transition-colors duration-fast ml-1"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? (
-                <X size={20} strokeWidth={1.5} className="text-ova-500" />
+                <X size={20} strokeWidth={1.5} className="text-ari-500" />
               ) : (
-                <Menu size={20} strokeWidth={1.5} className="text-ova-500" />
+                <Menu size={20} strokeWidth={1.5} className="text-ari-500" />
               )}
             </button>
           </div>
@@ -161,7 +161,7 @@ export default function Header() {
             className="fixed inset-0 bg-black/20 z-40 lg:hidden"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <div className="fixed top-16 left-0 right-0 z-40 lg:hidden bg-white border-b border-ova-200 shadow-lg animate-fade-in">
+          <div className="fixed top-16 left-0 right-0 z-40 lg:hidden bg-white border-b border-ari-200 shadow-lg animate-fade-in">
             <nav className="max-w-7xl mx-auto px-4 py-3 space-y-1">
               {navItems.map((item) => {
                 const isActive = pathname?.startsWith(item.href);
@@ -172,8 +172,8 @@ export default function Header() {
                     className={clsx(
                       "flex items-center gap-3 px-4 py-3 rounded-xl text-body-sm font-medium transition-colors duration-fast",
                       isActive
-                        ? "bg-ova-100 text-ova-900"
-                        : "text-ova-500 hover:bg-ova-50 hover:text-ova-900"
+                        ? "bg-ari-100 text-ari-900"
+                        : "text-ari-500 hover:bg-ari-50 hover:text-ari-900"
                     )}
                   >
                     <item.icon size={20} strokeWidth={1.5} />
@@ -183,7 +183,7 @@ export default function Header() {
               })}
               <Link
                 href="/settings"
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-body-sm font-medium text-ova-500 hover:bg-ova-50 hover:text-ova-900 transition-colors duration-fast"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-body-sm font-medium text-ari-500 hover:bg-ari-50 hover:text-ari-900 transition-colors duration-fast"
               >
                 <Settings size={20} strokeWidth={1.5} />
                 Settings

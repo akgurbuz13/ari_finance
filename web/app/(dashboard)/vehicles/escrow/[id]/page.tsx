@@ -63,7 +63,7 @@ export default function EscrowDetailPage() {
   if (loading || !escrow) {
     return (
       <div className="max-w-2xl mx-auto flex items-center justify-center py-20">
-        <Loader2 size={28} className="text-ova-400 animate-spin" />
+        <Loader2 size={28} className="text-ari-400 animate-spin" />
       </div>
     );
   }
@@ -90,7 +90,7 @@ export default function EscrowDetailPage() {
       {/* Back link */}
       <Link
         href="/vehicles"
-        className="inline-flex items-center gap-2 text-body-sm text-ova-500 hover:text-ova-900 transition-colors mb-8"
+        className="inline-flex items-center gap-2 text-body-sm text-ari-500 hover:text-ari-900 transition-colors mb-8"
       >
         <ArrowLeft size={16} />
         Back to vehicles
@@ -99,14 +99,14 @@ export default function EscrowDetailPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="text-h2 font-display text-ova-900 mb-1">Vehicle Escrow</h1>
+          <h1 className="text-h2 font-display text-ari-900 mb-1">Vehicle Escrow</h1>
           {vehicle && (
             <div className="flex items-center gap-2">
-              <span className="text-body-sm text-ova-500">
+              <span className="text-body-sm text-ari-500">
                 {vehicle.year} {vehicle.make} {vehicle.model}
               </span>
-              <span className="text-caption text-ova-300">|</span>
-              <span className="text-body-sm text-ova-400">{vehicle.plateNumber}</span>
+              <span className="text-caption text-ari-300">|</span>
+              <span className="text-body-sm text-ari-400">{vehicle.plateNumber}</span>
             </div>
           )}
         </div>
@@ -123,11 +123,11 @@ export default function EscrowDetailPage() {
         {/* Progress Timeline */}
         <Card header="Progress">
           {isCancelled ? (
-            <div className="flex items-center gap-3 p-3 bg-ova-red/5 rounded-xl">
-              <XCircle size={20} className="text-ova-red shrink-0" />
+            <div className="flex items-center gap-3 p-3 bg-ari-red/5 rounded-xl">
+              <XCircle size={20} className="text-ari-red shrink-0" />
               <div>
-                <span className="text-body-sm font-medium text-ova-red">Escrow Cancelled</span>
-                <p className="text-caption text-ova-500 mt-0.5">
+                <span className="text-body-sm font-medium text-ari-red">Escrow Cancelled</span>
+                <p className="text-caption text-ari-500 mt-0.5">
                   This deal has been cancelled. Any funds will be returned.
                 </p>
               </div>
@@ -135,7 +135,7 @@ export default function EscrowDetailPage() {
           ) : (
             <div className="relative">
               {/* Vertical line */}
-              <div className="absolute left-[11px] top-3 bottom-3 w-px bg-ova-200/60" />
+              <div className="absolute left-[11px] top-3 bottom-3 w-px bg-ari-200/60" />
 
               <div className="space-y-0">
                 {STEPS.map((step, i) => {
@@ -148,16 +148,16 @@ export default function EscrowDetailPage() {
                       {/* Dot */}
                       <div className="relative z-10 shrink-0">
                         {done ? (
-                          <div className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-ova-green">
+                          <div className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-ari-green">
                             <Check size={12} className="text-white" />
                           </div>
                         ) : active ? (
-                          <div className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-ova-navy">
+                          <div className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-ari-navy">
                             <div className="h-2 w-2 rounded-full bg-white animate-pulse-subtle" />
                           </div>
                         ) : (
-                          <div className="flex h-[22px] w-[22px] items-center justify-center rounded-full border-2 border-ova-200 bg-white">
-                            <Circle size={8} className="text-ova-300" />
+                          <div className="flex h-[22px] w-[22px] items-center justify-center rounded-full border-2 border-ari-200 bg-white">
+                            <Circle size={8} className="text-ari-300" />
                           </div>
                         )}
                       </div>
@@ -167,17 +167,17 @@ export default function EscrowDetailPage() {
                         <span
                           className={`text-body-sm font-medium block ${
                             done
-                              ? 'text-ova-900'
+                              ? 'text-ari-900'
                               : active
-                                ? 'text-ova-900'
-                                : 'text-ova-400'
+                                ? 'text-ari-900'
+                                : 'text-ari-400'
                           }`}
                         >
                           {step.label}
                         </span>
                         <span
                           className={`text-caption block mt-0.5 ${
-                            done || active ? 'text-ova-500' : 'text-ova-300'
+                            done || active ? 'text-ari-500' : 'text-ari-300'
                           }`}
                         >
                           {step.description}
@@ -186,12 +186,12 @@ export default function EscrowDetailPage() {
 
                       {/* Status indicator */}
                       {done && (
-                        <span className="text-micro text-ova-green uppercase tracking-wider shrink-0 mt-0.5">
+                        <span className="text-micro text-ari-green uppercase tracking-wider shrink-0 mt-0.5">
                           Done
                         </span>
                       )}
                       {active && (
-                        <span className="text-micro text-ova-navy uppercase tracking-wider shrink-0 mt-0.5 animate-pulse-subtle">
+                        <span className="text-micro text-ari-navy uppercase tracking-wider shrink-0 mt-0.5 animate-pulse-subtle">
                           Active
                         </span>
                       )}
@@ -208,15 +208,15 @@ export default function EscrowDetailPage() {
           <div className="space-y-5">
             {/* Vehicle mini card */}
             {vehicle && (
-              <div className="flex items-center gap-3 p-3 bg-ova-50 border border-ova-200/60 rounded-xl">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white border border-ova-200/60 shrink-0">
-                  <Car size={16} className="text-ova-navy" />
+              <div className="flex items-center gap-3 p-3 bg-ari-50 border border-ari-200/60 rounded-xl">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white border border-ari-200/60 shrink-0">
+                  <Car size={16} className="text-ari-navy" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="text-body-sm font-medium text-ova-900 block">
+                  <span className="text-body-sm font-medium text-ari-900 block">
                     {vehicle.year} {vehicle.make} {vehicle.model}
                   </span>
-                  <span className="text-caption text-ova-400 font-mono">
+                  <span className="text-caption text-ari-400 font-mono">
                     {vehicle.plateNumber}
                     {vehicle.tokenId != null && ` | Token #${vehicle.tokenId}`}
                   </span>
@@ -228,34 +228,34 @@ export default function EscrowDetailPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <span className="micro-label block mb-1">Sale Amount</span>
-                <span className="text-h3 font-display text-ova-900">
+                <span className="text-h3 font-display text-ari-900">
                   {parseFloat(escrow.saleAmount).toLocaleString('tr-TR')}
                 </span>
-                <span className="text-caption text-ova-500 ml-1">{escrow.currency}</span>
+                <span className="text-caption text-ari-500 ml-1">{escrow.currency}</span>
               </div>
               <div>
                 <span className="micro-label block mb-1">Platform Fee</span>
-                <span className="text-body font-semibold text-ova-900">
+                <span className="text-body font-semibold text-ari-900">
                   {parseFloat(escrow.feeAmount).toLocaleString('tr-TR')}
                 </span>
-                <span className="text-caption text-ova-500 ml-1">{escrow.currency}</span>
+                <span className="text-caption text-ari-500 ml-1">{escrow.currency}</span>
               </div>
             </div>
 
             {/* Confirmation status */}
-            <div className="border-t border-ova-100 pt-4">
+            <div className="border-t border-ari-100 pt-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center gap-2">
-                  <div className={`h-2 w-2 rounded-full ${escrow.sellerConfirmed ? 'bg-ova-green' : 'bg-ova-300'}`} />
-                  <span className="text-body-sm text-ova-700">Seller</span>
-                  <span className={`text-caption font-medium ${escrow.sellerConfirmed ? 'text-ova-green' : 'text-ova-400'}`}>
+                  <div className={`h-2 w-2 rounded-full ${escrow.sellerConfirmed ? 'bg-ari-green' : 'bg-ari-300'}`} />
+                  <span className="text-body-sm text-ari-700">Seller</span>
+                  <span className={`text-caption font-medium ${escrow.sellerConfirmed ? 'text-ari-green' : 'text-ari-400'}`}>
                     {escrow.sellerConfirmed ? 'Confirmed' : 'Pending'}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className={`h-2 w-2 rounded-full ${escrow.buyerConfirmed ? 'bg-ova-green' : 'bg-ova-300'}`} />
-                  <span className="text-body-sm text-ova-700">Buyer</span>
-                  <span className={`text-caption font-medium ${escrow.buyerConfirmed ? 'text-ova-green' : 'text-ova-400'}`}>
+                  <div className={`h-2 w-2 rounded-full ${escrow.buyerConfirmed ? 'bg-ari-green' : 'bg-ari-300'}`} />
+                  <span className="text-body-sm text-ari-700">Buyer</span>
+                  <span className={`text-caption font-medium ${escrow.buyerConfirmed ? 'text-ari-green' : 'text-ari-400'}`}>
                     {escrow.buyerConfirmed ? 'Confirmed' : 'Pending'}
                   </span>
                 </div>
@@ -277,7 +277,7 @@ export default function EscrowDetailPage() {
                       href={`https://subnets.avax.network/ari-tr/tx/${tx.hash}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-caption text-ova-700 hover:text-ova-900 font-medium transition-colors"
+                      className="inline-flex items-center gap-1 text-caption text-ari-700 hover:text-ari-900 font-medium transition-colors"
                     >
                       View on Explorer
                       <ExternalLink size={11} />

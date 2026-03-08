@@ -51,7 +51,7 @@ export default function RegisterVehiclePage() {
       {/* Back link */}
       <Link
         href="/vehicles"
-        className="inline-flex items-center gap-2 text-body-sm text-ova-500 hover:text-ova-900 transition-colors mb-8"
+        className="inline-flex items-center gap-2 text-body-sm text-ari-500 hover:text-ari-900 transition-colors mb-8"
       >
         <ArrowLeft size={16} />
         Back to vehicles
@@ -59,22 +59,22 @@ export default function RegisterVehiclePage() {
 
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-h2 font-display text-ova-900 mb-2">Register Vehicle</h1>
-        <p className="text-body-sm text-ova-500">
+        <h1 className="text-h2 font-display text-ari-900 mb-2">Register Vehicle</h1>
+        <p className="text-body-sm text-ari-500">
           Your vehicle details will be hashed and stored on-chain as a unique NFT
         </p>
       </div>
 
       {/* Avalanche info banner */}
-      <div className="flex items-center gap-3 p-4 bg-ova-50 border border-ova-200/60 rounded-xl mb-6">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white border border-ova-200/60 shrink-0">
-          <Hexagon size={16} className="text-ova-navy" />
+      <div className="flex items-center gap-3 p-4 bg-ari-50 border border-ari-200/60 rounded-xl mb-6">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white border border-ari-200/60 shrink-0">
+          <Hexagon size={16} className="text-ari-navy" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-body-sm text-ova-700 font-medium">
+          <p className="text-body-sm text-ari-700 font-medium">
             Your vehicle will be minted as an NFT on Avalanche L1
           </p>
-          <p className="text-caption text-ova-400 mt-0.5">
+          <p className="text-caption text-ari-400 mt-0.5">
             Immutable ownership proof secured by blockchain
           </p>
         </div>
@@ -160,13 +160,13 @@ export default function RegisterVehiclePage() {
           {/* Fuel / Transmission */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className="block text-body-sm font-medium text-ova-700 mb-2">
+              <label className="block text-body-sm font-medium text-ari-700 mb-2">
                 Fuel Type
               </label>
               <select
                 value={form.fuelType}
                 onChange={e => update('fuelType', e.target.value)}
-                className="w-full h-11 px-4 bg-ova-50 border border-ova-200 rounded-xl text-ova-900 text-body-sm transition-all duration-base focus:outline-none focus:bg-white focus:border-ova-900 focus:ring-1 focus:ring-ova-900/10"
+                className="w-full h-11 px-4 bg-ari-50 border border-ari-200 rounded-xl text-ari-900 text-body-sm transition-all duration-base focus:outline-none focus:bg-white focus:border-ari-900 focus:ring-1 focus:ring-ari-900/10"
               >
                 <option value="">Select...</option>
                 <option value="Gasoline">Gasoline</option>
@@ -177,13 +177,13 @@ export default function RegisterVehiclePage() {
               </select>
             </div>
             <div>
-              <label className="block text-body-sm font-medium text-ova-700 mb-2">
+              <label className="block text-body-sm font-medium text-ari-700 mb-2">
                 Transmission
               </label>
               <select
                 value={form.transmission}
                 onChange={e => update('transmission', e.target.value)}
-                className="w-full h-11 px-4 bg-ova-50 border border-ova-200 rounded-xl text-ova-900 text-body-sm transition-all duration-base focus:outline-none focus:bg-white focus:border-ova-900 focus:ring-1 focus:ring-ova-900/10"
+                className="w-full h-11 px-4 bg-ari-50 border border-ari-200 rounded-xl text-ari-900 text-body-sm transition-all duration-base focus:outline-none focus:bg-white focus:border-ari-900 focus:ring-1 focus:ring-ari-900/10"
               >
                 <option value="">Select...</option>
                 <option value="Manual">Manual</option>
@@ -193,12 +193,12 @@ export default function RegisterVehiclePage() {
           </div>
 
           {/* Divider */}
-          <div className="border-t border-ova-100" />
+          <div className="border-t border-ari-100" />
 
           {/* Error */}
           {error && (
-            <div className="p-3 bg-ova-red-light rounded-xl border border-ova-red/10">
-              <p className="text-body-sm text-ova-red">{error}</p>
+            <div className="p-3 bg-ari-red-light rounded-xl border border-ari-red/10">
+              <p className="text-body-sm text-ari-red">{error}</p>
             </div>
           )}
 

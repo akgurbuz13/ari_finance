@@ -69,9 +69,9 @@ export default function KycPage() {
     <div className="max-w-form mx-auto space-y-8 py-10">
       {/* Header */}
       <div className="text-center space-y-2">
-        <h1 className="text-h2 text-ova-900">Verify your identity</h1>
-        <p className="text-body text-ova-500">Unlock international transfers up to EUR 50,000</p>
-        <p className="text-caption text-ova-400">Takes about 5 minutes</p>
+        <h1 className="text-h2 text-ari-900">Verify your identity</h1>
+        <p className="text-body text-ari-500">Unlock international transfers up to EUR 50,000</p>
+        <p className="text-caption text-ari-400">Takes about 5 minutes</p>
       </div>
 
       {/* Horizontal stepper */}
@@ -81,26 +81,26 @@ export default function KycPage() {
             <div className="flex items-center gap-3">
               <div className={clsx(
                 'flex h-10 w-10 items-center justify-center rounded-full text-body-sm font-medium',
-                i < stepperState ? 'bg-ova-green text-white' :
-                i === stepperState ? 'bg-ova-navy text-white' :
-                'bg-ova-200 text-ova-500',
+                i < stepperState ? 'bg-ari-green text-white' :
+                i === stepperState ? 'bg-ari-navy text-white' :
+                'bg-ari-200 text-ari-500',
               )}>
                 {i < stepperState ? <Check size={16} strokeWidth={2} /> : i + 1}
               </div>
               <div>
                 <span className={clsx(
                   'text-body-sm font-medium block',
-                  i <= stepperState ? 'text-ova-900' : 'text-ova-400',
+                  i <= stepperState ? 'text-ari-900' : 'text-ari-400',
                 )}>
                   {step.name}
                 </span>
-                <span className="text-caption text-ova-400">{step.description}</span>
+                <span className="text-caption text-ari-400">{step.description}</span>
               </div>
             </div>
             {i < steps.length - 1 && (
               <div className={clsx(
                 'h-px flex-1',
-                i < stepperState ? 'bg-ova-green' : 'bg-ova-200',
+                i < stepperState ? 'bg-ari-green' : 'bg-ari-200',
               )} />
             )}
           </div>
@@ -109,7 +109,7 @@ export default function KycPage() {
 
       {/* Error banner */}
       {error && (
-        <div role="alert" className="p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red">
+        <div role="alert" className="p-3 bg-ari-red-light border border-ari-red/20 rounded-xl text-body-sm text-ari-red">
           {error}
         </div>
       )}
@@ -118,27 +118,27 @@ export default function KycPage() {
       {isApproved && (
         <Card>
           <div className="text-center py-8 space-y-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ova-green-light mx-auto">
-              <CheckCircle2 size={28} strokeWidth={1.5} className="text-ova-green" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ari-green-light mx-auto">
+              <CheckCircle2 size={28} strokeWidth={1.5} className="text-ari-green" />
             </div>
-            <h2 className="text-h3 text-ova-900">Identity verified</h2>
-            <p className="text-body-sm text-ova-500">You&apos;ve unlocked:</p>
-            <ul className="text-body-sm text-ova-700 space-y-3 text-left inline-block">
+            <h2 className="text-h3 text-ari-900">Identity verified</h2>
+            <p className="text-body-sm text-ari-500">You&apos;ve unlocked:</p>
+            <ul className="text-body-sm text-ari-700 space-y-3 text-left inline-block">
               <li className="flex items-center gap-3">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ova-green-light">
-                  <Globe size={14} className="text-ova-green" />
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ari-green-light">
+                  <Globe size={14} className="text-ari-green" />
                 </div>
                 International transfers up to EUR 50,000
               </li>
               <li className="flex items-center gap-3">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ova-green-light">
-                  <RefreshCw size={14} className="text-ova-green" />
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ari-green-light">
+                  <RefreshCw size={14} className="text-ari-green" />
                 </div>
                 Full FX conversion access
               </li>
               <li className="flex items-center gap-3">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ova-green-light">
-                  <Headphones size={14} className="text-ova-green" />
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ari-green-light">
+                  <Headphones size={14} className="text-ari-green" />
                 </div>
                 Priority support
               </li>
@@ -150,11 +150,11 @@ export default function KycPage() {
       {isPending && (
         <Card>
           <div className="text-center py-8 space-y-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ova-amber-light mx-auto">
-              <Clock size={28} strokeWidth={1.5} className="text-ova-amber" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ari-amber-light mx-auto">
+              <Clock size={28} strokeWidth={1.5} className="text-ari-amber" />
             </div>
-            <p className="text-body-sm font-medium text-ova-900">We&apos;re reviewing your documents</p>
-            <p className="text-body-sm text-ova-500">This usually takes a few minutes.</p>
+            <p className="text-body-sm font-medium text-ari-900">We&apos;re reviewing your documents</p>
+            <p className="text-body-sm text-ari-500">This usually takes a few minutes.</p>
           </div>
         </Card>
       )}
@@ -162,11 +162,11 @@ export default function KycPage() {
       {isRejected && (
         <Card>
           <div className="text-center py-8 space-y-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ova-red-light mx-auto">
-              <AlertCircle size={28} strokeWidth={1.5} className="text-ova-red" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ari-red-light mx-auto">
+              <AlertCircle size={28} strokeWidth={1.5} className="text-ari-red" />
             </div>
-            <h2 className="text-h3 text-ova-900">Verification unsuccessful</h2>
-            <p className="text-body-sm text-ova-500">
+            <h2 className="text-h3 text-ari-900">Verification unsuccessful</h2>
+            <p className="text-body-sm text-ari-500">
               We couldn&apos;t verify your identity. This can happen if documents are unclear or expired.
             </p>
             <div className="flex gap-3 justify-center pt-2">
@@ -180,10 +180,10 @@ export default function KycPage() {
       {!isApproved && !isPending && !isRejected && (
         <Card>
           <div className="text-center py-8 space-y-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ova-blue-light mx-auto">
-              <ShieldCheck size={28} strokeWidth={1.5} className="text-ova-blue" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ari-blue-light mx-auto">
+              <ShieldCheck size={28} strokeWidth={1.5} className="text-ari-blue" />
             </div>
-            <p className="text-body text-ova-700">
+            <p className="text-body text-ari-700">
               Verify your identity to unlock international transfers up to EUR 50,000
             </p>
             <Button onClick={initiateKyc}>Start Verification</Button>

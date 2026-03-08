@@ -58,29 +58,29 @@ function ResetPasswordForm() {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-ova-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-ari-50 flex items-center justify-center px-4">
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="text-center mb-10">
-            <Link href="/" className="ova-logo text-4xl" aria-label="Ova home">
-              ova
+            <Link href="/" className="ari-logo text-4xl" aria-label="ARI home">
+              ARI
             </Link>
           </div>
 
           {/* Card shell */}
-          <div className="bg-white border border-ova-200 rounded-2xl shadow-card p-8 sm:p-10">
-            <div className="p-4 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red mb-6" role="alert">
+          <div className="bg-white border border-ari-200 rounded-2xl shadow-card p-8 sm:p-10">
+            <div className="p-4 bg-ari-red-light border border-ari-red/20 rounded-xl text-body-sm text-ari-red mb-6" role="alert">
               Invalid or missing reset token. Please request a new password reset link.
             </div>
             <div className="text-center">
-              <Link href="/forgot-password" className="text-body-sm text-ova-blue font-medium hover:underline">
+              <Link href="/forgot-password" className="text-body-sm text-ari-blue font-medium hover:underline">
                 Request a new reset link
               </Link>
             </div>
           </div>
 
           {/* Trust signal */}
-          <div className="mt-8 flex items-center justify-center gap-2 text-caption text-ova-400">
+          <div className="mt-8 flex items-center justify-center gap-2 text-caption text-ari-400">
             <ShieldCheck size={14} strokeWidth={1.5} />
             <span>Encrypted end-to-end · Identity verified</span>
           </div>
@@ -90,18 +90,18 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div className="min-h-screen bg-ova-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-ari-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-10">
-          <Link href="/" className="ova-logo text-4xl" aria-label="Ova home">
-            ova
+          <Link href="/" className="ari-logo text-4xl" aria-label="ARI home">
+            ARI
           </Link>
-          <p className="mt-3 text-body-sm text-ova-500">Set a new password</p>
+          <p className="mt-3 text-body-sm text-ari-500">Set a new password</p>
         </div>
 
         {/* Card shell */}
-        <div className="bg-white border border-ova-200 rounded-2xl shadow-card p-8 sm:p-10">
+        <div className="bg-white border border-ari-200 rounded-2xl shadow-card p-8 sm:p-10">
           <AnimatePresence mode="wait">
             {success ? (
               <motion.div
@@ -116,17 +116,17 @@ function ResetPasswordForm() {
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
-                    className="flex h-14 w-14 items-center justify-center rounded-full bg-ova-green-light mx-auto mb-4"
+                    className="flex h-14 w-14 items-center justify-center rounded-full bg-ari-green-light mx-auto mb-4"
                   >
-                    <CheckCircle2 size={28} strokeWidth={1.5} className="text-ova-green" />
+                    <CheckCircle2 size={28} strokeWidth={1.5} className="text-ari-green" />
                   </motion.div>
-                  <h2 className="text-h3 text-ova-900">Password reset successful</h2>
-                  <p className="mt-2 text-body-sm text-ova-500">
+                  <h2 className="text-h3 text-ari-900">Password reset successful</h2>
+                  <p className="mt-2 text-body-sm text-ari-500">
                     Your password has been reset successfully. You can now sign in with your new password.
                   </p>
                 </div>
                 <div className="text-center">
-                  <Link href="/login" className="text-body-sm text-ova-blue font-medium hover:underline">
+                  <Link href="/login" className="text-body-sm text-ari-blue font-medium hover:underline">
                     Go to sign in
                   </Link>
                 </div>
@@ -145,7 +145,7 @@ function ResetPasswordForm() {
                         initial={{ opacity: 0, y: -8 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -8 }}
-                        className="p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red"
+                        className="p-3 bg-ari-red-light border border-ari-red/20 rounded-xl text-body-sm text-ari-red"
                         role="alert"
                       >
                         {error}
@@ -162,7 +162,7 @@ function ResetPasswordForm() {
                       placeholder="Enter your new password"
                       required
                     />
-                    <p className="text-caption text-ova-400 mt-1">Must be at least 8 characters</p>
+                    <p className="text-caption text-ari-400 mt-1">Must be at least 8 characters</p>
                     {newPassword && <PasswordStrength password={newPassword} />}
                   </div>
 
@@ -180,10 +180,10 @@ function ResetPasswordForm() {
                   </Button>
                 </form>
 
-                <div className="border-t border-ova-200 mt-6 pt-6">
-                  <p className="text-center text-body-sm text-ova-500">
+                <div className="border-t border-ari-200 mt-6 pt-6">
+                  <p className="text-center text-body-sm text-ari-500">
                     Remember your password?{' '}
-                    <Link href="/login" className="text-ova-blue font-medium hover:underline">
+                    <Link href="/login" className="text-ari-blue font-medium hover:underline">
                       Sign in
                     </Link>
                   </p>
@@ -194,7 +194,7 @@ function ResetPasswordForm() {
         </div>
 
         {/* Trust signal */}
-        <div className="mt-8 flex items-center justify-center gap-2 text-caption text-ova-400">
+        <div className="mt-8 flex items-center justify-center gap-2 text-caption text-ari-400">
           <ShieldCheck size={14} strokeWidth={1.5} />
           <span>Encrypted end-to-end · Identity verified</span>
         </div>
@@ -207,13 +207,13 @@ export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-ova-50 flex items-center justify-center px-4">
+        <div className="min-h-screen bg-ari-50 flex items-center justify-center px-4">
           <div className="w-full max-w-md space-y-6">
             <div className="text-center">
               <Skeleton variant="text" className="w-16 h-10 mx-auto" />
               <Skeleton variant="text" className="w-48 h-5 mx-auto mt-3" />
             </div>
-            <div className="bg-white border border-ova-200 rounded-2xl shadow-card p-8 sm:p-10 space-y-5">
+            <div className="bg-white border border-ari-200 rounded-2xl shadow-card p-8 sm:p-10 space-y-5">
               <Skeleton variant="rectangular" className="w-full h-12 rounded-xl" />
               <Skeleton variant="rectangular" className="w-full h-12 rounded-xl" />
               <Skeleton variant="rectangular" className="w-full h-12 rounded-xl" />

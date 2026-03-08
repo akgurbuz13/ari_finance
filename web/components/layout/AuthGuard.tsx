@@ -36,7 +36,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
   if (isChecking && !isAuthorized) {
     return (
-      <div className="min-h-screen bg-ova-50 flex items-center justify-center">
+      <div className="min-h-screen bg-ari-50 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Skeleton variant="text" className="w-16 h-10" />
           <Skeleton variant="text" className="w-32 h-4" />

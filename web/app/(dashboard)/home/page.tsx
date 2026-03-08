@@ -182,10 +182,10 @@ export default function HomePage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Greeting + Date */}
           <div className="animate-fade-in">
-            <p className="text-body-sm text-ova-400">
+            <p className="text-body-sm text-ari-400">
               {today}
             </p>
-            <h1 className="text-h2 font-display text-ova-900 mt-1">
+            <h1 className="text-h2 font-display text-ari-900 mt-1">
               {getGreeting()}, {displayName}
             </h1>
           </div>
@@ -262,7 +262,7 @@ export default function HomePage() {
               {vehicles.length > 0 && (
                 <Link
                   href="/vehicles"
-                  className="text-caption text-ova-500 hover:text-ova-700 transition-colors duration-fast flex items-center gap-0.5"
+                  className="text-caption text-ari-500 hover:text-ari-700 transition-colors duration-fast flex items-center gap-0.5"
                 >
                   View all
                   <ChevronRight size={14} />
@@ -282,13 +282,13 @@ export default function HomePage() {
                     <div className="flex flex-col gap-2">
                       <div className="flex items-start justify-between">
                         <div>
-                          <p className="text-body-sm font-semibold text-ova-900">
+                          <p className="text-body-sm font-semibold text-ari-900">
                             {vehicle.make} {vehicle.model}
                           </p>
-                          <p className="text-caption text-ova-400">{vehicle.year}</p>
+                          <p className="text-caption text-ari-400">{vehicle.year}</p>
                         </div>
                         {vehicle.tokenId !== null && (
-                          <span className="text-micro bg-ova-navy text-white px-2 py-0.5 rounded-full">
+                          <span className="text-micro bg-ari-navy text-white px-2 py-0.5 rounded-full">
                             #{vehicle.tokenId}
                           </span>
                         )}
@@ -315,14 +315,14 @@ export default function HomePage() {
               <Card padding="generous" className="border-dashed">
                 <div className="text-center">
                   <div className="flex justify-center mb-3">
-                    <div className="w-10 h-10 rounded-full bg-ova-100 flex items-center justify-center">
-                      <Car size={18} className="text-ova-400" />
+                    <div className="w-10 h-10 rounded-full bg-ari-100 flex items-center justify-center">
+                      <Car size={18} className="text-ari-400" />
                     </div>
                   </div>
-                  <p className="text-body-sm font-medium text-ova-700">
+                  <p className="text-body-sm font-medium text-ari-700">
                     Register your first vehicle as an on-chain NFT
                   </p>
-                  <p className="text-caption text-ova-400 mt-1">
+                  <p className="text-caption text-ari-400 mt-1">
                     Tokenize vehicle ownership on Avalanche for secure peer-to-peer sales
                   </p>
                   <div className="mt-4">
@@ -349,28 +349,28 @@ export default function HomePage() {
             <div className="grid grid-cols-2 gap-3">
               <Link
                 href="/transfer"
-                className="flex flex-col items-center gap-2.5 p-4 rounded-2xl bg-ova-navy text-white hover:bg-ova-navy-light transition-colors duration-fast group"
+                className="flex flex-col items-center gap-2.5 p-4 rounded-2xl bg-ari-navy text-white hover:bg-ari-navy-light transition-colors duration-fast group"
               >
                 <ArrowUpRight size={20} strokeWidth={1.5} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-fast" />
                 <span className="text-caption font-medium">Send Money</span>
               </Link>
               <Link
                 href="/transfer"
-                className="flex flex-col items-center gap-2.5 p-4 rounded-2xl bg-ova-navy text-white hover:bg-ova-navy-light transition-colors duration-fast group"
+                className="flex flex-col items-center gap-2.5 p-4 rounded-2xl bg-ari-navy text-white hover:bg-ari-navy-light transition-colors duration-fast group"
               >
                 <Globe size={20} strokeWidth={1.5} className="group-hover:rotate-12 transition-transform duration-fast" />
                 <span className="text-caption font-medium">Cross-Border</span>
               </Link>
               <Link
                 href="/vehicles"
-                className="flex flex-col items-center gap-2.5 p-4 rounded-2xl bg-white border border-ova-200/60 text-ova-700 hover:border-ova-300 hover:bg-ova-50 transition-all duration-fast"
+                className="flex flex-col items-center gap-2.5 p-4 rounded-2xl bg-white border border-ari-200/60 text-ari-700 hover:border-ari-300 hover:bg-ari-50 transition-all duration-fast"
               >
                 <Car size={20} strokeWidth={1.5} />
                 <span className="text-caption font-medium">Register Vehicle</span>
               </Link>
               <Link
                 href="/history"
-                className="flex flex-col items-center gap-2.5 p-4 rounded-2xl bg-white border border-ova-200/60 text-ova-700 hover:border-ova-300 hover:bg-ova-50 transition-all duration-fast"
+                className="flex flex-col items-center gap-2.5 p-4 rounded-2xl bg-white border border-ari-200/60 text-ari-700 hover:border-ari-300 hover:bg-ari-50 transition-all duration-fast"
               >
                 <Clock size={20} strokeWidth={1.5} />
                 <span className="text-caption font-medium">History</span>
@@ -382,21 +382,21 @@ export default function HomePage() {
           <div className="animate-fade-in-up stagger-3">
             <Card header="Recent Activity">
               {transactions.length > 0 ? (
-                <div className="divide-y divide-ova-100">
+                <div className="divide-y divide-ari-100">
                   {transactions.map((tx) => {
                     const Icon = txTypeIcons[tx.type] || ArrowUpRight;
                     const label = txTypeLabels[tx.type] || tx.type.replace(/_/g, ' ');
                     return (
                       <div key={tx.id} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ova-100 shrink-0">
-                            <Icon size={14} strokeWidth={1.5} className="text-ova-500" />
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ari-100 shrink-0">
+                            <Icon size={14} strokeWidth={1.5} className="text-ari-500" />
                           </div>
                           <div className="min-w-0">
-                            <p className="text-body-sm font-medium text-ova-900 truncate">
+                            <p className="text-body-sm font-medium text-ari-900 truncate">
                               {label}
                             </p>
-                            <p className="text-micro text-ova-400">
+                            <p className="text-micro text-ari-400">
                               {formatDate(tx.createdAt)}
                             </p>
                           </div>
@@ -417,8 +417,8 @@ export default function HomePage() {
                 </div>
               ) : (
                 <div className="text-center py-6">
-                  <p className="text-body-sm text-ova-400">No transactions yet</p>
-                  <p className="text-caption text-ova-300 mt-1">
+                  <p className="text-body-sm text-ari-400">No transactions yet</p>
+                  <p className="text-caption text-ari-300 mt-1">
                     Your activity will appear here
                   </p>
                 </div>
@@ -426,7 +426,7 @@ export default function HomePage() {
               {transactions.length > 0 && (
                 <Link
                   href="/history"
-                  className="flex items-center justify-center gap-1 mt-4 pt-4 border-t border-ova-100 text-caption font-medium text-ova-500 hover:text-ova-700 transition-colors duration-fast"
+                  className="flex items-center justify-center gap-1 mt-4 pt-4 border-t border-ari-100 text-caption font-medium text-ari-500 hover:text-ari-700 transition-colors duration-fast"
                 >
                   View all transactions
                   <ChevronRight size={14} />
@@ -443,10 +443,10 @@ export default function HomePage() {
                 {user?.status !== 'active' ? (
                   <Link
                     href="/kyc"
-                    className="flex items-center justify-between p-2.5 rounded-xl hover:bg-ova-50 transition-colors duration-fast"
+                    className="flex items-center justify-between p-2.5 rounded-xl hover:bg-ari-50 transition-colors duration-fast"
                   >
                     <StatusPill variant="warning" dot>KYC Pending</StatusPill>
-                    <span className="text-micro text-ova-amber">Verify &rarr;</span>
+                    <span className="text-micro text-ari-amber">Verify &rarr;</span>
                   </Link>
                 ) : (
                   <div className="flex items-center justify-between p-2.5">
@@ -456,10 +456,10 @@ export default function HomePage() {
                 {!user?.totpEnabled ? (
                   <Link
                     href="/settings"
-                    className="flex items-center justify-between p-2.5 rounded-xl hover:bg-ova-50 transition-colors duration-fast"
+                    className="flex items-center justify-between p-2.5 rounded-xl hover:bg-ari-50 transition-colors duration-fast"
                   >
                     <StatusPill variant="warning" dot>2FA Disabled</StatusPill>
-                    <span className="text-micro text-ova-amber">Enable &rarr;</span>
+                    <span className="text-micro text-ari-amber">Enable &rarr;</span>
                   </Link>
                 ) : (
                   <div className="flex items-center justify-between p-2.5">

@@ -50,18 +50,18 @@ export default function FxCalculator() {
   }, []);
 
   return (
-    <div className="bg-white border border-ova-200 rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-shadow duration-base">
+    <div className="bg-white border border-ari-200 rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-shadow duration-base">
       {/* Send */}
       <div>
-        <label className="text-body-sm font-medium text-ova-700">You send</label>
+        <label className="text-body-sm font-medium text-ari-700">You send</label>
         <div className="mt-2 flex items-center gap-3">
-          <span className="text-body-sm font-medium text-ova-500 w-16">{sendFlag} {sendCurrency}</span>
+          <span className="text-body-sm font-medium text-ari-500 w-16">{sendFlag} {sendCurrency}</span>
           <input
             type="text"
             inputMode="decimal"
             value={sendAmount}
             onChange={(e) => setSendAmount(e.target.value.replace(/[^0-9.,]/g, ""))}
-            className="flex-1 h-12 px-4 bg-ova-50 border border-ova-300 rounded-xl text-h3 text-ova-900 amount focus:outline-none focus:border-ova-blue focus:ring-2 focus:ring-ova-blue/20 transition-all duration-base"
+            className="flex-1 h-12 px-4 bg-ari-50 border border-ari-300 rounded-xl text-h3 text-ari-900 amount focus:outline-none focus:border-ari-blue focus:ring-2 focus:ring-ari-blue/20 transition-all duration-base"
           />
         </div>
       </div>
@@ -70,7 +70,7 @@ export default function FxCalculator() {
       <div className="flex justify-center my-3">
         <button
           onClick={handleSwap}
-          className="rounded-full border border-ova-200 p-2 text-ova-500 hover:bg-ova-50 hover:text-ova-700 transition-all duration-fast"
+          className="rounded-full border border-ari-200 p-2 text-ari-500 hover:bg-ari-50 hover:text-ari-700 transition-all duration-fast"
           aria-label="Swap currencies"
         >
           <svg
@@ -91,34 +91,34 @@ export default function FxCalculator() {
 
       {/* Receive */}
       <div>
-        <label className="text-body-sm font-medium text-ova-700">They receive</label>
+        <label className="text-body-sm font-medium text-ari-700">They receive</label>
         <div className="mt-2 flex items-center gap-3">
-          <span className="text-body-sm font-medium text-ova-500 w-16">{receiveFlag} {receiveCurrency}</span>
-          <div className="flex-1 h-12 px-4 bg-ova-100 border border-ova-200 rounded-xl flex items-center text-h3 text-ova-900 amount">
+          <span className="text-body-sm font-medium text-ari-500 w-16">{receiveFlag} {receiveCurrency}</span>
+          <div className="flex-1 h-12 px-4 bg-ari-100 border border-ari-200 rounded-xl flex items-center text-h3 text-ari-900 amount">
             {receiveSymbol}{parseFloat(receiveAmount).toLocaleString(receiveCurrency === "TRY" ? "tr-TR" : "de-DE", { minimumFractionDigits: 2 })}
           </div>
         </div>
       </div>
 
       {/* Details */}
-      <div className="mt-5 space-y-2 border-t border-ova-200 pt-4">
+      <div className="mt-5 space-y-2 border-t border-ari-200 pt-4">
         <div className="flex justify-between text-body-sm">
-          <span className="text-ova-500">Rate</span>
+          <span className="text-ari-500">Rate</span>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-ova-green animate-pulse" />
-              <span className="text-caption text-ova-green font-medium">Live rate</span>
+              <span className="h-2 w-2 rounded-full bg-ari-green animate-pulse" />
+              <span className="text-caption text-ari-green font-medium">Live rate</span>
             </div>
-            <span className="text-ova-900 font-medium">{rateDisplay}</span>
+            <span className="text-ari-900 font-medium">{rateDisplay}</span>
           </div>
         </div>
         <div className="flex justify-between text-body-sm">
-          <span className="text-ova-500">Fee</span>
-          <span className="text-ova-900 font-medium">{feeDisplay} (0.25%)</span>
+          <span className="text-ari-500">Fee</span>
+          <span className="text-ari-900 font-medium">{feeDisplay} (0.25%)</span>
         </div>
         <div className="flex justify-between text-body-sm">
-          <span className="text-ova-500">Arrives</span>
-          <span className="text-ova-900 font-medium">~2 minutes</span>
+          <span className="text-ari-500">Arrives</span>
+          <span className="text-ari-900 font-medium">~2 minutes</span>
         </div>
       </div>
 
@@ -126,7 +126,7 @@ export default function FxCalculator() {
       <div className="mt-5">
         <a
           href="/signup"
-          className="flex h-12 w-full items-center justify-center rounded-xl bg-ova-navy text-body font-medium text-white transition-all duration-base hover:bg-ova-navy-light hover:shadow-sm active:scale-[0.98]"
+          className="flex h-12 w-full items-center justify-center rounded-xl bg-ari-navy text-body font-medium text-white transition-all duration-base hover:bg-ari-navy-light hover:shadow-sm active:scale-[0.98]"
         >
           Send this amount &rarr;
         </a>
