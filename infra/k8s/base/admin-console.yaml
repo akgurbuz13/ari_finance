@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: admin-console
-  namespace: ova
+  namespace: ari
   labels:
     app: admin-console
 spec:
@@ -17,14 +17,14 @@ spec:
     spec:
       containers:
         - name: admin-console
-          image: ova-admin-console:latest
+          image: ari-admin-console:latest
           ports:
             - containerPort: 3001
           env:
             - name: NEXT_PUBLIC_API_URL
               valueFrom:
                 configMapKeyRef:
-                  name: ova-config
+                  name: ari-config
                   key: api.url
           resources:
             requests:
@@ -44,7 +44,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: admin-console
-  namespace: ova
+  namespace: ari
 spec:
   selector:
     app: admin-console

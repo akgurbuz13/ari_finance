@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: ova
+namespace: ari
 
 resources:
   - ../../base
@@ -10,28 +10,31 @@ patchesStrategicMerge:
   - config.yaml
 
 commonLabels:
-  ova.region: tr
+  ari.region: tr
 
 configMapGenerator:
-  - name: ova-config
+  - name: ari-config
     literals:
       - spring.profiles.active=tr
-      - ova.region=TR
       - ari.region=TR
-      - redis.host=ova-redis.redis.cache.windows.net
-      - cors.allowed-origins=https://app.ova.com.tr,https://admin.ova.com.tr
-      - api.url=https://api.ova.com.tr
+      # TODO: needs DNS update (renamed from ova-redis.redis.cache.windows.net)
+      - redis.host=ari-redis.redis.cache.windows.net
+      # TODO: needs DNS update (renamed from ova.com.tr)
+      - cors.allowed-origins=https://app.ari.com.tr,https://admin.ari.com.tr
+      - api.url=https://api.ari.com.tr
 
 images:
   - name: core-banking
-    newName: ovaacr.azurecr.io/ova/core-banking
+    # TODO: needs Azure resource rename (renamed from ovaacr.azurecr.io)
+    newName: ariacr.azurecr.io/ari/core-banking
     newTag: latest
   - name: blockchain-service
-    newName: ovaacr.azurecr.io/ova/blockchain-service
+    # TODO: needs Azure resource rename (renamed from ovaacr.azurecr.io)
+    newName: ariacr.azurecr.io/ari/blockchain-service
     newTag: latest
-  - name: ova-web
-    newName: ovaacr.azurecr.io/ova/web
+  - name: ari-web
+    newName: ariacr.azurecr.io/ari/web
     newTag: latest
-  - name: ova-admin-console
-    newName: ovaacr.azurecr.io/ova/admin-console
+  - name: ari-admin-console
+    newName: ariacr.azurecr.io/ari/admin-console
     newTag: latest

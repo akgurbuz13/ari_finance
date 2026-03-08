@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: blockchain-service
-  namespace: ova
+  namespace: ari
   labels:
     app: blockchain-service
 spec:
@@ -28,39 +28,39 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               valueFrom:
                 configMapKeyRef:
-                  name: ova-config
+                  name: ari-config
                   key: spring.profiles.active
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:
-                  name: ova-db-credentials
+                  name: ari-db-credentials
                   key: url
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: ova-db-credentials
+                  name: ari-db-credentials
                   key: username
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: ova-db-credentials
+                  name: ari-db-credentials
                   key: password
             - name: CORE_BANKING_URL
               value: http://core-banking:8080
             - name: INTERNAL_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: ova-internal-api-key
+                  name: ari-internal-api-key
                   key: api-key
             - name: ARI_BLOCKCHAIN_TR_L1_RPC_URL
               valueFrom:
                 secretKeyRef:
-                  name: ova-blockchain-config
+                  name: ari-blockchain-config
                   key: tr-l1-rpc-url
             - name: ARI_BLOCKCHAIN_EU_L1_RPC_URL
               valueFrom:
                 secretKeyRef:
-                  name: ova-blockchain-config
+                  name: ari-blockchain-config
                   key: eu-l1-rpc-url
           resources:
             requests:
@@ -86,7 +86,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: blockchain-service
-  namespace: ova
+  namespace: ari
 spec:
   selector:
     app: blockchain-service
@@ -99,4 +99,4 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: blockchain-service
-  namespace: ova
+  namespace: ari
