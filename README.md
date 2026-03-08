@@ -1,4 +1,4 @@
-# ARI Platform
+# ARI Fintech Platform
 
 **Regulated dual-region fintech on Avalanche L1s**
 
