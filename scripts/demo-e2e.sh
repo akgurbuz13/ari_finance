@@ -67,7 +67,7 @@ echo -e "  ${BOLD}Ledger Balance:${NC} $LEDGER_BALANCE TRY"
 # Check on-chain balance via JSON-RPC
 # balanceOf(address) selector = 0x70a08231
 # Get user's wallet address from blockchain DB
-WALLET_ADDR=$(docker exec ova-postgres psql -U ova -d ova -t -c "
+WALLET_ADDR=$(docker exec ari-postgres psql -U ari -d ari -t -c "
     SELECT address FROM blockchain.custodial_wallets WHERE user_id = '$DEMO_USER_ID' AND chain_id = $TR_L1_CHAIN_ID LIMIT 1;
 " 2>/dev/null | tr -d ' \n')
 
@@ -178,7 +178,7 @@ echo ""
 
 # Step 2c: Check outbox events created
 echo -e "  ${YELLOW}[2c] Checking outbox events...${NC}"
-OUTBOX_EVENTS=$(docker exec ova-postgres psql -U ova -d ova -t -c "
+OUTBOX_EVENTS=$(docker exec ari-postgres psql -U ari -d ari -t -c "
     SELECT event_type, published FROM shared.outbox_events
     WHERE aggregate_id LIKE '%$PAYMENT_ID%' OR payload::text LIKE '%$PAYMENT_ID%'
     ORDER BY created_at DESC LIMIT 5;
@@ -251,7 +251,7 @@ if [ -n "$WALLET_ADDR" ]; then
     echo -e "    ariTRY on TR L1: $TR_TOKENS"
 
     # EU L1 ariEUR balance (check if wallet exists on EU chain too)
-    EU_WALLET=$(docker exec ova-postgres psql -U ova -d ova -t -c "
+    EU_WALLET=$(docker exec ari-postgres psql -U ari -d ari -t -c "
         SELECT address FROM blockchain.custodial_wallets WHERE user_id = '$DEMO_USER_ID' AND chain_id = $EU_L1_CHAIN_ID LIMIT 1;
     " 2>/dev/null | tr -d ' \n')
 

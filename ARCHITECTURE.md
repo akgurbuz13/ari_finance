@@ -1,11 +1,11 @@
-# Ova Fintech MVP — System Architecture & Implementation Plan
+# ARI Fintech MVP — System Architecture & Implementation Plan
 
 > **Document Status:** Living Document (Updated 2026-02-05)
 > **Implementation Status:** See [PROGRESS.md](./PROGRESS.md) for current completion status
 
 ## Summary
 
-Build a regulated fintech platform (Ova) launching in Turkey + EU simultaneously. Core banking is a **Kotlin/Spring Boot modular monolith** with **PostgreSQL double-entry ledger**, and blockchain settlement runs as a **separate Avalanche L1 service**. Cross-border transfers use Avalanche ICTT bridge. Architecture is designed from day 1 to support future agentic payments (x402/AP2/ACP).
+Build a regulated fintech platform (ARI) launching in Turkey + EU simultaneously. Core banking is a **Kotlin/Spring Boot modular monolith** with **PostgreSQL double-entry ledger**, and blockchain settlement runs as a **separate Avalanche L1 service**. Cross-border transfers use Avalanche ICTT bridge. Architecture is designed from day 1 to support future agentic payments (x402/AP2/ACP).
 
 ---
 
@@ -18,7 +18,7 @@ Build a regulated fintech platform (Ova) launching in Turkey + EU simultaneously
 | **Cache** | Redis 7 | Sessions, rate limits, OTP, FX rate cache, idempotency keys |
 | **Migrations** | Flyway | Used by Revolut, version-controlled schema evolution. Currently V001-V013 |
 | **Mobile** | Flutter (Dart) | Single codebase, proven at Nubank (200M+ users), excellent custom rendering |
-| **Web App** | Next.js 14 (React) + Tailwind CSS | Customer-facing web app. SSR for SEO/performance. Black & white design system, minimalist "serious banking" aesthetic. Brand: "Ova" text wordmark (no logo). Reference: Revolut web |
+| **Web App** | Next.js 14 (React) + Tailwind CSS | Customer-facing web app. SSR for SEO/performance. Black & white design system, minimalist "serious banking" aesthetic. Brand: "ARI" text wordmark (no logo). Reference: Revolut web |
 | **Admin Console** | Next.js 14 (React) | Internal admin tool. SSR for security, RBAC-protected. Separate deployment from web app |
 | **Blockchain** | Solidity 0.8.24 + Hardhat, Avalanche L1 via AvaCloud | ERC-20 stablecoins, ICTT bridge (TokenHome/TokenRemote), permissioned validators |
 | **Cloud (EU)** | AWS (eu-central-1 Frankfurt) | Most mature fintech compliance (PCI-DSS, SOC2) |
@@ -37,7 +37,7 @@ Build a regulated fintech platform (Ova) launching in Turkey + EU simultaneously
 ```
               ┌─────────────────────┐     ┌─────────────────────┐
               │   Flutter Mobile App│     │   Web App (Next.js) │
-              │   (iOS + Android)   │     │   ova.com / ova.app │
+              │   (iOS + Android)   │     │  arifinance.co      │
               └─────────┬───────────┘     └─────────┬───────────┘
                         │ HTTPS                     │ HTTPS
                         └───────────┬───────────────┘
@@ -387,7 +387,7 @@ CREATE TABLE shared.audit_log (
 ## 5. Kotlin Module Structure
 
 ```
-ova/
+ari/
 ├── build.gradle.kts                     # Root build config
 ├── settings.gradle.kts                  # Module declarations
 ├── docker-compose.yml                   # Local dev: Postgres, Redis
@@ -397,8 +397,8 @@ ova/
 │
 ├── core-banking/                        # MODULAR MONOLITH
 │   ├── build.gradle.kts
-│   └── src/main/kotlin/com/ova/platform/
-│       ├── OvaPlatformApplication.kt    # Spring Boot entry point
+│   └── src/main/kotlin/com/ari/platform/
+│       ├── AriPlatformApplication.kt    # Spring Boot entry point
 │       │
 │       ├── identity/                    # Module: Identity & KYC
 │       │   ├── api/
@@ -536,17 +536,17 @@ ova/
 │
 ├── blockchain-service/                  # SEPARATE DEPLOYABLE
 │   ├── build.gradle.kts
-│   └── src/main/kotlin/com/ova/blockchain/
-│       ├── OvaBlockchainApplication.kt
+│   └── src/main/kotlin/com/ari/blockchain/
+│       ├── AriBlockchainApplication.kt
 │       ├── config/
 │       │   ├── BlockchainConfig.kt
 │       │   └── Web3jProvider.kt
 │       ├── contract/                    # Web3j contract wrappers
 │       │   ├── ContractFactory.kt
-│       │   ├── OvaStablecoinContract.kt
-│       │   ├── OvaBridgeAdapterContract.kt
-│       │   ├── OvaTokenHomeContract.kt
-│       │   └── OvaTokenRemoteContract.kt
+│       │   ├── AriStablecoinContract.kt
+│       │   ├── AriBridgeAdapterContract.kt
+│       │   ├── AriTokenHomeContract.kt
+│       │   └── AriTokenRemoteContract.kt
 │       ├── settlement/
 │       │   ├── MintService.kt
 │       │   ├── BurnService.kt
@@ -573,25 +573,25 @@ ova/
 │   ├── hardhat.config.ts
 │   ├── contracts/
 │   │   ├── token/
-│   │   │   ├── OvaStablecoin.sol            # ERC-20 + mint/burn/freeze/allowlist
-│   │   │   └── OvaStablecoinUpgradeable.sol # UUPS proxy pattern
+│   │   │   ├── AriStablecoin.sol            # ERC-20 + mint/burn/freeze/allowlist
+│   │   │   └── AriStablecoinUpgradeable.sol # UUPS proxy pattern
 │   │   ├── access/
 │   │   │   └── KycAllowList.sol             # KYC-verified addresses only
 │   │   ├── bridge/
 │   │   │   ├── IcttInterfaces.sol           # ICTT interface definitions
-│   │   │   ├── OvaTokenHome.sol             # Lock native tokens for bridging
-│   │   │   ├── OvaTokenRemote.sol           # Mint wrapped tokens on remote chain
-│   │   │   └── OvaBridgeAdapter.sol         # Bridge orchestration
+│   │   │   ├── AriTokenHome.sol             # Lock native tokens for bridging
+│   │   │   ├── AriTokenRemote.sol           # Mint wrapped tokens on remote chain
+│   │   │   └── AriBridgeAdapter.sol         # Bridge orchestration
 │   │   ├── governance/
-│   │   │   ├── OvaTimelock.sol              # Time-delayed admin actions
+│   │   │   ├── AriTimelock.sol              # Time-delayed admin actions
 │   │   │   └── ValidatorManager.sol         # L1 validator management
 │   │   └── mocks/
 │   │       └── MockTeleporter.sol           # Testing ICTT without network
 │   ├── test/
-│   │   ├── OvaStablecoin.test.ts
-│   │   ├── OvaTokenHome.test.ts             # 37 test cases
-│   │   ├── OvaTokenRemote.test.ts
-│   │   └── OvaBridgeAdapter.test.ts
+│   │   ├── AriStablecoin.test.ts
+│   │   ├── AriTokenHome.test.ts             # 37 test cases
+│   │   ├── AriTokenRemote.test.ts
+│   │   └── AriBridgeAdapter.test.ts
 │   └── scripts/
 │       ├── deploy.ts
 │       ├── deploy-dual-chain.ts             # TR + EU L1 deployment
@@ -601,7 +601,7 @@ ova/
 │   ├── package.json
 │   ├── tailwind.config.ts               # Black/white design system
 │   ├── app/
-│   │   ├── layout.tsx                   # Root layout with "Ova" wordmark
+│   │   ├── layout.tsx                   # Root layout with "ARI" wordmark
 │   │   ├── page.tsx                     # Landing / marketing page
 │   │   ├── (auth)/
 │   │   │   ├── login/
@@ -725,7 +725,7 @@ User A (Turkey, TRY) sends 10,000 TRY to User B (EU, EUR)
 
 4. [FX Module] Get quote:
    a. Fetch TRY/EUR rate from FX provider (currently hardcoded)
-   b. Apply Ova spread (e.g., 0.3-0.5% better than banks)
+   b. Apply ARI spread (e.g., 0.3-0.5% better than banks)
    c. Lock quote for 30 seconds
    d. Return: 10,000 TRY → ~260 EUR (example)
    → User confirms
@@ -737,7 +737,7 @@ User A (Turkey, TRY) sends 10,000 TRY to User B (EU, EUR)
    d. CREDIT System Float EUR          260 EUR  (at locked rate)
    e. DEBIT  System Float EUR          260 EUR
    f. CREDIT User B EUR account        260 EUR
-   g. DEBIT  System Float EUR          0.78 EUR  (Ova fee from spread)
+   g. DEBIT  System Float EUR          0.78 EUR  (ARI fee from spread)
    h. CREDIT Revenue EUR               0.78 EUR
    → All entries in same transaction, idempotency_key prevents double-post
 
@@ -767,12 +767,12 @@ User A (Turkey, TRY) sends 10,000 TRY to User B (EU, EUR)
 ```
                     TR L1 (99999)                           EU L1 (99998)
               ┌─────────────────────┐                 ┌─────────────────────┐
-              │   OvaTRY (native)   │                 │   OvaEUR (native)   │
+              │   ariTRY (native)   │                 │   ariEUR (native)   │
               │   ERC-20 stablecoin │                 │   ERC-20 stablecoin │
               └─────────┬───────────┘                 └─────────┬───────────┘
                         │                                       │
               ┌─────────▼───────────┐                 ┌─────────▼───────────┐
-              │   OvaTokenHome      │                 │   OvaTokenHome      │
+              │   AriTokenHome      │                 │   AriTokenHome      │
               │   - Lock TRY        │                 │   - Lock EUR        │
               │   - Bridge out      │                 │   - Bridge out      │
               │   - Release TRY     │                 │   - Release EUR     │
@@ -785,18 +785,18 @@ User A (Turkey, TRY) sends 10,000 TRY to User B (EU, EUR)
               ┌─────────────────────────┼─────────────────────────┐
               │                         │                         │
     ┌─────────▼───────────┐   ┌─────────▼───────────┐   ┌─────────▼───────────┐
-    │   OvaTokenRemote    │   │                     │   │   OvaTokenRemote    │
-    │   (wEUR on TR L1)   │   │  OvaBridgeAdapter   │   │   (wTRY on EU L1)   │
+    │   AriTokenRemote    │   │                     │   │   AriTokenRemote    │
+    │   (wEUR on TR L1)   │   │  AriBridgeAdapter   │   │   (wTRY on EU L1)   │
     │   - Mint wrapped    │   │  - Orchestration    │   │   - Mint wrapped    │
     │   - Burn to bridge  │   │  - Fee collection   │   │   - Burn to bridge  │
     │   - KYC enforcement │   │  - Status tracking  │   │   - KYC enforcement │
     └─────────────────────┘   └─────────────────────┘   └─────────────────────┘
 ```
 
-### Stablecoin Contract (OvaStablecoin.sol)
+### Stablecoin Contract (AriStablecoin.sol)
 ```solidity
 // Production contract with full access control
-contract OvaStablecoin is ERC20, AccessControl, Pausable {
+contract AriStablecoin is ERC20, AccessControl, Pausable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant FREEZER_ROLE = keccak256("FREEZER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
@@ -812,21 +812,21 @@ contract OvaStablecoin is ERC20, AccessControl, Pausable {
 
     // Override transfer to check allowlist + frozen status
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
-        require(allowlisted[from] && allowlisted[to], "OvaStablecoin: recipient not KYC verified");
-        require(!frozen[from] && !frozen[to], "OvaStablecoin: account frozen");
+        require(allowlisted[from] && allowlisted[to], "AriStablecoin: recipient not KYC verified");
+        require(!frozen[from] && !frozen[to], "AriStablecoin: account frozen");
     }
 }
 ```
 
 ### ICTT Bridge Contracts
 
-**OvaTokenHome**: Deployed on the native token's chain
+**AriTokenHome**: Deployed on the native token's chain
 - `bridgeTokens(destChainId, recipient, amount, feeAmount)`: Lock tokens and send Teleporter message
 - `registerRemote(chainId, remoteAddress)`: Link to TokenRemote on partner chain
 - Daily bridge limits (100,000 per user, 1,000,000 total)
 - Emergency pause and withdrawal
 
-**OvaTokenRemote**: Deployed on partner chains for wrapped tokens
+**AriTokenRemote**: Deployed on partner chains for wrapped tokens
 - `receiveTeleporterMessage(...)`: Mint wrapped tokens on receiving Teleporter message
 - `bridgeBack(recipient, amount, feeAmount)`: Burn wrapped tokens to bridge back
 - KYC allowlist enforcement on all transfers
@@ -871,7 +871,7 @@ The system is designed from day 1 to support machine-to-machine payments:
 
 6. **Future endpoints to build**:
    - `POST /api/v1/agent/payments` — x402-compatible payment endpoint
-   - `GET /.well-known/ova-payments.json` — machine-discoverable payment capabilities
+   - `GET /.well-known/ari-payments.json` — machine-discoverable payment capabilities
    - WebSocket for real-time payment status streaming
 
 7. **Blockchain-native agent payments**: Agents can transact directly on the Avalanche L1 via smart contract APIs — no need for traditional rails for agent-to-agent micropayments.
@@ -958,7 +958,7 @@ The system is designed from day 1 to support machine-to-machine payments:
 **Goal**: Avalanche L1 deployment, stablecoins, cross-border transfers
 
 **Deliverables**:
-- Solidity contracts: OvaStablecoin, OvaStablecoinUpgradeable, OvaTokenHome, OvaTokenRemote, OvaBridgeAdapter, OvaTimelock, ValidatorManager
+- Solidity contracts: AriStablecoin, AriStablecoinUpgradeable, AriTokenHome, AriTokenRemote, AriBridgeAdapter, AriTimelock, ValidatorManager
 - Comprehensive test suite (115 Solidity tests)
 - Blockchain service: mint/burn/transfer
 - Custodial wallet management (KMS-backed HD wallet)
@@ -974,7 +974,7 @@ The system is designed from day 1 to support machine-to-machine payments:
 **Goal**: Customer-facing web + mobile apps, end-to-end testing, production readiness
 
 **Web App** ✅:
-- Landing page with "Ova" wordmark branding
+- Landing page with "ARI" wordmark branding
 - Auth flows (login, signup, password reset)
 - Dashboard: account overview, balances, recent activity
 - Transfer flows: domestic P2P, cross-border with FX quote

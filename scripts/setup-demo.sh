@@ -202,7 +202,7 @@ else
 
     # First credit the ledger (so balance shows in UI)
     # Create a deposit-style ledger entry directly
-    docker exec ova-postgres psql -U ova -d ova -c "
+    docker exec ari-postgres psql -U ari -d ari -c "
     DO \$\$
     DECLARE
         v_tx_id UUID := gen_random_uuid();
@@ -235,7 +235,7 @@ else
     " 2>/dev/null
 
     # Insert MintRequested outbox event for blockchain-service
-    docker exec ova-postgres psql -U ova -d ova -c "
+    docker exec ari-postgres psql -U ari -d ari -c "
     INSERT INTO shared.outbox_events (id, aggregate_type, aggregate_id, event_type, payload, published, created_at)
     VALUES (
         nextval('shared.outbox_events_id_seq'),

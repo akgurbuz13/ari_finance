@@ -37,7 +37,7 @@ This document covers the architecture, deployment, and operational procedures fo
     │      TR L1        │◄───── ICM ─────────►│       EU L1         │
     │  (Chain 99999)    │    Cross-chain      │   (Chain 99998)     │
     │                   │     Messaging       │                     │
-    │ - OvaTRY Token    │                     │ - OvaEUR Token      │
+    │ - ariTRY Token    │                     │ - ariEUR Token      │
     │ - TokenHome (TRY) │                     │ - TokenHome (EUR)   │
     │ - TokenRemote(EUR)│                     │ - TokenRemote(TRY)  │
     │ - ValidatorMgr    │                     │ - ValidatorMgr      │
@@ -251,7 +251,7 @@ pragma solidity ^0.8.24;
 import "@avalabs/icm-contracts/validator-manager/PoAValidatorManager.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract OvaValidatorManager is PoAValidatorManager, Ownable {
+contract AriValidatorManager is PoAValidatorManager, Ownable {
     constructor(address _multisig) Ownable(_multisig) {}
 
     function initiateValidatorRegistration(
@@ -327,7 +327,7 @@ TR L1                                              EU L1
 ### Deployment Steps
 
 ```bash
-# 1. Deploy TokenHome on TR L1 for OvaTRY
+# 1. Deploy TokenHome on TR L1 for ariTRY
 npx hardhat run scripts/deploy-token-home.ts --network tr-l1
 
 # 2. Deploy TokenRemote on EU L1 for wrapped TRY
@@ -364,7 +364,7 @@ User wants to send 1000 TRY from TR L1 to EU L1:
 git clone https://github.com/ava-labs/awm-relayer.git
 cd awm-relayer
 
-# Configure for Ova chains
+# Configure for ARI chains
 cat > config.json << EOF
 {
   "source-chains": {
@@ -464,7 +464,7 @@ IAllowList(TX_ALLOW_LIST_ADDRESS).setEnabled(
 
 This way:
 - Only KYC'd users (with custodial wallets) can transact
-- Gas is paid by the fee recipient (Ova's address)
+- Gas is paid by the fee recipient (ARI's address)
 - Users never need native tokens
 
 ---
@@ -496,7 +496,7 @@ wallet:
 └──────────────┘      └──────────────┘      └──────────────┘
        │                       │                       │
        ▼                       ▼                       ▼
-  OvaStablecoin          OvaBridgeAdapter         ICM Relayer
+  AriStablecoin          AriBridgeAdapter         ICM Relayer
   (MINTER_ROLE)        (BRIDGE_OPERATOR)        (gas sponsor)
 ```
 

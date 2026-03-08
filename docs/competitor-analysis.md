@@ -1,4 +1,4 @@
-# Ova Competitor & Feature Analysis
+# ARI Competitor & Feature Analysis
 
 > **Author**: Competitor Analysis Agent
 > **Date**: 2026-02-09
@@ -6,7 +6,7 @@
 
 ---
 
-## Part 1: Ova MVP Feature Map
+## Part 1: ARI MVP Feature Map
 
 ### Current Frontend Pages & Features
 
@@ -35,7 +35,7 @@
 7. **Transaction History** - Filterable by account, type, status
 8. **Idempotent Payments** - Every transfer has unique key
 
-### What Makes Ova Unique (Differentiators to Showcase)
+### What Makes ARI Unique (Differentiators to Showcase)
 
 1. **Turkey-EU corridor specialist** - Not a generic fintech, specific corridor
 2. **Blockchain settlement** - On-chain transparency (not just marketing)
@@ -58,7 +58,7 @@
 - **Color**: Clean white backgrounds, dark text, green for positive, red for negative. Accent blue is used sparingly for interactive elements.
 - **Trust building**: Real-time transaction notifications, instant balance updates, clear fee breakdowns before confirmation.
 
-**Applicable to Ova:**
+**Applicable to ARI:**
 - Currency pocket concept maps well to TRY/EUR wallets
 - Progressive disclosure in transfer flows
 - Balance-as-hero pattern
@@ -73,7 +73,7 @@
 - **Bill payments integration**: Turkish utility bills, phone top-ups - everyday money tasks
 - **QR payments**: Popular in Turkish market for in-person transfers
 
-**Applicable to Ova:**
+**Applicable to ARI:**
 - Understanding the Turkish user's expectation for simplicity
 - Fee transparency is critical in Turkey market
 - Region-specific UX patterns (TR users expect different flows than EU users)
@@ -89,7 +89,7 @@
 - **Trust through transparency**: Free real-time data, competitive pricing shown upfront
 - **Pro mode**: Power users get advanced analytics while basic view stays simple
 
-**Applicable to Ova:**
+**Applicable to ARI:**
 - Financial data presentation patterns (balances, rates, history)
 - Professional aesthetic that Turkish users associate with financial sophistication
 - Tiered complexity (simple by default, detailed on demand)
@@ -105,10 +105,10 @@
 - **Trust through simplicity**: No hidden fees, clear statements, transparent communication
 - **Emotional design**: Spending summaries, personalized insights feel human
 
-**Applicable to Ova:**
-- Single brand color strategy (could be navy/dark blue for Ova)
+**Applicable to ARI:**
+- Single brand color strategy (could be navy/dark blue for ARI)
 - Design system rigor - every component from a shared token system
-- Warmth in financial interfaces - Ova doesn't need to be cold
+- Warmth in financial interfaces - ARI doesn't need to be cold
 - Regional adaptation patterns (TR vs EU variations)
 
 ### 5. N26 (Germany/EU)
@@ -121,8 +121,8 @@
 - **Security visibility**: Regulatory compliance displayed prominently. Cards show bank license numbers.
 - **European compliance UX**: PSD2/SCA flows integrated smoothly
 
-**Applicable to Ova:**
-- Web-first design excellence (Ova is web-focused)
+**Applicable to ARI:**
+- Web-first design excellence (ARI is web-focused)
 - European regulatory compliance display patterns
 - Transaction categorization UI
 - German design discipline (precision, systematic)
@@ -138,7 +138,7 @@
 - **Trust through data**: Speed stats (80% instant, 88% within 24h) shown prominently
 - **API/Platform**: Design system that works for consumers AND business integrations
 
-**Applicable to Ova:**
+**Applicable to ARI:**
 - FX transparency patterns - critical for cross-border
 - Transfer timeline/progress UI - maps perfectly to ICTT bridge status
 - Multi-currency balance display
@@ -155,7 +155,7 @@
 - **Notification design**: Clear, actionable push notifications for every transaction
 - **Playful-professional balance**: Fun without being unserious
 
-**Applicable to Ova:**
+**Applicable to ARI:**
 - Transaction categorization and insights (post-MVP but good to design for)
 - Savings visualization concepts
 - Notification patterns for transfer status updates
@@ -170,7 +170,7 @@ All successful fintechs make the balance the hero element:
 - Revolut: Massive number, swipeable currencies
 - Nubank: Large, centered, with available/total breakdown
 - N26: Prominent with recent trend indicator
-- **Ova should**: Display TRY and EUR balances as the primary visual element on dashboard, with display-size typography. Not in cards - just clean, large numbers.
+- **ARI should**: Display TRY and EUR balances as the primary visual element on dashboard, with display-size typography. Not in cards - just clean, large numbers.
 
 ### Pattern 2: Transfer Flows
 Universally follow a wizard pattern:
@@ -179,7 +179,7 @@ Universally follow a wizard pattern:
 3. Review details (fee breakdown, FX rate if applicable)
 4. Confirm (with 2FA if required)
 5. Success + tracking
-- **Ova should**: Adopt this 5-step wizard for both domestic and cross-border. The FX quote step should be a clear "review and confirm" gate.
+- **ARI should**: Adopt this 5-step wizard for both domestic and cross-border. The FX quote step should be a clear "review and confirm" gate.
 
 ### Pattern 3: Trust Signals
 Every serious fintech displays:
@@ -187,13 +187,13 @@ Every serious fintech displays:
 - Security certifications
 - Encryption indicators on sensitive pages
 - "Your money is protected" messaging with specifics (FDIC, FSCS, BDDK equivalent)
-- **Ova should**: Add BDDK license, PSD2 authorization, KVKK compliance badges in footer and on landing page. Show security indicators on transfer confirmation screens.
+- **ARI should**: Add BDDK license, PSD2 authorization, KVKK compliance badges in footer and on landing page. Show security indicators on transfer confirmation screens.
 
 ### Pattern 4: Landing Page Philosophy
 Split between two schools:
 - **Product-led** (Wise, Revolut): Show the actual product, real screenshots, real numbers
 - **Brand-led** (Nubank, N26): Emotional messaging, lifestyle imagery, brand story
-- **Ova should**: Product-led approach. Show real FX rates, real transfer times, real fee comparisons. Turkish and EU users are pragmatic about money - they want to see what they get.
+- **ARI should**: Product-led approach. Show real FX rates, real transfer times, real fee comparisons. Turkish and EU users are pragmatic about money - they want to see what they get.
 
 ### Pattern 5: Color Strategy
 - Revolut: Blue accent, white/gray palette
@@ -201,19 +201,19 @@ Split between two schools:
 - Wise: Green accent, white backgrounds
 - N26: Teal/green accent, clean white
 - Monzo: Hot coral, warm neutrals
-- **Ova should**: Commit to ONE brand color. Given Turkey/EU cross-border positioning, I recommend a deep navy (#0A1628 or similar) as the primary brand color with a clean blue (#1A6FD4) as the interactive accent. Navy communicates: established, trustworthy, international, professional. NOT teal, NOT gradients.
+- **ARI should**: Commit to ONE brand color. Given Turkey/EU cross-border positioning, I recommend a deep navy (#0A1628 or similar) as the primary brand color with a clean blue (#1A6FD4) as the interactive accent. Navy communicates: established, trustworthy, international, professional. NOT teal, NOT gradients.
 
 ### Pattern 6: Navigation
 - Mobile fintechs: Bottom tab bar (4-5 items)
 - Web fintechs: Left sidebar (collapsible) or top nav
-- **Ova web should**: Keep the left sidebar but refine it. Consider collapsible for more content space. Top bar for user info + notifications.
+- **ARI web should**: Keep the left sidebar but refine it. Consider collapsible for more content space. Top bar for user info + notifications.
 
 ### Pattern 7: Empty/Loading/Error States
 Best-in-class fintechs design these with care:
 - Revolut: Skeleton loading screens matching final layout
 - Nubank: Branded empty states with gentle illustration
 - Wise: Progress indicators with estimated time
-- **Ova should**: Skeleton loading states, designed empty states with CTAs, inline error messages with recovery suggestions.
+- **ARI should**: Skeleton loading states, designed empty states with CTAs, inline error messages with recovery suggestions.
 
 ---
 
@@ -236,18 +236,18 @@ Best-in-class fintechs design these with care:
 - **CTA**: Single, prominent "Open an Account" button
 - **Footer**: Regulatory disclosures, compliance info, contact
 
-**Key insight from competitors**: Wise's landing page works because it shows REAL data (real rates, real fees, real speeds). Ova should show: "Send TRY 10,000 to Europe. They receive EUR X. Takes Y minutes. Fee: Z." Real calculator > marketing copy.
+**Key insight from competitors**: Wise's landing page works because it shows REAL data (real rates, real fees, real speeds). ARI should show: "Send TRY 10,000 to Europe. They receive EUR X. Takes Y minutes. Fee: Z." Real calculator > marketing copy.
 
 ### 2. Auth Pages (Login/Signup)
 
 **Current problems:**
 - Too plain - functional but doesn't build confidence
-- Logo switches between "Ova" (auth) and "ova" (landing) - inconsistent
+- Logo should use "ARI" consistently across all pages
 - 2FA field always visible on login (should be conditional)
 - No trust signals on the page where users enter credentials
 
 **Competitor-informed proposal:**
-- Consistent "ova" lowercase wordmark everywhere
+- Consistent "ARI" uppercase wordmark everywhere
 - Clean centered form (Revolut-style) OR split layout (N26-style)
 - 2FA: Show only after initial email/password validation succeeds and 2FA is required
 - Add subtle trust indicator: "Secured with bank-grade encryption"
@@ -362,7 +362,7 @@ Best-in-class fintechs design these with care:
 
 ## Part 5: Design Direction Summary
 
-### Recommended Ova Design Identity: "Institutional Precision"
+### Recommended ARI Design Identity: "Institutional Precision"
 
 Not a startup. Not a legacy bank. A modern financial institution.
 

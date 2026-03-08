@@ -1,4 +1,4 @@
-# Ova Design Principles & Redesign Proposals
+# ARI Design Principles & Redesign Proposals
 
 > **Author**: Design Principles Agent
 > **Date**: 2026-02-09
@@ -10,11 +10,11 @@
 
 ### Apple's Design Philosophy Applied to Fintech
 
-Apple's design principles center on three pillars that are directly transferable to Ova:
+Apple's design principles center on three pillars that are directly transferable to ARI:
 
 1. **Clarity**: Interfaces should be understandable at a glance. Every element must have a clear purpose. In banking, this means the user should never wonder "what happens if I tap this?"
 
-2. **Deference**: The interface should defer to content. In Ova's case, the content IS the money -- balances, transfers, rates. The chrome around it should be invisible.
+2. **Deference**: The interface should defer to content. In ARI's case, the content IS the money -- balances, transfers, rates. The chrome around it should be invisible.
 
 3. **Depth**: Visual layering gives users a sense of place. Where am I? Where did I come from? What can I do next? This is critical during multi-step flows like cross-border transfers.
 
@@ -24,9 +24,9 @@ Apple's design principles center on three pillars that are directly transferable
 
 **Apple's Color Strategy**: Restrained palette. One or two accent colors maximum. Neutral backgrounds. Color is used *functionally* -- to draw attention, to signal state (success/error/warning), never decoratively.
 
-### Dieter Rams' 10 Principles Applied to Ova
+### Dieter Rams' 10 Principles Applied to ARI
 
-| # | Principle | Application to Ova |
+| # | Principle | Application to ARI |
 |---|-----------|-------------------|
 | 1 | **Innovative** | Innovation in fintech = making complex flows (FX, bridge, KYC) feel simple, not adding flashy features |
 | 2 | **Useful** | Every screen must answer: "What can I DO here?" Remove anything that doesn't serve the user's immediate goal |
@@ -59,7 +59,7 @@ From current fintech design research:
 
 The codebase has **two completely different design systems** that don't cohere:
 
-- **Landing page (`page.tsx`)**: Blue-teal gradient aesthetic with custom `ova-` CSS classes, navy/sky color palette, decorative grid backgrounds, floating blurred circles, phone mockups
+- **Landing page (`page.tsx`)**: Blue-teal gradient aesthetic with custom `ari-` CSS classes, navy/sky color palette, decorative grid backgrounds, floating blurred circles, phone mockups
 - **Dashboard/Auth pages**: Black/white/gray minimalist system using Tailwind defaults
 
 This is the #1 problem. A user goes from a "gradient-blue fintech startup" landing page to a "black-and-white SaaS tool" dashboard. The brand breaks.
@@ -67,7 +67,7 @@ This is the #1 problem. A user goes from a "gradient-blue fintech startup" landi
 #### Problem 2: Landing Page Looks Like SaaS, Not a Bank
 
 The current landing page has these SaaS-startup hallmarks:
-- Decorative grid background (`.ova-surface-grid`) -- looks like a developer tool
+- Decorative grid background (`.ari-surface-grid`) -- looks like a developer tool
 - Floating colored blur circles -- looks like Vercel/Linear
 - "Chip" badges with uppercase tracking -- startup pattern
 - Phone mockup with gradient shell -- mobile app landing pattern
@@ -91,17 +91,17 @@ Problem: The type system exists in config but isn't used consistently. The serif
 
 Current CSS variables:
 ```
---ova-ink: #10243a
---ova-navy: #0f3558
---ova-sky: #1f82cd
---ova-teal: #56bfa8
---ova-canvas: #f5fbff
---ova-line: #d2e4f1
+--ari-ink: #10243a
+--ari-navy: #0f3558
+--ari-sky: #1f82cd
+--ari-teal: #56bfa8
+--ari-canvas: #f5fbff
+--ari-line: #d2e4f1
 ```
 
 Plus Tailwind config colors:
 ```
-ova-ink, ova-slate, ova-sky, ova-mint, ova-frost, ova-canvas, ova-glow
+ari-ink, ari-slate, ari-sky, ari-mint, ari-frost, ari-canvas, ari-glow
 ```
 
 Plus dozens of hardcoded hex values in page.tsx (e.g., `#496985`, `#17324e`, `#8fb4d2`, `#9bbad4`, `#2a567b`, `#0f3659`...). I counted **40+ unique color values** across the landing page alone.
@@ -131,9 +131,9 @@ These deserve as much design care as the happy path. Banks need to feel reassuri
 #### Problem 7: Lack of Motion Design Language
 
 Current animations:
-- `ova-reveal`: fade + translateY(22px) -- landing page only
-- `ova-pulse-line`: opacity pulse on progress bars
-- `ova-scene-in`: phone scene transition
+- `ari-reveal`: fade + translateY(22px) -- landing page only
+- `ari-pulse-line`: opacity pulse on progress bars
+- `ari-scene-in`: phone scene transition
 
 Dashboard has NO motion at all. No page transitions, no micro-interactions, no hover feedback beyond color changes.
 
@@ -147,24 +147,24 @@ Replace the sprawling color palette with a disciplined system:
 
 ```
 Primary:
-  --ova-black: #0A0A0A        (near-black for text, primary actions)
-  --ova-charcoal: #1A1A1A     (sidebar, cards on dark)
-  --ova-graphite: #2D2D2D     (secondary text on dark)
+  --ari-black: #0A0A0A        (near-black for text, primary actions)
+  --ari-charcoal: #1A1A1A     (sidebar, cards on dark)
+  --ari-graphite: #2D2D2D     (secondary text on dark)
 
 Neutral:
-  --ova-900: #171717           (primary text)
-  --ova-700: #404040           (secondary text)
-  --ova-500: #737373           (tertiary/placeholder)
-  --ova-300: #D4D4D4           (borders)
-  --ova-100: #F5F5F5           (subtle backgrounds)
-  --ova-50:  #FAFAFA           (page background)
-  --ova-white: #FFFFFF         (cards, inputs)
+  --ari-900: #171717           (primary text)
+  --ari-700: #404040           (secondary text)
+  --ari-500: #737373           (tertiary/placeholder)
+  --ari-300: #D4D4D4           (borders)
+  --ari-100: #F5F5F5           (subtle backgrounds)
+  --ari-50:  #FAFAFA           (page background)
+  --ari-white: #FFFFFF         (cards, inputs)
 
 Accent (used sparingly):
-  --ova-blue: #1A6FD4          (links, active states)
-  --ova-green: #16803C         (success, positive amounts)
-  --ova-amber: #B45309         (warnings)
-  --ova-red: #DC2626           (errors, destructive)
+  --ari-blue: #1A6FD4          (links, active states)
+  --ari-green: #16803C         (success, positive amounts)
+  --ari-amber: #B45309         (warnings)
+  --ari-red: #DC2626           (errors, destructive)
 ```
 
 **Rationale**: This palette is essentially grayscale with functional color. It communicates seriousness. Blue is used only for interactive elements. Green only for money-positive signals. No teal. No gradients. No decorative color.
@@ -229,7 +229,7 @@ font-family: 'Inter', -apple-system, 'SF Pro Display', 'Segoe UI', sans-serif;
 **Replace with**:
 
 ```
-[Nav: ova logo left, "Sign in" right, nothing else]
+[Nav: ARI logo left, "Sign in" right, nothing else]
 
 [Hero: full width, 40vh minimum]
   "Banking that moves at the speed of your business"
@@ -257,7 +257,7 @@ font-family: 'Inter', -apple-system, 'SF Pro Display', 'Segoe UI', sans-serif;
   "Ready to move money without borders?"
   [Open account button]
 
-[Footer: ova, legal links, regulatory disclosures]
+[Footer: ARI, legal links, regulatory disclosures]
 ```
 
 **Why this works**:
@@ -273,14 +273,14 @@ font-family: 'Inter', -apple-system, 'SF Pro Display', 'Segoe UI', sans-serif;
 **Sidebar**:
 - Keep dark sidebar but refine: `#111111` background, not pure black
 - Replace Unicode icons with a proper icon system (Lucide, Phosphor, or custom SVG)
-- Active state: left accent bar (3px, ova-blue) + white text, not bg-white/10
+- Active state: left accent bar (3px, ari-blue) + white text, not bg-white/10
 - Logo: smaller, more refined. Consider wordmark only
 - Remove "v0.1" version tag -- communicates "prototype"
 
 **Home/Dashboard**:
 - Balance cards: Full-width stack (one per currency), not grid
   - Each card: large balance number left, currency + status right
-  - Background: subtle gradient (white to ova-50), not solid black
+  - Background: subtle gradient (white to ari-50), not solid black
   - Balance should be THE largest number on screen (text-display size)
 - Quick actions: Icon buttons in a horizontal strip, not standard text buttons
 - Recent activity: Denser list with amount, recipient, date. No card wrapper needed
@@ -298,12 +298,12 @@ font-family: 'Inter', -apple-system, 'SF Pro Display', 'Segoe UI', sans-serif;
 
 ### Proposal 6: Auth Pages -- "Confident Simplicity"
 
-**Current**: Functional but bare. White page, centered form, "Ova" in bold.
+**Current**: Functional but bare. White page, centered form, "ARI" in bold.
 
 **Proposed refinements**:
 - Split layout on desktop: Left half = subtle brand imagery or value prop, Right half = form
 - Or: Keep centered but add more vertical breathing room
-- Logo: Use lowercase "ova" consistently (matching landing page)
+- Logo: Use uppercase "ARI" consistently (matching landing page)
 - Input fields: Increase to 48px height, 16px border-radius
 - Submit button: Full-width, 48px height, slight shadow on hover
 - Social proof: "Trusted by X,000+ businesses in Turkey and Europe" below form
@@ -313,30 +313,30 @@ font-family: 'Inter', -apple-system, 'SF Pro Display', 'Segoe UI', sans-serif;
 
 **Buttons**:
 ```
-Primary: bg-ova-900, text-white, rounded-xl, h-12, px-6
-  Hover: bg-ova-black, subtle shadow
+Primary: bg-ari-900, text-white, rounded-xl, h-12, px-6
+  Hover: bg-ari-black, subtle shadow
   Active: scale(0.98) for 100ms
 
-Secondary: bg-white, border-ova-300, text-ova-900, rounded-xl, h-12, px-6
-  Hover: bg-ova-50, border-ova-400
+Secondary: bg-white, border-ari-300, text-ari-900, rounded-xl, h-12, px-6
+  Hover: bg-ari-50, border-ari-400
 
-Ghost: transparent, text-ova-700
-  Hover: bg-ova-100
+Ghost: transparent, text-ari-700
+  Hover: bg-ari-100
 ```
 
 **Cards**:
 ```
-Default: bg-white, border-ova-200, rounded-2xl, p-6, shadow-sm
+Default: bg-white, border-ari-200, rounded-2xl, p-6, shadow-sm
   Hover: shadow-md (if interactive)
   No translateY on hover -- too playful for banking
 ```
 
 **Inputs**:
 ```
-Default: bg-white, border-ova-300, rounded-xl, h-12, px-4
-  Focus: border-ova-blue, ring-2 ring-ova-blue/20 (not ring-black)
-  Error: border-ova-red, ring-2 ring-ova-red/20
-  Labels: text-ova-700, text-body-sm, font-medium
+Default: bg-white, border-ari-300, rounded-xl, h-12, px-4
+  Focus: border-ari-blue, ring-2 ring-ari-blue/20 (not ring-black)
+  Error: border-ari-red, ring-2 ring-ari-red/20
+  Labels: text-ari-700, text-body-sm, font-medium
 ```
 
 **Status pills**:
@@ -345,7 +345,7 @@ Success: bg-green-50, text-green-700, font-medium
 Warning: bg-amber-50, text-amber-700, font-medium
 Error: bg-red-50, text-red-700, font-medium
 Info: bg-blue-50, text-blue-700, font-medium
-Neutral: bg-ova-100, text-ova-700, font-medium
+Neutral: bg-ari-100, text-ari-700, font-medium
 ```
 
 ### Proposal 8: Motion Design -- "Barely There"

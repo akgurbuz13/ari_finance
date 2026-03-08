@@ -1,6 +1,6 @@
 #!/bin/bash
 # ==============================================================================
-# Ova Contract Deployment Script for AWS Test Environment
+# ARI Contract Deployment Script for AWS Test Environment
 # ==============================================================================
 # Deploys all smart contracts to both TR and EU L1 chains and configures
 # cross-chain bridge connections.
@@ -87,19 +87,19 @@ deploy_tr_l1() {
 {
     "chainId": ${TR_L1_CHAIN_ID},
     "chainName": "TR L1",
-    "stablecoinName": "Ova Turkish Lira",
-    "stablecoinSymbol": "oTRY",
+    "stablecoinName": "ARI Turkish Lira",
+    "stablecoinSymbol": "ariTRY",
     "treasuryAddress": "${TREASURY_ADDRESS}",
     "teleporterRegistry": "${TELEPORTER_REGISTRY_ADDRESS}",
     "partnerChainId": ${EU_L1_CHAIN_ID},
-    "wrappedTokenName": "Wrapped Ova Euro",
-    "wrappedTokenSymbol": "woEUR"
+    "wrappedTokenName": "Wrapped ARI Euro",
+    "wrappedTokenSymbol": "wariEUR"
 }
 EOF
 
     # Deploy using hardhat
     TR_DEPLOYMENT=$(npx hardhat run scripts/deploy-dual-chain.ts \
-        --network ova-tr-testnet \
+        --network ari-tr-testnet \
         --config hardhat.config.ts 2>&1 | tee /dev/tty)
 
     # Extract addresses from deployment output
@@ -133,19 +133,19 @@ deploy_eu_l1() {
 {
     "chainId": ${EU_L1_CHAIN_ID},
     "chainName": "EU L1",
-    "stablecoinName": "Ova Euro",
-    "stablecoinSymbol": "oEUR",
+    "stablecoinName": "ARI Euro",
+    "stablecoinSymbol": "ariEUR",
     "treasuryAddress": "${TREASURY_ADDRESS}",
     "teleporterRegistry": "${TELEPORTER_REGISTRY_ADDRESS}",
     "partnerChainId": ${TR_L1_CHAIN_ID},
-    "wrappedTokenName": "Wrapped Ova Turkish Lira",
-    "wrappedTokenSymbol": "woTRY"
+    "wrappedTokenName": "Wrapped ARI Turkish Lira",
+    "wrappedTokenSymbol": "wariTRY"
 }
 EOF
 
     # Deploy using hardhat
     EU_DEPLOYMENT=$(npx hardhat run scripts/deploy-dual-chain.ts \
-        --network ova-eu-testnet \
+        --network ari-eu-testnet \
         --config hardhat.config.ts 2>&1 | tee /dev/tty)
 
     # Extract addresses from deployment output
@@ -175,7 +175,7 @@ configure_bridges() {
 
     # Run bridge configuration script
     npx hardhat run scripts/configure-bridge.ts \
-        --network ova-tr-testnet \
+        --network ari-tr-testnet \
         --config hardhat.config.ts
 
     log_info "Bridge configuration complete"
@@ -236,7 +236,7 @@ verify_deployment() {
     if [[ -n "${TR_STABLECOIN_ADDRESS:-}" ]]; then
         echo "  TR Stablecoin: Deployed"
         # Additional verification: check contract code exists
-        # npx hardhat verify --network ova-tr-testnet $TR_STABLECOIN_ADDRESS
+        # npx hardhat verify --network ari-tr-testnet $TR_STABLECOIN_ADDRESS
     fi
 
     # Check EU L1 contracts
@@ -254,7 +254,7 @@ verify_deployment() {
 # Main
 # ==============================================================================
 main() {
-    log_info "Starting Ova contract deployment to AWS test environment..."
+    log_info "Starting ARI contract deployment to AWS test environment..."
     log_info "Target network(s): $NETWORK"
 
     verify_env

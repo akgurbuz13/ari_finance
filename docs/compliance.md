@@ -1,8 +1,8 @@
-# Regulatory Compliance Documentation for Ova
+# Regulatory Compliance Documentation for ARI
 
 ## Overview
 
-Ova operates as an e-money institution in two jurisdictions:
+ARI operates as an e-money institution in two jurisdictions:
 - **Turkey**: Under TCMB (Central Bank of Turkey) e-money license
 - **European Union**: Under EMI (Electronic Money Institution) license + MiCA (Markets in Crypto-Assets) for EUR stablecoin
 
@@ -249,7 +249,7 @@ Payment and electronic money institutions CANNOT:
 ❌ Transfer or issue crypto assets
 ❌ Intermediate fund transfers to/from crypto platforms
 
-Ova's blockchain settlement is PERMITTED because:
+ARI's blockchain settlement is PERMITTED because:
 ✅ Internal infrastructure (not customer-facing)
 ✅ Stablecoin backed 1:1 by fiat (e-money, not crypto)
 ✅ Settlement layer, not trading platform
@@ -308,7 +308,7 @@ Option 2 - Insurance/Guarantee:
 
 ### 2.3 MiCA E-Money Token (EMT) Requirements
 
-Since Ova issues EUR-backed stablecoins, MiCA EMT rules apply.
+Since ARI issues EUR-backed stablecoins, MiCA EMT rules apply.
 
 #### Authorization
 
@@ -368,7 +368,7 @@ Requirements:
 Technical Implementation:
 POST /api/v1/redemption
 {
-  "tokenId": "OvaEUR",
+  "tokenId": "ariEUR",
   "amount": 1000,
   "destinationIban": "LT..."
 }
@@ -654,7 +654,7 @@ Required When:
 - Systematic monitoring of public areas
 - High risk processing (2+ criteria from EDPB guidelines)
 
-Ova Processes Requiring DPIA:
+ARI Processes Requiring DPIA:
 1. KYC automated verification
 2. Transaction monitoring (profiling)
 3. Sanctions screening

@@ -1,6 +1,6 @@
-# Ova Local Testing Guide
+# ARI Local Testing Guide
 
-Step-by-step instructions to run and test Ova locally. Two modes available:
+Step-by-step instructions to run and test ARI locally. Two modes available:
 - **Simple Mode**: Web app + Core Banking only (no blockchain)
 - **Full Mode**: Complete stack with blockchain service
 
@@ -60,8 +60,8 @@ docker compose ps
 Expected output:
 ```
 NAME           STATUS
-ova-postgres   running (healthy)
-ova-redis      running (healthy)
+ari-postgres   running (healthy)
+ari-redis      running (healthy)
 ```
 
 ### Step 2: Start Core Banking Backend
@@ -77,7 +77,7 @@ cd /Users/alikaangurbuz/ova_v1
 
 Wait for startup (about 30-60 seconds). Look for:
 ```
-Started OvaPlatformApplication in X seconds
+Started AriPlatformApplication in X seconds
 ```
 
 **Verify backend is running**:
@@ -192,7 +192,7 @@ Access: http://localhost:3001
 
 ```bash
 # Connect to PostgreSQL
-docker exec -it ova-postgres psql -U ova -d ova
+docker exec -it ari-postgres psql -U ari -d ari
 
 # Grant admin role to a user (replace USER_ID)
 UPDATE identity.users SET role = 'ADMIN' WHERE email = 'test@example.com';
@@ -267,8 +267,8 @@ npx hardhat run scripts/deploy.ts --network localhost
 
 Note the deployed contract addresses from output:
 ```
-OvaStablecoin deployed to: 0x5FbDB...
-OvaBridgeAdapter deployed to: 0xe7f17...
+AriStablecoin deployed to: 0x5FbDB...
+AriBridgeAdapter deployed to: 0xe7f17...
 ```
 
 ### Step 4: Configure Blockchain Service
@@ -452,9 +452,9 @@ Ensure backend is running with dev profile which allows localhost:3000:
 
 | What | Value |
 |------|-------|
-| PostgreSQL User | `ova` |
-| PostgreSQL Password | `ova_dev_password` |
-| PostgreSQL Database | `ova` |
+| PostgreSQL User | `ari` |
+| PostgreSQL Password | `ari_dev_password` |
+| PostgreSQL Database | `ari` |
 
 ### Common Commands
 

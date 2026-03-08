@@ -61,7 +61,7 @@ All 6 phases of the hackathon sprint are complete:
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| Phase 0 | Rebrand Ova → ARI | ✅ Complete |
+| Phase 0 | Rebrand from Ova to ARI | ✅ Complete |
 | Phase 1 | Testnet Infrastructure (Fuji L1s) | ✅ Complete |
 | Phase 2 | Contract Deployment & Bridge Setup | ✅ Complete |
 | Phase 3 | Backend Integration & Critical Fixes | ✅ Complete |
@@ -145,7 +145,7 @@ Pre-demo investigation and fixes:
 
 **CI Backend Test Fixes:**
 - Fixed Redis port mismatch: `BaseIntegrationTest` hardcoded port `16379`, CI Redis runs on `6379`. Now reads from `SPRING_DATA_REDIS_PORT` env var with `16379` fallback for local dev.
-- Fixed config prefix: `application-test.yml` used dead `ova:` prefix instead of `ari:`. Updated to match `application.yml`.
+- Fixed config prefix: `application-test.yml` used dead old `ova:` prefix instead of `ari:`. Updated to match `application.yml`.
 - Added JVM memory limit: `-Xmx1536m` in `GRADLE_OPTS` to prevent OOM in CI.
 - Added `SPRING_DATA_REDIS_PORT` env var to CI workflow.
 
@@ -238,17 +238,17 @@ Pre-demo investigation and fixes:
 
 | Deliverable | Status | Date | Notes |
 |-------------|--------|------|-------|
-| OvaStablecoin contract | ✅ | 2026-02-03 | ERC-20 + mint/burn/freeze/allowlist |
-| OvaStablecoinUpgradeable | ✅ | 2026-02-03 | UUPS proxy pattern |
+| AriStablecoin contract | ✅ | 2026-02-03 | ERC-20 + mint/burn/freeze/allowlist |
+| AriStablecoinUpgradeable | ✅ | 2026-02-03 | UUPS proxy pattern |
 | Deploy TR L1 + EU L1 | 🔶 | Pending | Terraform ready, awaiting deployment |
 | Blockchain service: mint/burn | ✅ | 2026-02-04 | Full implementation with error handling |
 | Custodial wallet management | ✅ | 2026-02-04 | HD wallet derivation |
 | Gasless relayer | ✅ | 2026-02-04 | ERC-2771 meta-transactions |
 | Chain event listener | ✅ | 2026-02-04 | With retry logic |
 | **ICTT bridge integration** | ✅ | 2026-02-05 | TokenHome ↔ TokenRemote |
-| **OvaTokenHome contract** | ✅ | 2026-02-05 | Lock/release native tokens |
-| **OvaTokenRemote contract** | ✅ | 2026-02-05 | Mint/burn wrapped tokens |
-| **OvaBridgeAdapter contract** | ✅ | 2026-02-05 | Bridge orchestration |
+| **AriTokenHome contract** | ✅ | 2026-02-05 | Lock/release native tokens |
+| **AriTokenRemote contract** | ✅ | 2026-02-05 | Mint/burn wrapped tokens |
+| **AriBridgeAdapter contract** | ✅ | 2026-02-05 | Bridge orchestration |
 | FX quote engine | ✅ | 2026-02-03 | 30s TTL, spread calculation |
 | Cross-border orchestrator | ✅ | 2026-02-04 | Full saga pattern |
 | Daily reconciliation | ✅ | 2026-02-04 | On-chain vs off-chain |
@@ -329,9 +329,9 @@ After initial implementation of Phases 1-5, a comprehensive review revealed that
 - Added `findByTransferId()` and `findPendingBridgeTransfers()` repository methods
 
 #### Priority 2: Kotlin Wrappers ✅
-- Rewrote `OvaBridgeAdapterContract` with correct Solidity method signatures
-- Created `OvaTokenHomeContract` wrapper (`bridgeTokens`, `registerRemote`, daily limits)
-- Created `OvaTokenRemoteContract` wrapper (`bridgeBack`, `registerHomeChain`, allowlist)
+- Rewrote `AriBridgeAdapterContract` with correct Solidity method signatures
+- Created `AriTokenHomeContract` wrapper (`bridgeTokens`, `registerRemote`, daily limits)
+- Created `AriTokenRemoteContract` wrapper (`bridgeBack`, `registerHomeChain`, allowlist)
 - Updated `ContractFactory` with new contract factories
 - Updated `BlockchainConfig` with TokenHome/TokenRemote addresses
 
@@ -342,9 +342,9 @@ After initial implementation of Phases 1-5, a comprehensive review revealed that
 
 #### Priority 4: Comprehensive Tests ✅
 - Created `MockTeleporter.sol` for testing ICTT bridge without network
-- Created `OvaTokenHome.test.ts` (37 test cases)
-- Created `OvaTokenRemote.test.ts` (comprehensive coverage)
-- Created `OvaBridgeAdapter.test.ts` (full integration tests)
+- Created `AriTokenHome.test.ts` (37 test cases)
+- Created `AriTokenRemote.test.ts` (comprehensive coverage)
+- Created `AriBridgeAdapter.test.ts` (full integration tests)
 - Created `IcttBridgeServiceTest.kt` (quote, transfer, status tracking)
 - Created `MintServiceTest.kt` (mint operations, allowlist, errors)
 - Created `BurnServiceTest.kt` (burn operations, errors, network handling)
@@ -391,7 +391,7 @@ After initial implementation of Phases 1-5, a comprehensive review revealed that
 ### Core Banking Entry Points
 | File | Purpose |
 |------|---------|
-| `core-banking/.../OvaPlatformApplication.kt` | Spring Boot entry |
+| `core-banking/.../AriPlatformApplication.kt` | Spring Boot entry |
 | `core-banking/.../identity/api/AuthController.kt` | Auth endpoints |
 | `core-banking/.../ledger/internal/service/LedgerService.kt` | Double-entry engine |
 | `core-banking/.../payments/internal/service/CrossBorderTransferService.kt` | FX cross-border saga |
@@ -400,7 +400,7 @@ After initial implementation of Phases 1-5, a comprehensive review revealed that
 ### Blockchain Service Entry Points
 | File | Purpose |
 |------|---------|
-| `blockchain-service/.../OvaBlockchainApplication.kt` | Spring Boot entry |
+| `blockchain-service/.../AriBlockchainApplication.kt` | Spring Boot entry |
 | `blockchain-service/.../bridge/IcttBridgeService.kt` | ICTT bridge operations |
 | `blockchain-service/.../settlement/MintService.kt` | Token minting |
 | `blockchain-service/.../settlement/BurnService.kt` | Token burning |
@@ -409,10 +409,10 @@ After initial implementation of Phases 1-5, a comprehensive review revealed that
 ### Smart Contracts
 | File | Purpose |
 |------|---------|
-| `contracts/contracts/token/OvaStablecoin.sol` | Base stablecoin |
-| `contracts/contracts/bridge/OvaTokenHome.sol` | Native token lock/release |
-| `contracts/contracts/bridge/OvaTokenRemote.sol` | Wrapped token mint/burn |
-| `contracts/contracts/bridge/OvaBridgeAdapter.sol` | ICTT bridge orchestration |
+| `contracts/contracts/token/AriStablecoin.sol` | Base stablecoin |
+| `contracts/contracts/bridge/AriTokenHome.sol` | Native token lock/release |
+| `contracts/contracts/bridge/AriTokenRemote.sol` | Wrapped token mint/burn |
+| `contracts/contracts/bridge/AriBridgeAdapter.sol` | ICTT bridge orchestration |
 | `contracts/contracts/bridge/AriBurnMintBridge.sol` | Same-ccy burn/mint bridge |
 
 ### Infrastructure

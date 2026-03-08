@@ -10,22 +10,22 @@
 
 ## Overview
 
-This plan upgrades the Ova web frontend from its current solid-but-prototype state into a production-grade fintech interface competing with Revolut, Wise, PayPal, and Papara. The current codebase already has a good brand identity foundation (navy palette, Inter font, custom Tailwind tokens, Lucide icons). This plan focuses on **elevating** the existing work with richer content, better micro-interactions, improved information density, responsive design, and polished empty/loading/error states.
+This plan upgrades the ARI web frontend from its current solid-but-prototype state into a production-grade fintech interface competing with Revolut, Wise, PayPal, and Papara. The current codebase already has a good brand identity foundation (navy palette, Inter font, custom Tailwind tokens, Lucide icons). This plan focuses on **elevating** the existing work with richer content, better micro-interactions, improved information density, responsive design, and polished empty/loading/error states.
 
 ### Competitor Analysis Alignment
 
 The competitor analysis (`docs/competitor-analysis/analysis.md`) confirmed our foundation is already aligned with industry leaders:
 
-| What Ova Already Has Right | Competitor Validation |
+| What ARI Already Has Right | Competitor Validation |
 |---|---|
 | Inter font | Used by Wise — "industry standard for financial UI, excellent number rendering" |
 | Lucide SVG icons | ALL competitors use SVG icon systems; none use Unicode characters |
-| Navy palette with restrained color count | Revolut uses ~4 colors, Wise ~8, PayPal ~6 — Ova's token system is well-scoped |
+| Navy palette with restrained color count | Revolut uses ~4 colors, Wise ~8, PayPal ~6 — ARI's token system is well-scoped |
 | Clean white backgrounds | ALL competitors use white/neutral backgrounds — no grids, blurs, or gradients |
-| FxCalculator on landing | Wise's calculator-as-hero is "the gold standard" — Ova already has this |
+| FxCalculator on landing | Wise's calculator-as-hero is "the gold standard" — ARI already has this |
 
 Key gaps identified by competitor analysis that this plan addresses:
-1. **No trust signals above the fold** — ALL competitors show regulatory info prominently (Revolut: "70M+ customers", Wise: Trustpilot, PayPal: "FDIC insured", Papara: "23M+ users" + Central Bank supervision). Note: PayPal exited Turkey in 2016, so Ova's real TR→EU competitors are Revolut, Wise, and Papara only.
+1. **No trust signals above the fold** — ALL competitors show regulatory info prominently (Revolut: "70M+ customers", Wise: Trustpilot, PayPal: "FDIC insured", Papara: "23M+ users" + Central Bank supervision). Note: PayPal exited Turkey in 2016, so ARI's real TR→EU competitors are Revolut, Wise, and Papara only.
 2. **No sticky navigation** — ALL competitors use sticky headers with glass/shadow on scroll
 3. **No button press animation** — ALL competitors use `scale(0.97-0.98)` for 100-150ms tactile feedback
 4. **Auth pages not wrapped in cards** — ALL competitors use clean centered single-column forms
@@ -33,7 +33,7 @@ Key gaps identified by competitor analysis that this plan addresses:
 6. **Limited social proof** — Competitors prominently display customer counts, volume, trust metrics
 
 **What's already good** (preserve):
-- Ova brand color system (navy, blue, neutral grays) in Tailwind config
+- ARI brand color system (navy, blue, neutral grays) in Tailwind config
 - Inter font with well-defined type scale (display through caption)
 - Component library (Button with 5 variants, Card, Input, StatusPill, Skeleton)
 - AuthGuard + middleware auth pattern
@@ -98,7 +98,7 @@ web/
 │   └── hooks/
 │       └── useAuth.ts                    # Auth hook with login/signup/logout (67 lines)
 ├── middleware.ts                          # Route matching middleware (37 lines)
-├── tailwind.config.ts                    # Ova design tokens (99 lines)
+├── tailwind.config.ts                    # ARI design tokens (99 lines)
 ├── next.config.js                        # Rewrites, typed routes (17 lines)
 └── package.json                          # Next 14.2.5, React 18, Lucide, Axios, clsx
 ```
@@ -116,7 +116,7 @@ web/
 ```
 
 ### Current Design Tokens (tailwind.config.ts)
-- Colors: `ova.navy`, `ova.navy-light`, `ova.blue`, `ova.blue-hover`, `ova.blue-light`, neutral scale (950-50, white), functional (green, red, amber + light variants)
+- Colors: `ari.navy`, `ari.navy-light`, `ari.blue`, `ari.blue-hover`, `ari.blue-light`, neutral scale (950-50, white), functional (green, red, amber + light variants)
 - Font sizes: display (48px), h1 (36px), h2 (28px), h3 (20px), body-lg (17px), body (15px), body-sm (13px), caption (11px)
 - Max widths: form (720px), dashboard (960px), landing (1200px)
 - Border radius: xl (1rem), 2xl (1.5rem)
@@ -217,7 +217,7 @@ Add to `@layer components`:
 ```css
 /* Shimmer skeleton */
 .skeleton-shimmer {
-  background: linear-gradient(90deg, var(--ova-200) 25%, var(--ova-100) 50%, var(--ova-200) 75%);
+  background: linear-gradient(90deg, var(--ari-200) 25%, var(--ari-100) 50%, var(--ari-200) 75%);
   background-size: 200% 100%;
   animation: shimmer 2s linear infinite;
 }
@@ -237,11 +237,11 @@ Add to `@layer components`:
 Add Open Graph metadata:
 ```typescript
 export const metadata: Metadata = {
-  title: "Ova - Cross-border transfers between Turkey and Europe",
+  title: "ARI - Cross-border transfers between Turkey and Europe",
   description: "Move money between TRY and EUR with live rates, transparent fees, and real-time settlement tracking.",
   keywords: ["banking", "fintech", "Turkey", "Europe", "TRY", "EUR", "cross-border", "transfers"],
   openGraph: {
-    title: 'Ova - Cross-border transfers between Turkey and Europe',
+    title: 'ARI - Cross-border transfers between Turkey and Europe',
     description: 'Move money between TRY and EUR with live rates, transparent fees, and real-time settlement tracking.',
     type: 'website',
   },
@@ -262,8 +262,8 @@ export const metadata: Metadata = {
 
 **Competitor patterns adopted**:
 - **Sticky glass navigation**: ALL competitors (Revolut, Wise, PayPal, Papara) use sticky headers. Revolut adds slight shadow + backdrop-blur on scroll.
-- **Calculator-as-hero**: Wise's live currency calculator in the hero is "unique among competitors and immediately demonstrates value" — Ova already has FxCalculator here, we're polishing it.
-- **Trust signals above the fold**: Revolut shows "35M+ customers", Wise shows Trustpilot ratings, PayPal shows "FDIC insured", Papara shows Central Bank supervision. Ova needs to show "BDDK Regulated | KVKK Compliant | PSD2 Authorized" prominently.
+- **Calculator-as-hero**: Wise's live currency calculator in the hero is "unique among competitors and immediately demonstrates value" — ARI already has FxCalculator here, we're polishing it.
+- **Trust signals above the fold**: Revolut shows "35M+ customers", Wise shows Trustpilot ratings, PayPal shows "FDIC insured", Papara shows Central Bank supervision. ARI needs to show "BDDK Regulated | KVKK Compliant | PSD2 Authorized" prominently.
 - **Animated number counters**: PayPal uses scroll-triggered counting animations for social proof stats.
 - **Multi-column footer**: Revolut and Wise both use comprehensive 4-column footers with regulatory disclosures at the bottom.
 - **Subtle scroll animations**: Revolut uses "subtle fade-in on scroll, NOT heavy parallax". All competitors prioritize fast, content-focused experiences.
@@ -297,16 +297,16 @@ Update nav element:
   "fixed top-0 left-0 right-0 z-50 transition-all duration-base",
   scrolled
     ? "bg-[var(--glass-bg)] backdrop-blur-sm border-b border-[var(--glass-border)] shadow-xs"
-    : "bg-white border-b border-ova-200"
+    : "bg-white border-b border-ari-200"
 )}>
 ```
 
 Add center navigation links (Personal, Business, Fees — link to anchor sections on the same page):
 ```tsx
 <div className="hidden md:flex items-center gap-6">
-  <a href="#features" className="text-body-sm font-medium text-ova-700 hover:text-ova-900 transition-colors duration-fast">Features</a>
-  <a href="#how-it-works" className="text-body-sm font-medium text-ova-700 hover:text-ova-900 transition-colors duration-fast">How it works</a>
-  <a href="#fees" className="text-body-sm font-medium text-ova-700 hover:text-ova-900 transition-colors duration-fast">Fees</a>
+  <a href="#features" className="text-body-sm font-medium text-ari-700 hover:text-ari-900 transition-colors duration-fast">Features</a>
+  <a href="#how-it-works" className="text-body-sm font-medium text-ari-700 hover:text-ari-900 transition-colors duration-fast">How it works</a>
+  <a href="#fees" className="text-body-sm font-medium text-ari-700 hover:text-ari-900 transition-colors duration-fast">Fees</a>
 </div>
 ```
 
@@ -330,7 +330,7 @@ Wrap hero text elements with staggered animation:
   initial={{ opacity: 0, y: 12 }}
   animate={{ opacity: 1, y: 0 }}
   transition={{ duration: 0.5, delay: 0.1 }}
-  className="text-display text-ova-navy text-balance"
+  className="text-display text-ari-navy text-balance"
 >
   Cross-border transfers between Turkey and Europe.
 </motion.h1>
@@ -339,7 +339,7 @@ Wrap hero text elements with staggered animation:
   initial={{ opacity: 0, y: 12 }}
   animate={{ opacity: 1, y: 0 }}
   transition={{ duration: 0.5, delay: 0.2 }}
-  className="mt-2 text-h2 text-ova-navy font-semibold"
+  className="mt-2 text-h2 text-ari-navy font-semibold"
 >
   Instant. Transparent. Secure.
 </motion.p>
@@ -364,41 +364,41 @@ Add subtle float animation to FxCalculator wrapper:
 {/* ──── HOW IT WORKS ──── */}
 <section id="how-it-works" className="py-20 bg-white">
   <div className="mx-auto max-w-landing px-6">
-    <h2 className="text-h1 text-ova-navy text-center">How Ova works</h2>
-    <p className="mt-3 text-body-lg text-ova-500 text-center max-w-md mx-auto">
+    <h2 className="text-h1 text-ari-navy text-center">How ARI works</h2>
+    <p className="mt-3 text-body-lg text-ari-500 text-center max-w-md mx-auto">
       Three steps to move money between Turkey and Europe
     </p>
 
     <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
       {/* Step 1 */}
       <div className="text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-ova-100">
-          <UserPlus size={28} strokeWidth={1.5} className="text-ova-navy" />
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-ari-100">
+          <UserPlus size={28} strokeWidth={1.5} className="text-ari-navy" />
         </div>
-        <h3 className="mt-5 text-h3 text-ova-900">Create your account</h3>
-        <p className="mt-2 text-body-sm text-ova-500">
+        <h3 className="mt-5 text-h3 text-ari-900">Create your account</h3>
+        <p className="mt-2 text-body-sm text-ari-500">
           Sign up in under 2 minutes with your email and phone number.
         </p>
       </div>
 
       {/* Step 2 */}
       <div className="text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-ova-100">
-          <ShieldCheck size={28} strokeWidth={1.5} className="text-ova-navy" />
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-ari-100">
+          <ShieldCheck size={28} strokeWidth={1.5} className="text-ari-navy" />
         </div>
-        <h3 className="mt-5 text-h3 text-ova-900">Verify your identity</h3>
-        <p className="mt-2 text-body-sm text-ova-500">
+        <h3 className="mt-5 text-h3 text-ari-900">Verify your identity</h3>
+        <p className="mt-2 text-body-sm text-ari-500">
           Quick KYC verification unlocks transfers up to EUR 50,000.
         </p>
       </div>
 
       {/* Step 3 */}
       <div className="text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-ova-100">
-          <Zap size={28} strokeWidth={1.5} className="text-ova-navy" />
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-ari-100">
+          <Zap size={28} strokeWidth={1.5} className="text-ari-navy" />
         </div>
-        <h3 className="mt-5 text-h3 text-ova-900">Send money instantly</h3>
-        <p className="mt-2 text-body-sm text-ova-500">
+        <h3 className="mt-5 text-h3 text-ari-900">Send money instantly</h3>
+        <p className="mt-2 text-body-sm text-ari-500">
           Live FX rates, transparent fees, and real-time settlement tracking.
         </p>
       </div>
@@ -417,7 +417,7 @@ Convert the existing vertical list into a 2x2 grid with icons (id="features"):
 {/* ──── FEATURES ──── */}
 <section id="features" className="py-20">
   <div className="mx-auto max-w-landing px-6">
-    <h2 className="text-h1 text-ova-navy text-center">Why choose Ova</h2>
+    <h2 className="text-h1 text-ari-navy text-center">Why choose ARI</h2>
     <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
       <FeatureCard
         icon={<TrendingUp size={24} strokeWidth={1.5} />}
@@ -448,12 +448,12 @@ New inline helper component:
 ```tsx
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
-    <div className="bg-white border border-ova-200 rounded-2xl p-8 shadow-card hover:shadow-card-hover transition-shadow duration-base">
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-ova-100 text-ova-navy">
+    <div className="bg-white border border-ari-200 rounded-2xl p-8 shadow-card hover:shadow-card-hover transition-shadow duration-base">
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-ari-100 text-ari-navy">
         {icon}
       </div>
-      <h3 className="mt-5 text-h3 text-ova-900">{title}</h3>
-      <p className="mt-2 text-body-sm text-ova-500 leading-relaxed">{description}</p>
+      <h3 className="mt-5 text-h3 text-ari-900">{title}</h3>
+      <p className="mt-2 text-body-sm text-ari-500 leading-relaxed">{description}</p>
     </div>
   );
 }
@@ -465,7 +465,7 @@ Import `TrendingUp`, `Receipt`, `Lock` from `lucide-react`.
 
 ```tsx
 {/* ──── FX RATE BANNER ──── */}
-<section id="fees" className="py-16 bg-ova-navy">
+<section id="fees" className="py-16 bg-ari-navy">
   <div className="mx-auto max-w-landing px-6 text-center">
     <p className="text-caption text-white/60 uppercase tracking-wide">Live exchange rate</p>
     <p className="mt-3 text-display text-white amount">
@@ -476,7 +476,7 @@ Import `TrendingUp`, `Receipt`, `Lock` from `lucide-react`.
     </p>
     <Link
       href="/signup"
-      className="mt-6 inline-flex h-12 items-center rounded-xl bg-white px-6 text-body-sm font-medium text-ova-navy transition-all duration-base hover:bg-ova-50 hover:shadow-sm active:scale-[0.98]"
+      className="mt-6 inline-flex h-12 items-center rounded-xl bg-white px-6 text-body-sm font-medium text-ari-navy transition-all duration-base hover:bg-ari-50 hover:shadow-sm active:scale-[0.98]"
     >
       Start sending money
     </Link>
@@ -488,26 +488,26 @@ Import `TrendingUp`, `Receipt`, `Lock` from `lucide-react`.
 
 ```tsx
 {/* ──── STATS ──── */}
-<section className="py-20 bg-ova-100">
+<section className="py-20 bg-ari-100">
   <div className="mx-auto max-w-landing px-6">
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
       <div>
-        <p className="text-display text-ova-navy amount">
+        <p className="text-display text-ari-navy amount">
           <AnimatedCounter target={50000} suffix="+" />
         </p>
-        <p className="mt-2 text-body-sm text-ova-500">Transfers completed</p>
+        <p className="mt-2 text-body-sm text-ari-500">Transfers completed</p>
       </div>
       <div>
-        <p className="text-display text-ova-navy amount">
+        <p className="text-display text-ari-navy amount">
           €<AnimatedCounter target={100} suffix="M+" />
         </p>
-        <p className="mt-2 text-body-sm text-ova-500">Volume processed</p>
+        <p className="mt-2 text-body-sm text-ari-500">Volume processed</p>
       </div>
       <div>
-        <p className="text-display text-ova-navy amount">
+        <p className="text-display text-ari-navy amount">
           <AnimatedCounter target={2} suffix=" min" />
         </p>
-        <p className="mt-2 text-body-sm text-ova-500">Average delivery time</p>
+        <p className="mt-2 text-body-sm text-ari-500">Average delivery time</p>
       </div>
     </div>
   </div>
@@ -518,55 +518,55 @@ Import `TrendingUp`, `Receipt`, `Lock` from `lucide-react`.
 
 Replace existing footer with:
 ```tsx
-<footer className="border-t border-ova-200 py-12">
+<footer className="border-t border-ari-200 py-12">
   <div className="mx-auto max-w-landing px-6">
     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
       {/* Brand column */}
       <div className="col-span-2 md:col-span-1">
-        <p className="ova-logo text-2xl">ova</p>
-        <p className="mt-2 text-body-sm text-ova-500">
+        <p className="ari-logo text-2xl">ARI</p>
+        <p className="mt-2 text-body-sm text-ari-500">
           Designed for trust.<br />Built for movement.
         </p>
       </div>
 
       {/* Product */}
       <div>
-        <h4 className="text-caption text-ova-400 uppercase tracking-wide">Product</h4>
+        <h4 className="text-caption text-ari-400 uppercase tracking-wide">Product</h4>
         <ul className="mt-3 space-y-2">
-          <li><a href="#features" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors duration-fast">Transfers</a></li>
-          <li><a href="#fees" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors duration-fast">Fees & Rates</a></li>
-          <li><a href="#how-it-works" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors duration-fast">How it works</a></li>
+          <li><a href="#features" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors duration-fast">Transfers</a></li>
+          <li><a href="#fees" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors duration-fast">Fees & Rates</a></li>
+          <li><a href="#how-it-works" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors duration-fast">How it works</a></li>
         </ul>
       </div>
 
       {/* Company */}
       <div>
-        <h4 className="text-caption text-ova-400 uppercase tracking-wide">Company</h4>
+        <h4 className="text-caption text-ari-400 uppercase tracking-wide">Company</h4>
         <ul className="mt-3 space-y-2">
-          <li><a href="#" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors duration-fast">About</a></li>
-          <li><a href="#" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors duration-fast">Security</a></li>
-          <li><a href="#" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors duration-fast">Contact</a></li>
+          <li><a href="#" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors duration-fast">About</a></li>
+          <li><a href="#" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors duration-fast">Security</a></li>
+          <li><a href="#" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors duration-fast">Contact</a></li>
         </ul>
       </div>
 
       {/* Legal */}
       <div>
-        <h4 className="text-caption text-ova-400 uppercase tracking-wide">Legal</h4>
+        <h4 className="text-caption text-ari-400 uppercase tracking-wide">Legal</h4>
         <ul className="mt-3 space-y-2">
-          <li><a href="#" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors duration-fast">Terms</a></li>
-          <li><a href="#" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors duration-fast">Privacy</a></li>
-          <li><a href="#" className="text-body-sm text-ova-500 hover:text-ova-700 transition-colors duration-fast">Compliance</a></li>
+          <li><a href="#" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors duration-fast">Terms</a></li>
+          <li><a href="#" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors duration-fast">Privacy</a></li>
+          <li><a href="#" className="text-body-sm text-ari-500 hover:text-ari-700 transition-colors duration-fast">Compliance</a></li>
         </ul>
       </div>
     </div>
 
-    <div className="mt-10 border-t border-ova-200 pt-6">
-      <p className="text-caption text-ova-400">
-        Ova Financial Services, licensed by BDDK (Turkey) and authorized under PSD2 (European Union).
+    <div className="mt-10 border-t border-ari-200 pt-6">
+      <p className="text-caption text-ari-400">
+        ARI Financial Services, licensed by BDDK (Turkey) and authorized under PSD2 (European Union).
         KVKK and GDPR compliant. All transfers are subject to regulatory compliance checks.
       </p>
-      <p className="mt-2 text-caption text-ova-400">
-        © {new Date().getFullYear()} Ova Financial Services. All rights reserved.
+      <p className="mt-2 text-caption text-ari-400">
+        © {new Date().getFullYear()} ARI Financial Services. All rights reserved.
       </p>
     </div>
   </div>
@@ -581,8 +581,8 @@ Replace existing footer with:
 2. Add "Live rate" indicator with green dot:
    ```tsx
    <div className="flex items-center gap-1.5">
-     <span className="h-2 w-2 rounded-full bg-ova-green animate-pulse" />
-     <span className="text-caption text-ova-green font-medium">Live rate</span>
+     <span className="h-2 w-2 rounded-full bg-ari-green animate-pulse" />
+     <span className="text-caption text-ari-green font-medium">Live rate</span>
    </div>
    ```
 
@@ -688,7 +688,7 @@ export default function AnimatedCounter({
 
 1. **Wrap form in a Card shell** for visual elevation:
    ```tsx
-   <div className="bg-white border border-ova-200 rounded-2xl shadow-card p-8 sm:p-10">
+   <div className="bg-white border border-ari-200 rounded-2xl shadow-card p-8 sm:p-10">
      {/* existing form content moves inside here */}
    </div>
    ```
@@ -719,7 +719,7 @@ export default function AnimatedCounter({
          initial={{ opacity: 0, y: -8 }}
          animate={{ opacity: 1, y: 0 }}
          exit={{ opacity: 0, y: -8 }}
-         className="p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red"
+         className="p-3 bg-ari-red-light border border-ari-red/20 rounded-xl text-body-sm text-ari-red"
        >
          {error}
        </motion.div>
@@ -729,7 +729,7 @@ export default function AnimatedCounter({
 
 4. **Add divider** between form and footer links:
    ```tsx
-   <div className="border-t border-ova-200 mt-6 pt-6">
+   <div className="border-t border-ari-200 mt-6 pt-6">
      {/* existing links */}
    </div>
    ```
@@ -738,7 +738,7 @@ export default function AnimatedCounter({
    ```tsx
    import { ShieldCheck } from 'lucide-react';
    // Below the Card wrapper:
-   <p className="text-caption text-ova-400 text-center mt-6 flex items-center justify-center gap-1.5">
+   <p className="text-caption text-ari-400 text-center mt-6 flex items-center justify-center gap-1.5">
      <ShieldCheck size={14} strokeWidth={1.5} />
      BDDK regulated · Encrypted end-to-end
    </p>
@@ -752,7 +752,7 @@ export default function AnimatedCounter({
 2. **Replace `<select>` region with styled radio buttons:**
    ```tsx
    <div>
-     <label className="block text-body-sm font-medium text-ova-700 mb-3">Region</label>
+     <label className="block text-body-sm font-medium text-ari-700 mb-3">Region</label>
      <div className="grid grid-cols-2 gap-3">
        <button
          type="button"
@@ -760,14 +760,14 @@ export default function AnimatedCounter({
          className={clsx(
            'flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-fast text-left',
            region === 'TR'
-             ? 'border-ova-navy bg-ova-50'
-             : 'border-ova-200 hover:border-ova-300'
+             ? 'border-ari-navy bg-ari-50'
+             : 'border-ari-200 hover:border-ari-300'
          )}
        >
          <span className="text-2xl">{'\u{1F1F9}\u{1F1F7}'}</span>
          <div>
-           <p className="text-body-sm font-medium text-ova-900">Turkey</p>
-           <p className="text-caption text-ova-500">TRY accounts</p>
+           <p className="text-body-sm font-medium text-ari-900">Turkey</p>
+           <p className="text-caption text-ari-500">TRY accounts</p>
          </div>
        </button>
        <button
@@ -776,14 +776,14 @@ export default function AnimatedCounter({
          className={clsx(
            'flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-fast text-left',
            region === 'EU'
-             ? 'border-ova-navy bg-ova-50'
-             : 'border-ova-200 hover:border-ova-300'
+             ? 'border-ari-navy bg-ari-50'
+             : 'border-ari-200 hover:border-ari-300'
          )}
        >
          <span className="text-2xl">{'\u{1F1EA}\u{1F1FA}'}</span>
          <div>
-           <p className="text-body-sm font-medium text-ova-900">European Union</p>
-           <p className="text-caption text-ova-500">EUR accounts</p>
+           <p className="text-body-sm font-medium text-ari-900">European Union</p>
+           <p className="text-caption text-ari-500">EUR accounts</p>
          </div>
        </button>
      </div>
@@ -807,8 +807,8 @@ export default function AnimatedCounter({
    ```tsx
    import { Mail } from 'lucide-react';
    // In success state:
-   <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ova-green-light mx-auto mb-4">
-     <Mail size={28} strokeWidth={1.5} className="text-ova-green" />
+   <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ari-green-light mx-auto mb-4">
+     <Mail size={28} strokeWidth={1.5} className="text-ari-green" />
    </div>
    ```
 
@@ -818,7 +818,7 @@ export default function AnimatedCounter({
 2. **Add PasswordStrength** below new password field
 3. **Add password requirements help text**:
    ```tsx
-   <p className="text-caption text-ova-400 mt-1">Must be at least 8 characters</p>
+   <p className="text-caption text-ari-400 mt-1">Must be at least 8 characters</p>
    ```
 4. **Animate success checkmark** with scale-in
 
@@ -841,8 +841,8 @@ function getStrength(password: string): { level: 0 | 1 | 2 | 3; label: string } 
   return { level: 3, label: 'Strong' };
 }
 
-const colors = ['bg-ova-red', 'bg-ova-red', 'bg-ova-amber', 'bg-ova-green'];
-const textColors = ['text-ova-red', 'text-ova-red', 'text-ova-amber', 'text-ova-green'];
+const colors = ['bg-ari-red', 'bg-ari-red', 'bg-ari-amber', 'bg-ari-green'];
+const textColors = ['text-ari-red', 'text-ari-red', 'text-ari-amber', 'text-ari-green'];
 
 export default function PasswordStrength({ password }: { password: string }) {
   const { level, label } = getStrength(password);
@@ -855,7 +855,7 @@ export default function PasswordStrength({ password }: { password: string }) {
             key={i}
             className={clsx(
               'h-1 flex-1 rounded-full transition-colors duration-fast',
-              i < level ? colors[level] : 'bg-ova-200'
+              i < level ? colors[level] : 'bg-ari-200'
             )}
           />
         ))}
@@ -945,13 +945,13 @@ export default function PasswordStrength({ password }: { password: string }) {
    const title = pageTitle[pathname || ''] || 'Dashboard';
 
    // In JSX, left side of header:
-   <span className="text-h3 text-ova-900">{title}</span>
+   <span className="text-h3 text-ari-900">{title}</span>
    ```
 
 2. **Add notification bell** (visual placeholder):
    ```tsx
-   <button className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-ova-100 transition-colors duration-fast">
-     <Bell size={18} strokeWidth={1.5} className="text-ova-500" />
+   <button className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-ari-100 transition-colors duration-fast">
+     <Bell size={18} strokeWidth={1.5} className="text-ari-500" />
    </button>
    ```
 
@@ -962,14 +962,14 @@ export default function PasswordStrength({ password }: { password: string }) {
    <div className="relative">
      <button
        onClick={() => setDropdownOpen(!dropdownOpen)}
-       className="flex h-9 w-9 items-center justify-center rounded-full bg-ova-navy text-caption font-medium text-white"
+       className="flex h-9 w-9 items-center justify-center rounded-full bg-ari-navy text-caption font-medium text-white"
      >
        {initials}
      </button>
      {dropdownOpen && (
-       <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-ova-200 rounded-xl shadow-md py-1 z-50 animate-scale-in">
-         <Link href="/settings" className="block px-4 py-2.5 text-body-sm text-ova-700 hover:bg-ova-50">Settings</Link>
-         <button onClick={handleLogout} className="block w-full text-left px-4 py-2.5 text-body-sm text-ova-red hover:bg-ova-red-light">Logout</button>
+       <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-ari-200 rounded-xl shadow-md py-1 z-50 animate-scale-in">
+         <Link href="/settings" className="block px-4 py-2.5 text-body-sm text-ari-700 hover:bg-ari-50">Settings</Link>
+         <button onClick={handleLogout} className="block w-full text-left px-4 py-2.5 text-body-sm text-ari-red hover:bg-ari-red-light">Logout</button>
        </div>
      )}
    </div>
@@ -1003,7 +1003,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-ova-50">
+      <div className="min-h-screen bg-ari-50">
         <Sidebar />
         <Header />
         <main className="ml-60 pt-16 p-8">
@@ -1027,7 +1027,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 1. **Add amounts to recent activity list** — currently only shows type + status. Add amount display:
    ```tsx
    // In the transaction row, add between the type info and StatusPill:
-   <span className="text-body-sm font-medium text-ova-900 amount">
+   <span className="text-body-sm font-medium text-ari-900 amount">
      {tx.type === 'deposit' || tx.type === 'mint' ? '+' : '-'}
      {/* Amount would come from tx.metadata or a separate field */}
    </span>
@@ -1048,7 +1048,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 3. **Enhance quick actions** — larger icons:
    ```tsx
    // Change icon circles from h-10 w-10 to h-12 w-12
-   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ova-navy text-white">
+   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ari-navy text-white">
    ```
 
 4. **Upgrade empty state for new users**:
@@ -1056,7 +1056,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
    {accounts.length === 0 && (
      <Card className="col-span-2 bg-gradient-card text-white">
        <div className="text-center py-8">
-         <h2 className="text-h2 text-white">Welcome to Ova</h2>
+         <h2 className="text-h2 text-white">Welcome to ARI</h2>
          <p className="text-body text-white/70 mt-2">
            Create your first account to start sending money between Turkey and Europe.
          </p>
@@ -1076,20 +1076,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 5. **Make Account Health section actionable**:
    ```tsx
    <Card>
-     <h3 className="text-body-sm font-medium text-ova-700 mb-4">Account Health</h3>
+     <h3 className="text-body-sm font-medium text-ari-700 mb-4">Account Health</h3>
      <div className="flex flex-wrap gap-4">
        {user?.status !== 'active' ? (
-         <Link href="/kyc" className="flex items-center gap-2 p-3 rounded-xl bg-ova-amber-light hover:bg-ova-amber-light/80 transition-colors duration-fast">
+         <Link href="/kyc" className="flex items-center gap-2 p-3 rounded-xl bg-ari-amber-light hover:bg-ari-amber-light/80 transition-colors duration-fast">
            <StatusPill variant="warning">KYC Pending</StatusPill>
-           <span className="text-caption text-ova-amber">Complete verification →</span>
+           <span className="text-caption text-ari-amber">Complete verification →</span>
          </Link>
        ) : (
          <StatusPill variant="success">KYC Verified</StatusPill>
        )}
        {!user?.totpEnabled ? (
-         <Link href="/settings" className="flex items-center gap-2 p-3 rounded-xl bg-ova-amber-light hover:bg-ova-amber-light/80 transition-colors duration-fast">
+         <Link href="/settings" className="flex items-center gap-2 p-3 rounded-xl bg-ari-amber-light hover:bg-ari-amber-light/80 transition-colors duration-fast">
            <StatusPill variant="warning">2FA Disabled</StatusPill>
-           <span className="text-caption text-ova-amber">Enable 2FA →</span>
+           <span className="text-caption text-ari-amber">Enable 2FA →</span>
          </Link>
        ) : (
          <StatusPill variant="success">2FA Enabled</StatusPill>
@@ -1184,9 +1184,9 @@ hover && "hover:shadow-card-hover cursor-pointer transition-shadow duration-fast
 3. **Add total cost summary to FX quote**:
    ```tsx
    // After the existing quote details, add:
-   <div className="flex justify-between text-body-sm font-medium border-t border-ova-200 pt-3 mt-3">
-     <span className="text-ova-700">Total cost</span>
-     <span className="text-ova-900">
+   <div className="flex justify-between text-body-sm font-medium border-t border-ari-200 pt-3 mt-3">
+     <span className="text-ari-700">Total cost</span>
+     <span className="text-ari-900">
        {formatAmount(
          parseFloat(cbQuote.sourceAmount) * (1 + parseFloat(cbQuote.spread) / 100),
          cbQuote.sourceCurrency
@@ -1204,9 +1204,9 @@ hover && "hover:shadow-card-hover cursor-pointer transition-shadow duration-fast
      initial={{ scale: 0, opacity: 0 }}
      animate={{ scale: 1, opacity: 1 }}
      transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
-     className="w-16 h-16 bg-ova-green-light rounded-full flex items-center justify-center mx-auto"
+     className="w-16 h-16 bg-ari-green-light rounded-full flex items-center justify-center mx-auto"
    >
-     <CheckCircle2 size={32} strokeWidth={1.5} className="text-ova-green" />
+     <CheckCircle2 size={32} strokeWidth={1.5} className="text-ari-green" />
    </motion.div>
    ```
 
@@ -1214,7 +1214,7 @@ hover && "hover:shadow-card-hover cursor-pointer transition-shadow duration-fast
    ```tsx
    // Below the amount input:
    {cbAmount && sourceAccount && parseFloat(cbAmount) > parseFloat(sourceAccount.balance) && (
-     <p className="mt-1 text-caption text-ova-red">Insufficient balance</p>
+     <p className="mt-1 text-caption text-ari-red">Insufficient balance</p>
    )}
    ```
 
@@ -1225,8 +1225,8 @@ hover && "hover:shadow-card-hover cursor-pointer transition-shadow duration-fast
    {accounts.length > 0 && (
      <div className="flex items-baseline justify-between">
        <div>
-         <h1 className="text-h2 text-ova-900">Accounts</h1>
-         <p className="text-body-sm text-ova-500 mt-1">{accounts.length} account{accounts.length !== 1 ? 's' : ''}</p>
+         <h1 className="text-h2 text-ari-900">Accounts</h1>
+         <p className="text-body-sm text-ari-500 mt-1">{accounts.length} account{accounts.length !== 1 ? 's' : ''}</p>
        </div>
        <div className="flex gap-2">
          {/* existing create buttons */}
@@ -1240,7 +1240,7 @@ hover && "hover:shadow-card-hover cursor-pointer transition-shadow duration-fast
    // At the bottom of AccountCard, after the expandable details:
    <Link
      href="/history"
-     className="inline-flex items-center gap-1 text-caption text-ova-blue hover:underline mt-3"
+     className="inline-flex items-center gap-1 text-caption text-ari-blue hover:underline mt-3"
    >
      View transactions <ArrowRight size={12} />
    </Link>
@@ -1250,11 +1250,11 @@ hover && "hover:shadow-card-hover cursor-pointer transition-shadow duration-fast
    ```tsx
    <Card>
      <div className="text-center py-12 space-y-4">
-       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-ova-100 mx-auto">
-         <Wallet size={32} strokeWidth={1.5} className="text-ova-400" />
+       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-ari-100 mx-auto">
+         <Wallet size={32} strokeWidth={1.5} className="text-ari-400" />
        </div>
-       <h2 className="text-h3 text-ova-900">No accounts yet</h2>
-       <p className="text-body-sm text-ova-400 max-w-sm mx-auto">
+       <h2 className="text-h3 text-ari-900">No accounts yet</h2>
+       <p className="text-body-sm text-ari-400 max-w-sm mx-auto">
          Create a TRY or EUR account to start sending and receiving money between Turkey and Europe.
        </p>
        <div className="flex justify-center gap-3 pt-2">
@@ -1284,8 +1284,8 @@ hover && "hover:shadow-card-hover cursor-pointer transition-shadow duration-fast
          className={clsx(
            'px-3 py-1.5 rounded-full text-caption font-medium transition-colors duration-fast',
            typeFilter === type
-             ? 'bg-ova-navy text-white'
-             : 'bg-ova-100 text-ova-500 hover:bg-ova-200'
+             ? 'bg-ari-navy text-white'
+             : 'bg-ari-100 text-ari-500 hover:bg-ari-200'
          )}
        >
          {type === 'all' ? 'All' : type.replace(/_/g, ' ')}
@@ -1308,21 +1308,21 @@ hover && "hover:shadow-card-hover cursor-pointer transition-shadow duration-fast
    // In transaction row:
    <div
      key={tx.id}
-     className="cursor-pointer hover:bg-ova-50 transition-colors duration-fast -mx-6 px-6"
+     className="cursor-pointer hover:bg-ari-50 transition-colors duration-fast -mx-6 px-6"
      onClick={() => setExpandedTx(expandedTx === tx.id ? null : tx.id)}
    >
      {/* existing row content */}
      {expandedTx === tx.id && (
        <div className="mt-2 pb-2 pl-11 space-y-1">
-         <p className="text-caption text-ova-400">
-           Transaction ID: <span className="font-mono text-ova-500">{tx.id}</span>
+         <p className="text-caption text-ari-400">
+           Transaction ID: <span className="font-mono text-ari-500">{tx.id}</span>
          </p>
          {tx.referenceId && (
-           <p className="text-caption text-ova-400">
-             Reference: <span className="font-mono text-ova-500">{tx.referenceId}</span>
+           <p className="text-caption text-ari-400">
+             Reference: <span className="font-mono text-ari-500">{tx.referenceId}</span>
            </p>
          )}
-         <p className="text-caption text-ova-400">
+         <p className="text-caption text-ari-400">
            Date: {new Date(tx.createdAt).toLocaleString('en-GB')}
          </p>
        </div>
@@ -1359,7 +1359,7 @@ hover && "hover:shadow-card-hover cursor-pointer transition-shadow duration-fast
 2. **Improve 2FA setup** — add instruction copy:
    ```tsx
    // Before the CopyableSecret components:
-   <ol className="list-decimal list-inside space-y-2 text-body-sm text-ova-700">
+   <ol className="list-decimal list-inside space-y-2 text-body-sm text-ari-700">
      <li>Open your authenticator app (Google Authenticator, Authy, etc.)</li>
      <li>Copy the secret key below and add it as a new account</li>
      <li>Enter the 6-digit code from the app on your next login</li>
@@ -1388,22 +1388,22 @@ hover && "hover:shadow-card-hover cursor-pointer transition-shadow duration-fast
    // Already has check items — enhance with Lucide icons:
    import { Check, Globe, RefreshCw, Headphones } from 'lucide-react';
 
-   <ul className="text-body-sm text-ova-700 space-y-3 text-left inline-block">
+   <ul className="text-body-sm text-ari-700 space-y-3 text-left inline-block">
      <li className="flex items-center gap-3">
-       <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ova-green-light">
-         <Globe size={14} className="text-ova-green" />
+       <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ari-green-light">
+         <Globe size={14} className="text-ari-green" />
        </div>
        International transfers up to EUR 50,000
      </li>
      <li className="flex items-center gap-3">
-       <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ova-green-light">
-         <RefreshCw size={14} className="text-ova-green" />
+       <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ari-green-light">
+         <RefreshCw size={14} className="text-ari-green" />
        </div>
        Full FX conversion access
      </li>
      <li className="flex items-center gap-3">
-       <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ova-green-light">
-         <Headphones size={14} className="text-ova-green" />
+       <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ari-green-light">
+         <Headphones size={14} className="text-ari-green" />
        </div>
        Priority support
      </li>
@@ -1423,8 +1423,8 @@ hover && "hover:shadow-card-hover cursor-pointer transition-shadow duration-fast
    if (status === 'active') {
      return (
        <div className="relative">
-         <div className="absolute inset-0 rounded-full bg-ova-blue/20 animate-ping" style={{ animationDuration: '2s' }} />
-         <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-ova-blue">
+         <div className="absolute inset-0 rounded-full bg-ari-blue/20 animate-ping" style={{ animationDuration: '2s' }} />
+         <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-ari-blue">
            <div className="h-2.5 w-2.5 rounded-full bg-white" />
          </div>
        </div>
@@ -1463,7 +1463,7 @@ hover && "hover:shadow-card-hover cursor-pointer transition-shadow duration-fast
 **Competitor patterns adopted**:
 - **Mobile-first responsive**: Competitor analysis confirms "ALL competitors design for mobile first, desktop second." Wise documents breakpoints at 390px (mobile), 768px (tablet), 1440px (desktop).
 - **Hamburger → full overlay on mobile**: Revolut uses "Hamburger menu with full-screen overlay" on mobile — we'll use a slide-out sidebar overlay.
-- **Accessible focus states**: PayPal has "excellent accessibility with visible focus rings" — `0.1875rem solid #097ff5 with shadow offset 0.375rem`. Our `focus:ring-2 focus:ring-ova-blue` achieves similar results.
+- **Accessible focus states**: PayPal has "excellent accessibility with visible focus rings" — `0.1875rem solid #097ff5 with shadow offset 0.375rem`. Our `focus:ring-2 focus:ring-ari-blue` achieves similar results.
 - **Shimmer loading states**: All competitors have "designed" loading states — not just text placeholders. Upgrading from `animate-pulse` to shimmer gradient.
 - **Functional empty/error states**: Competitor analysis notes these should be "designed with the same care as happy-path screens."
 
@@ -1484,7 +1484,7 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
 
   {/* Sidebar */}
   <div className={clsx(
-    "fixed left-0 top-0 h-screen w-60 bg-ova-navy z-50 transition-transform duration-slow lg:translate-x-0",
+    "fixed left-0 top-0 h-screen w-60 bg-ari-navy z-50 transition-transform duration-slow lg:translate-x-0",
     sidebarOpen ? "translate-x-0" : "-translate-x-full"
   )}>
     <Sidebar onClose={() => setSidebarOpen(false)} />
@@ -1500,7 +1500,7 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
 **Header** — add hamburger on mobile:
 ```tsx
 <button className="lg:hidden" onClick={() => setSidebarOpen(true)}>
-  <Menu size={20} strokeWidth={1.5} className="text-ova-500" />
+  <Menu size={20} strokeWidth={1.5} className="text-ari-500" />
 </button>
 ```
 
@@ -1517,7 +1517,7 @@ Note: `setSidebarOpen` needs to be passed from layout to header, or use a simple
 Replace `animate-pulse` with `skeleton-shimmer` class in `Skeleton.tsx`:
 ```tsx
 className={clsx(
-  "skeleton-shimmer",  // was "animate-pulse bg-ova-200"
+  "skeleton-shimmer",  // was "animate-pulse bg-ari-200"
   variant === "text" && "h-4 rounded",
   // ...rest
 )}
@@ -1535,7 +1535,7 @@ import { AnimatePresence, motion } from 'framer-motion';
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="p-3 bg-ova-red-light border border-ova-red/20 rounded-xl text-body-sm text-ova-red"
+      className="p-3 bg-ari-red-light border border-ari-red/20 rounded-xl text-body-sm text-ari-red"
     >
       {error}
     </motion.div>
@@ -1555,7 +1555,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 ### 6.5 Consistency Pass
 
 Verify across ALL pages:
-- [ ] Page titles: `text-h2 text-ova-900`
+- [ ] Page titles: `text-h2 text-ari-900`
 - [ ] Card usage: `<Card>` component, never raw divs
 - [ ] Button usage: `<Button>` component, never raw `<button>`
 - [ ] Input usage: `<Input>` component, never raw `<input>` (except special cases like FX amount)
@@ -1564,7 +1564,7 @@ Verify across ALL pages:
 - [ ] Error banners: consistent red-light bg, red border, red text, rounded-xl
 - [ ] Success banners: consistent green-light bg, green border, green text, rounded-xl
 - [ ] Transition durations: `duration-fast` for hover, `duration-base` for state changes
-- [ ] Focus rings: `focus:ring-2 focus:ring-ova-blue focus:ring-offset-2`
+- [ ] Focus rings: `focus:ring-2 focus:ring-ari-blue focus:ring-offset-2`
 - [ ] Border radius: `rounded-xl` for containers/inputs/buttons, `rounded-2xl` for cards, `rounded-full` for pills/avatars
 
 ### Phase 6 Acceptance Criteria
@@ -1666,7 +1666,7 @@ Per competitor analysis "Design Patterns to Avoid":
 | Phone mockups as hero | "Never as the primary hero element with decorative shells" |
 | Multiple competing CTAs | "All competitors have ONE clear primary CTA per section" |
 | Uppercase body text | "Only used for very small labels/badges" |
-| Mixed serif + sans-serif | "No competitor mixes serif + sans-serif" — Ova correctly uses Inter only |
+| Mixed serif + sans-serif | "No competitor mixes serif + sans-serif" — ARI correctly uses Inter only |
 
 ### Future Enhancements (from competitor analysis, not in this plan)
 
@@ -1674,7 +1674,7 @@ Per competitor analysis "Design Patterns to Avoid":
 |-------------|--------|-------|
 | SSO subdomain | Revolut (`sso.revolut.com`) | Domain isolation for auth security; requires infrastructure |
 | FIDO2 passkeys | Revolut | First-mover advantage in web-based passkey auth |
-| Mega-menu navigation | Revolut (20+ service pages) | Build nav component to support expansion as Ova adds services |
+| Mega-menu navigation | Revolut (20+ service pages) | Build nav component to support expansion as ARI adds services |
 | Dark mode | Revolut, PayPal | Build color system with CSS custom properties for theme switching |
 | Trustpilot integration | Wise | Show real customer reviews as social proof |
 | QR code for mobile app | Wise, Papara | Landing page footer enhancement |
