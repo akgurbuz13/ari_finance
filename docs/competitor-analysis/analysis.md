@@ -482,20 +482,20 @@ Papara's purple palette is **distinctive in the Turkish market** -- most competi
 
 ## Cross-Competitor Comparison
 
-### What ALL Competitors Do Well That Ova Should Adopt
+### What ALL Competitors Do Well That ARI Should Adopt
 
-1. **Clear value proposition in hero**: Every competitor immediately communicates WHAT they do and WHY you should care. Ova's current "next-generation money operations" is vague.
+1. **Clear value proposition in hero**: Every competitor immediately communicates WHAT they do and WHY you should care. ARI's current "next-generation money operations" is vague.
 
-2. **Trust signals above the fold**: Regulatory info, customer counts, security messaging -- all visible without scrolling. Ova buries this.
+2. **Trust signals above the fold**: Regulatory info, customer counts, security messaging -- all visible without scrolling. ARI buries this.
 
-3. **Functional color usage**: All competitors use color to guide actions, not decorate. Blue/green = interactive. Red = error. Gray = secondary. Ova uses color decoratively (gradients, blurs).
+3. **Functional color usage**: All competitors use color to guide actions, not decorate. Blue/green = interactive. Red = error. Gray = secondary. ARI uses color decoratively (gradients, blurs).
 
 4. **Professional typography**: Every competitor uses a carefully chosen typeface:
    - Revolut: Aeonik Pro (geometric, modern)
    - Wise: Inter + Wise Sans (accessible, distinctive)
    - PayPal: PayPal Pro / LL Supreme (premium, custom)
    - Papara: Averta (geometric, clean)
-   Ova uses Avenir Next + an inconsistent serif (Iowan Old Style) that feels disconnected.
+   ARI uses Avenir Next + an inconsistent serif (Iowan Old Style) that feels disconnected.
 
 5. **Generous whitespace**: All competitors use 40-60%+ whitespace. Sections breathe. Content isn't crowded.
 
@@ -516,7 +516,7 @@ Papara's purple palette is **distinctive in the Turkish market** -- most competi
 
 **Key insight**: Revolut's SSO subdomain approach is the most security-forward. However, ALL competitors use a clean, centered single-column login form. None use decorative split layouts -- the auth page is purely functional.
 
-**Recommendation for Ova**: Start with a clean centered form (like all competitors). Consider SSO subdomain for enterprise positioning. Add passkey support as a differentiator.
+**Recommendation for ARI**: Start with a clean centered form (like all competitors). Consider SSO subdomain for enterprise positioning. Add passkey support as a differentiator.
 
 ### Navigation Patterns Comparison
 
@@ -531,13 +531,13 @@ Papara's purple palette is **distinctive in the Turkish market** -- most competi
 
 **Key insight**: The more services you offer, the more important organized mega-menus become. Revolut's categorized approach (Spend, Send, Save, Invest, Protect, Travel, Earn) is the gold standard for super-apps.
 
-**Recommendation for Ova**: Given Ova's current scope (send, exchange, accounts), a simple 3-4 item nav is appropriate. But build the nav component to support expansion into mega-menus as services grow.
+**Recommendation for ARI**: Given ARI's current scope (send, exchange, accounts), a simple 3-4 item nav is appropriate. But build the nav component to support expansion into mega-menus as services grow.
 
 ### Design Patterns We MUST Adopt
 
 1. **Calculator/tool in hero** (Wise pattern): Show, don't tell. An interactive FX calculator immediately proves value.
 
-2. **Restrained color palette**: Maximum 3-4 colors. Revolut uses essentially 2 (black + white). Ova currently uses 40+ unique color values.
+2. **Restrained color palette**: Maximum 3-4 colors. Revolut uses essentially 2 (black + white). ARI currently uses 40+ unique color values.
 
 3. **Professional font pairing**: One sans-serif for headings + body. No random serif mixing. Inter is the industry standard for financial UI.
 
@@ -571,11 +571,11 @@ Papara's purple palette is **distinctive in the Turkish market** -- most competi
 
 ---
 
-## Recommendations for Ova
+## Recommendations for ARI
 
 ### Must-Have Changes (Critical)
 
-1. **Kill the SaaS aesthetic**: Remove grid background, floating blur circles, decorative gradients, and the phone mockup. These make Ova look like a developer tool, not a financial institution.
+1. **Kill the SaaS aesthetic**: Remove grid background, floating blur circles, decorative gradients, and the phone mockup. These make ARI look like a developer tool, not a financial institution.
 
 2. **Restrain the color palette**: Go from 40+ colors to 6-8 maximum. Adopt a near-black + white + one accent color system. Recommendation: use the proposed "Quiet Navy" palette from design-principles.md.
 
@@ -611,13 +611,13 @@ Papara's purple palette is **distinctive in the Turkish market** -- most competi
 
 15. **FX calculator widget**: Like Wise, embed an interactive calculator showing live TRY/EUR rates with fee transparency. This is the single highest-impact trust-building element.
 
-16. **Service expansion pages**: As Ova adds services, create individual pages (like Revolut's /savings/, /cards/, etc.) rather than cramming everything onto one page.
+16. **Service expansion pages**: As ARI adds services, create individual pages (like Revolut's /savings/, /cards/, etc.) rather than cramming everything onto one page.
 
 17. **Mega-menu preparation**: Build nav component architecture that can expand from simple dropdown to categorized mega-menu as services grow.
 
 18. **Dark mode support**: Both Revolut and PayPal offer dark mode. Build the color system with CSS custom properties that support theme switching.
 
-19. **Trustpilot/review integration**: All competitors show real customer reviews. Plan for this as Ova acquires users.
+19. **Trustpilot/review integration**: All competitors show real customer reviews. Plan for this as ARI acquires users.
 
 20. **QR code for mobile**: Papara and Wise use QR codes for mobile app installation. Consider adding to landing page footer.
 
@@ -625,7 +625,7 @@ Papara's purple palette is **distinctive in the Turkish market** -- most competi
 
 ## Appendix: Design System Comparison Matrix
 
-| Aspect | Revolut | Wise | PayPal | Papara | Ova (Current) |
+| Aspect | Revolut | Wise | PayPal | Papara | ARI (Current) |
 |--------|---------|------|--------|--------|----------------|
 | Primary color | Black #000 | Green #9FE870 | Navy #003087 | Purple #8C00A1 | Navy #0f3558 |
 | Background | White #FFF | White #FFF | White #FFF | White #FFF | Blue gradient |

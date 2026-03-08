@@ -72,7 +72,7 @@ generate_staking_keys() {
                 -newkey rsa:4096 \
                 -keyout "$keys_dir/${key_name}.key" \
                 -out "$keys_dir/${key_name}.crt" \
-                -subj "/CN=ova-${chain}-validator-${i}"
+                -subj "/CN=ari-${chain}-validator-${i}"
 
             # Generate BLS key (using Platform CLI)
             if command -v platform &> /dev/null; then
@@ -102,7 +102,7 @@ upload_keys_to_secrets_manager() {
     for chain in "tr" "eu"; do
         for i in 1 2; do
             local key_name="${chain}-validator-${i}"
-            local secret_name="ova/${ENVIRONMENT}/validator/${key_name}"
+            local secret_name="ari/${ENVIRONMENT}/validator/${key_name}"
 
             if [[ "$DRY_RUN" == "true" ]]; then
                 log_info "[DRY-RUN] Would upload keys for $key_name to $secret_name"

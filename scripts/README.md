@@ -109,8 +109,8 @@ Required variables:
 
 This will:
 1. Compile all Solidity contracts
-2. Deploy OvaTRY stablecoin + TokenHome + TokenRemote to TR L1
-3. Deploy OvaEUR stablecoin + TokenHome + TokenRemote to EU L1
+2. Deploy ariTRY stablecoin + TokenHome + TokenRemote to TR L1
+3. Deploy ariEUR stablecoin + TokenHome + TokenRemote to EU L1
 4. Configure cross-chain bridge connections
 5. Grant operational roles
 6. Update `.env.aws-test` with deployed addresses
@@ -159,7 +159,7 @@ The test will:
 │    TR L1        │                      │    EU L1        │
 │  (Chain 99999)  │                      │  (Chain 99998)  │
 ├─────────────────┤                      ├─────────────────┤
-│ • OvaTRY        │                      │ • OvaEUR        │
+│ • ariTRY        │                      │ • ariEUR        │
 │ • TokenHome     │◄─── Teleporter ────►│ • TokenHome     │
 │ • TokenRemote   │     Messages        │ • TokenRemote   │
 │ • BridgeAdapter │                      │ • BridgeAdapter │
@@ -199,7 +199,7 @@ The test will:
 ### Validators not starting
 ```bash
 # Check validator logs
-ssh -i ova-dev.pem ubuntu@<validator-ip> \
+ssh -i ari-dev.pem ubuntu@<validator-ip> \
   "journalctl -u avalanchego -f"
 ```
 

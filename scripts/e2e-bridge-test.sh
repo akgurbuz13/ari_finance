@@ -1,6 +1,6 @@
 #!/bin/bash
 # ==============================================================================
-# Ova End-to-End Bridge Test Script
+# ARI End-to-End Bridge Test Script
 # ==============================================================================
 # Tests the complete TR→EU cross-border transfer flow:
 # 1. Create test users (TR and EU)
@@ -49,11 +49,11 @@ if [[ -f "$ENV_FILE" ]]; then
 fi
 
 # Test data
-TR_USER_EMAIL="tr-test-$(date +%s)@ova.com"
+TR_USER_EMAIL="tr-test-$(date +%s)@ari.finance"
 TR_USER_PHONE="+905551234567"
 TR_USER_PASSWORD="Test123!@#"
 
-EU_USER_EMAIL="eu-test-$(date +%s)@ova.com"
+EU_USER_EMAIL="eu-test-$(date +%s)@ari.finance"
 EU_USER_PHONE="+491701234567"
 EU_USER_PASSWORD="Test123!@#"
 
@@ -458,7 +458,7 @@ print_test_summary() {
 }
 
 main() {
-    log_info "Starting Ova End-to-End Bridge Test"
+    log_info "Starting ARI End-to-End Bridge Test"
     log_info "Transfer amount: $TRANSFER_AMOUNT TRY"
     log_info "Core Banking: $CORE_BANKING_URL"
     log_info "Blockchain Service: $BLOCKCHAIN_SERVICE_URL"

@@ -30,10 +30,10 @@ Global scale outlook: **partially scalable by design direction (modular + outbox
 1. Horizontal authorization gaps on account/payment/transaction reads
 
 Evidence:
-- `core-banking/src/main/kotlin/com/ova/platform/payments/api/PaymentController.kt:116`
-- `core-banking/src/main/kotlin/com/ova/platform/payments/api/PaymentController.kt:132`
-- `core-banking/src/main/kotlin/com/ova/platform/ledger/api/AccountController.kt:51`
-- `core-banking/src/main/kotlin/com/ova/platform/ledger/api/TransactionController.kt:90`
+- `core-banking/src/main/kotlin/com/ari/platform/payments/api/PaymentController.kt:116`
+- `core-banking/src/main/kotlin/com/ari/platform/payments/api/PaymentController.kt:132`
+- `core-banking/src/main/kotlin/com/ari/platform/ledger/api/AccountController.kt:51`
+- `core-banking/src/main/kotlin/com/ari/platform/ledger/api/TransactionController.kt:90`
 
 Why this is critical:
 - Authenticated users can request resources by ID without ownership checks.
@@ -46,9 +46,9 @@ Required change:
 2. Authentication route policy is over-broad (`/api/v1/auth/**` is public)
 
 Evidence:
-- `core-banking/src/main/kotlin/com/ova/platform/shared/security/SecurityConfig.kt:39`
-- `core-banking/src/main/kotlin/com/ova/platform/identity/api/AuthController.kt:88`
-- `core-banking/src/main/kotlin/com/ova/platform/identity/api/AuthController.kt:106`
+- `core-banking/src/main/kotlin/com/ari/platform/shared/security/SecurityConfig.kt:39`
+- `core-banking/src/main/kotlin/com/ari/platform/identity/api/AuthController.kt:88`
+- `core-banking/src/main/kotlin/com/ari/platform/identity/api/AuthController.kt:106`
 
 Why this is critical:
 - `logout`, `2fa/setup`, and `2fa/enable` live under `/api/v1/auth/**` and rely on authenticated principal.
@@ -60,10 +60,10 @@ Required change:
 3. Service-to-service settlement callback path is internally inconsistent
 
 Evidence:
-- Core requires internal key header: `core-banking/src/main/kotlin/com/ova/platform/shared/security/InternalApiKeyFilter.kt:26`
-- Internal path protected by `ROLE_SYSTEM`: `core-banking/src/main/kotlin/com/ova/platform/shared/security/SecurityConfig.kt:53`
-- Blockchain callback does not send internal key header: `blockchain-service/src/main/kotlin/com/ova/blockchain/outbox/OutboxPollerService.kt:149`
-- Callback target is internal endpoint: `core-banking/src/main/kotlin/com/ova/platform/shared/api/InternalSettlementController.kt:32`
+- Core requires internal key header: `core-banking/src/main/kotlin/com/ari/platform/shared/security/InternalApiKeyFilter.kt:26`
+- Internal path protected by `ROLE_SYSTEM`: `core-banking/src/main/kotlin/com/ari/platform/shared/security/SecurityConfig.kt:53`
+- Blockchain callback does not send internal key header: `blockchain-service/src/main/kotlin/com/ari/blockchain/outbox/OutboxPollerService.kt:149`
+- Callback target is internal endpoint: `core-banking/src/main/kotlin/com/ari/platform/shared/api/InternalSettlementController.kt:32`
 
 Why this is critical:
 - Settlement confirmations can fail authentication, leaving payment lifecycle stuck/inconsistent.
@@ -94,9 +94,9 @@ Required change:
 5. Blockchain outbox/schema drift: non-existent columns referenced
 
 Evidence:
-- Outbox update writes `published_at`: `blockchain-service/src/main/kotlin/com/ova/blockchain/outbox/OutboxPollerService.kt:65`
+- Outbox update writes `published_at`: `blockchain-service/src/main/kotlin/com/ari/blockchain/outbox/OutboxPollerService.kt:65`
 - Outbox table has no `published_at`: `core-banking/src/main/resources/db/migration/V005__shared_tables.sql:3`
-- Account owner query uses `owner_id`: `blockchain-service/src/main/kotlin/com/ova/blockchain/outbox/OutboxPollerService.kt:140`
+- Account owner query uses `owner_id`: `blockchain-service/src/main/kotlin/com/ari/blockchain/outbox/OutboxPollerService.kt:140`
 - Ledger accounts schema uses `user_id`: `core-banking/src/main/resources/db/migration/V003__ledger_tables.sql:5`
 
 Why this is critical:
@@ -108,8 +108,8 @@ Required change:
 6. Blockchain transaction status/model drift causes likely insert failures
 
 Evidence:
-- Service writes `status = "initiated"`: `blockchain-service/src/main/kotlin/com/ova/blockchain/bridge/IcttBridgeService.kt:177`
-- Also writes initiated in bridge-back: `blockchain-service/src/main/kotlin/com/ova/blockchain/bridge/IcttBridgeService.kt:286`
+- Service writes `status = "initiated"`: `blockchain-service/src/main/kotlin/com/ari/blockchain/bridge/IcttBridgeService.kt:177`
+- Also writes initiated in bridge-back: `blockchain-service/src/main/kotlin/com/ari/blockchain/bridge/IcttBridgeService.kt:286`
 - DB status constraint excludes `initiated`: `core-banking/src/main/resources/db/migration/V013__fix_blockchain_operations.sql:38`
 
 Why this is critical:
@@ -121,8 +121,8 @@ Required change:
 7. Bridge transfer tracking likely broken due metadata format mismatch
 
 Evidence:
-- Metadata stored via map `.toString()`: `blockchain-service/src/main/kotlin/com/ova/blockchain/bridge/IcttBridgeService.kt:181`
-- Query expects JSON-like pattern in `LIKE`: `blockchain-service/src/main/kotlin/com/ova/blockchain/repository/BlockchainTransactionRepository.kt:122`
+- Metadata stored via map `.toString()`: `blockchain-service/src/main/kotlin/com/ari/blockchain/bridge/IcttBridgeService.kt:181`
+- Query expects JSON-like pattern in `LIKE`: `blockchain-service/src/main/kotlin/com/ari/blockchain/repository/BlockchainTransactionRepository.kt:122`
 
 Why this is critical:
 - Bridge status lookup by transferId can fail or become nondeterministic.
@@ -134,9 +134,9 @@ Required change:
 
 Evidence:
 - `payments.fx_quotes` schema columns: `rate`, `inverse_rate`, `used`: `core-banking/src/main/resources/db/migration/V004__payments_tables.sql:32`
-- FX service expects `mid_market_rate`, `customer_rate`, `status`, `consumed_at`: `core-banking/src/main/kotlin/com/ova/platform/fx/internal/service/QuoteService.kt:85`
-- Payments repo expects `exchange_rate`, `fee_amount`, `fee_currency`: `core-banking/src/main/kotlin/com/ova/platform/payments/internal/repository/FxQuoteRepository.kt:18`
-- Conversion writes to `payments.fx_conversions` table: `core-banking/src/main/kotlin/com/ova/platform/fx/internal/service/ConversionService.kt:129`
+- FX service expects `mid_market_rate`, `customer_rate`, `status`, `consumed_at`: `core-banking/src/main/kotlin/com/ari/platform/fx/internal/service/QuoteService.kt:85`
+- Payments repo expects `exchange_rate`, `fee_amount`, `fee_currency`: `core-banking/src/main/kotlin/com/ari/platform/payments/internal/repository/FxQuoteRepository.kt:18`
+- Conversion writes to `payments.fx_conversions` table: `core-banking/src/main/kotlin/com/ari/platform/fx/internal/service/ConversionService.kt:129`
 - No migration defines `payments.fx_conversions`.
 
 Why this is critical:
@@ -148,10 +148,10 @@ Required change:
 9. Compliance/threshold logic references non-existent table and invalid enum value
 
 Evidence:
-- MASAK checks query `payments.payments`: `core-banking/src/main/kotlin/com/ova/platform/compliance/internal/service/MasakReportingService.kt:310`
-- and: `core-banking/src/main/kotlin/com/ova/platform/compliance/internal/service/MasakReportingService.kt:335`
+- MASAK checks query `payments.payments`: `core-banking/src/main/kotlin/com/ari/platform/compliance/internal/service/MasakReportingService.kt:310`
+- and: `core-banking/src/main/kotlin/com/ari/platform/compliance/internal/service/MasakReportingService.kt:335`
 - Actual payment table is `payments.payment_orders`: `core-banking/src/main/resources/db/migration/V004__payments_tables.sql:3`
-- Reconciliation inserts alert type `SAFEGUARDING_DISCREPANCY`: `core-banking/src/main/kotlin/com/ova/platform/payments/internal/service/ReconciliationService.kt:313`
+- Reconciliation inserts alert type `SAFEGUARDING_DISCREPANCY`: `core-banking/src/main/kotlin/com/ari/platform/payments/internal/service/ReconciliationService.kt:313`
 - Constraint does not allow it: `core-banking/src/main/resources/db/migration/V011__masak_and_enhanced_sanctions.sql:86`
 
 Why this is critical:
@@ -163,9 +163,9 @@ Required change:
 10. Cross-border accounting and settlement state transitions are inconsistent
 
 Evidence:
-- FX leg debits and credits same source float account: `core-banking/src/main/kotlin/com/ova/platform/payments/internal/service/CrossBorderTransferService.kt:184`
-- Payment marked `COMPLETED` immediately after publishing mint/burn requests: `core-banking/src/main/kotlin/com/ova/platform/payments/internal/service/CrossBorderTransferService.kt:292`
-- Internal settlement callback prepares metadata but does not persist metadata update: `core-banking/src/main/kotlin/com/ova/platform/shared/api/InternalSettlementController.kt:112`
+- FX leg debits and credits same source float account: `core-banking/src/main/kotlin/com/ari/platform/payments/internal/service/CrossBorderTransferService.kt:184`
+- Payment marked `COMPLETED` immediately after publishing mint/burn requests: `core-banking/src/main/kotlin/com/ari/platform/payments/internal/service/CrossBorderTransferService.kt:292`
+- Internal settlement callback prepares metadata but does not persist metadata update: `core-banking/src/main/kotlin/com/ari/platform/shared/api/InternalSettlementController.kt:112`
 
 Why this is critical:
 - Ledger semantics and settlement truth can diverge from real on-chain finality.
@@ -178,8 +178,8 @@ Required change:
 11. Ledger posting path has potential race condition for concurrent debits
 
 Evidence:
-- Reads latest balance then writes new entry without explicit account lock: `core-banking/src/main/kotlin/com/ova/platform/ledger/internal/service/LedgerService.kt:75`
-- Latest balance query is a plain read: `core-banking/src/main/kotlin/com/ova/platform/ledger/internal/repository/EntryRepository.kt:57`
+- Reads latest balance then writes new entry without explicit account lock: `core-banking/src/main/kotlin/com/ari/platform/ledger/internal/service/LedgerService.kt:75`
+- Latest balance query is a plain read: `core-banking/src/main/kotlin/com/ari/platform/ledger/internal/repository/EntryRepository.kt:57`
 
 Risk:
 - Under concurrent load, user-wallet non-negative checks can be bypassed by races.
@@ -190,8 +190,8 @@ Recommended:
 12. Webhook signature verification is stubbed
 
 Evidence:
-- Rail webhook signature validator always returns true: `core-banking/src/main/kotlin/com/ova/platform/rails/api/RailWebhookController.kt:139`
-- KYC webhook accepts signature header but simulated parser does not validate it: `core-banking/src/main/kotlin/com/ova/platform/identity/api/KycWebhookController.kt:18`, `core-banking/src/main/kotlin/com/ova/platform/identity/internal/provider/SimulatedKycProvider.kt:44`
+- Rail webhook signature validator always returns true: `core-banking/src/main/kotlin/com/ari/platform/rails/api/RailWebhookController.kt:139`
+- KYC webhook accepts signature header but simulated parser does not validate it: `core-banking/src/main/kotlin/com/ari/platform/identity/api/KycWebhookController.kt:18`, `core-banking/src/main/kotlin/com/ari/platform/identity/internal/provider/SimulatedKycProvider.kt:44`
 
 Risk:
 - Forged callback payloads can manipulate payment/KYC states.
@@ -202,9 +202,9 @@ Recommended:
 13. RBAC/admin path is likely incomplete
 
 Evidence:
-- Admin endpoints require `ROLE_ADMIN`: `core-banking/src/main/kotlin/com/ova/platform/shared/security/SecurityConfig.kt:55`
-- Access tokens generated with default empty role list: `core-banking/src/main/kotlin/com/ova/platform/identity/internal/service/AuthService.kt:156`
-- JWT filter only maps roles from claim: `core-banking/src/main/kotlin/com/ova/platform/shared/security/JwtAuthenticationFilter.kt:28`
+- Admin endpoints require `ROLE_ADMIN`: `core-banking/src/main/kotlin/com/ari/platform/shared/security/SecurityConfig.kt:55`
+- Access tokens generated with default empty role list: `core-banking/src/main/kotlin/com/ari/platform/identity/internal/service/AuthService.kt:156`
+- JWT filter only maps roles from claim: `core-banking/src/main/kotlin/com/ari/platform/shared/security/JwtAuthenticationFilter.kt:28`
 - User schema has no role column: `core-banking/src/main/resources/db/migration/V002__identity_tables.sql:3`
 
 Risk:
@@ -303,8 +303,8 @@ Recommended:
 21. Rate limiting is in-memory and non-distributed
 
 Evidence:
-- Uses local `ConcurrentHashMap` buckets: `core-banking/src/main/kotlin/com/ova/platform/shared/security/RateLimitingFilter.kt:35`
-- File itself notes Redis-backed model for production: `core-banking/src/main/kotlin/com/ova/platform/shared/security/RateLimitingFilter.kt:169`
+- Uses local `ConcurrentHashMap` buckets: `core-banking/src/main/kotlin/com/ari/platform/shared/security/RateLimitingFilter.kt:35`
+- File itself notes Redis-backed model for production: `core-banking/src/main/kotlin/com/ari/platform/shared/security/RateLimitingFilter.kt:169`
 
 Impact:
 - Limits are per-instance, can be bypassed across replicas.
@@ -352,7 +352,7 @@ From public engineering materials and hiring signals:
 - Wise: Java-based service ecosystem, strong reliability and observability focus for global transfers.
 - N26: Java/Kotlin cloud-native microservice backend operating under strict EU regulatory controls.
 
-Implication for Ova:
+Implication for ARI:
 - Your direction (modular monolith + outbox + later extraction) is reasonable for current team size.
 - But competitors at scale are differentiated by operational rigor: strict service contracts, resilient event systems, production security controls, and mature reliability engineering.
 - To compete, near-term priority is correctness/security hardening, then platform reliability and data scalability.

@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-ARI is a regulated fintech platform (Turkey + EU) with a Kotlin/Spring Boot modular monolith backend, a separate blockchain settlement service, customer web app, admin console, Flutter mobile app, and Solidity smart contracts on Avalanche L1. (Codebase still uses `Ova` prefix in class/file names from before the Phase 0 rebrand.)
+ARI is a regulated fintech platform (Turkey + EU) with a Kotlin/Spring Boot modular monolith backend, a separate blockchain settlement service, customer web app, admin console, Flutter mobile app, and Solidity smart contracts on Avalanche L1.
 
 **Repository**: https://github.com/akgurbuz13/ova_finance
 **Brand name**: ARI (uppercase, no dot, no period)
-**Logo CSS**: `.ova-logo` in `web/app/globals.css` must use `text-transform: uppercase`. NEVER set it to lowercase.
+**Logo CSS**: `.ari-logo` in `web/app/globals.css` must use `text-transform: uppercase`. NEVER set it to lowercase.
 
 ### Commit Rules
 - **NEVER add Co-Authored-By lines** to commit messages. User does not want Claude listed as co-author.
@@ -50,7 +50,7 @@ This prevents duplicate effort and ensures you build on existing work rather tha
 - 20 new Solidity tests, zero compiler warnings
 
 ### Avalanche Hackathon MVP: All 6 phases complete (Phases 0-5)
-- Rebrand Ova → ARI, Fuji L1 deployment, contract deployment, backend integration, demo readiness
+- Rebrand from Ova to ARI, Fuji L1 deployment, contract deployment, backend integration, demo readiness
 - E2E mint verified on Fuji TR L1
 - CI fixes: Redis port, config prefix, JVM memory (2026-03-03)
 - Cross-border region logic fix: `regionForCurrency()` helper (2026-03-03)
@@ -225,8 +225,8 @@ Update **MEMORY.md** when:
 | P2P Transfer | `PaymentController.kt` → `DomesticTransferService.kt` → `LedgerService.kt` |
 | Cross-Border (FX) | `CrossBorderTransferService.kt` → FX Quote → Ledger → Outbox → Blockchain |
 | Cross-Border (Same-Ccy) | `SameCurrencyCrossBorderService.kt` → Transit Account → Outbox → `AriBurnMintBridge.sol` |
-| Mint/Burn | `OutboxPollerService.kt` → `MintService.kt`/`BurnService.kt` → `OvaStablecoin.sol` |
-| ICTT Bridge | `IcttBridgeService.kt` → `OvaTokenHome.sol` ↔ Teleporter ↔ `OvaTokenRemote.sol` |
+| Mint/Burn | `OutboxPollerService.kt` → `MintService.kt`/`BurnService.kt` → `AriStablecoin.sol` |
+| ICTT Bridge | `IcttBridgeService.kt` → `AriTokenHome.sol` ↔ Teleporter ↔ `AriTokenRemote.sol` |
 | Burn/Mint Bridge | `OutboxPollerService.kt` → `AriBurnMintBridgeContract.kt` → `AriBurnMintBridge.sol` |
 
 ### Module Boundaries
@@ -295,7 +295,7 @@ JAVA_HOME=$(/usr/libexec/java_home -v 21) ./gradlew :blockchain-service:test --n
 ```bash
 cd contracts
 npx hardhat test                    # All 115 tests
-npx hardhat test test/OvaTokenHome.test.ts  # Specific test file
+npx hardhat test test/AriTokenHome.test.ts  # Specific test file
 npx hardhat coverage               # Coverage report
 ```
 
@@ -323,7 +323,7 @@ Claude Code has access to GitHub via MCP plugin:
 2. **Plan**: Create prioritized task list if multiple items
 3. **Implement**: Make changes, verify incrementally
 4. **Test**: Run relevant tests before committing
-5. **Commit**: Descriptive commit messages with Co-Author
+5. **Commit**: Descriptive commit messages (no Co-Authored-By)
 6. **Update**: Update PROGRESS.md with completed work
 7. **Push**: Push changes to remote
 8. **Document**: Add learnings to MEMORY.md if applicable
