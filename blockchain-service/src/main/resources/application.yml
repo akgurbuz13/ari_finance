@@ -3,9 +3,9 @@ spring:
     name: ari-blockchain-service
 
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:ova}
-    username: ${DB_USER:ova}
-    password: ${DB_PASSWORD:ova_dev_password}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:ari}
+    username: ${DB_USER:ari}
+    password: ${DB_PASSWORD:ari_dev_password}
 
   flyway:
     enabled: false

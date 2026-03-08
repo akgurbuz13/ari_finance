@@ -1,6 +1,6 @@
 spring:
   application:
-    name: ova-core-banking-test
+    name: ari-core-banking-test
 
   main:
     allow-bean-definition-overriding: true

@@ -6,7 +6,7 @@ plugins {
 }
 
 allprojects {
-    group = "com.ova"
+    group = "com.ari"
     version = "0.1.0-SNAPSHOT"
 
     repositories {

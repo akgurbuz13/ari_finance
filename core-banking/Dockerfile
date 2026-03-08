@@ -11,10 +11,10 @@ RUN chmod +x gradlew && ./gradlew :core-banking:bootJar -x test --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-RUN addgroup -S ova && adduser -S ova -G ova
+RUN addgroup -S ari && adduser -S ari -G ari
 COPY --from=build /app/core-banking/build/libs/*.jar app.jar
-RUN chown -R ova:ova /app
-USER ova
+RUN chown -R ari:ari /app
+USER ari
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s CMD wget -q --spider http://localhost:8080/actuator/health || exit 1
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
