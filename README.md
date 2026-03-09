@@ -8,21 +8,33 @@ ARI is a cross-border payments and asset tokenization platform purpose-built for
 
 ---
 
+## The Problem
+
+There are fundamental inefficiencies in how people move money and transfer ownership of valuable assets, and these problems hit hardest in emerging markets like Turkey.
+
+**Cross-border payments are broken.** Sending foreign currency across borders still relies on the SWIFT network, which charges $25-80 per transfer and takes 1-5 business days to settle. Even within Turkey, transferring foreign currency between two domestic banks often requires physically withdrawing cash from an ATM and depositing it at the other bank — because direct inter-bank FX transfers either don't exist or carry prohibitive fees.
+
+**Vehicle ownership transfer is broken.** Buying or selling a car in Turkey requires going to a notary, waiting in line for hours, and paying hundreds or sometimes thousands of Turkish lira for what is essentially someone stamping a piece of paper. Worse, most notaries do not verify that funds have actually arrived from the buyer to the seller before completing the title transfer — leading to fraud, scams, and in some cases, people committing crimes in desperation. A small number of notaries offer secure payment verification, but these services cost thousands of lira on top of already high notary fees, making them inaccessible to most people.
+
+**Our mission is not just about saving money — it's about protecting people.**
+
+---
+
 ## Why Avalanche L1s?
 
-Traditional cross-border fintech relies on SWIFT/SEPA with 1-3 day settlement and opaque fees. ARI replaces this with two purpose-built Avalanche L1s that settle in seconds.
-
-**The problem**: Turkey (BDDK/MASAK) and the EU (PSD2/MiCA) have incompatible regulatory frameworks. Assets, user data, and compliance rules cannot be mixed. Existing solutions either ignore this (risky) or use a single centralized database (no transparency).
+Turkey (BDDK/MASAK) and the EU (PSD2/MiCA) have incompatible regulatory frameworks. Assets, user data, and compliance rules cannot be mixed. Existing solutions either ignore this (risky) or use a single centralized database (no transparency).
 
 **Our solution**: One L1 per jurisdiction. Each chain has its own validator set, governance, and compliance rules. Cross-border transfers go through explicit bridges with full audit trails. On-chain KYC enforcement means compliance isn't just a backend check — it's cryptographically enforced at the EVM level.
 
-**Why not a single chain?** Regulatory isolation. Turkey's BDDK requires transaction processing within Turkish jurisdiction. EU's GDPR/MiCA has its own data residency requirements. Two L1s keep these boundaries clean while still enabling instant cross-border settlement via Teleporter.
+**Why two chains instead of one?** Regulatory isolation. Turkey's BDDK requires transaction processing within Turkish jurisdiction. EU's GDPR/MiCA has its own data residency requirements. Two L1s keep these boundaries clean while enabling instant cross-border settlement via Teleporter — replacing the days-long SWIFT process with seconds-long on-chain finality.
+
+**Why Avalanche specifically?** Avalanche L1s give us permissioned EVM chains with sub-second finality, native cross-chain messaging (Teleporter/ICM), and the ability to customize every aspect of the chain — from fee structure (gasless UX via 1 gwei min base fee) to access control (transaction and contract deployment allowlists at the precompile level). No other platform offers this combination of permissioning, interoperability, and EVM compatibility.
 
 ---
 
 ## Live Chains on Fuji Testnet
 
-### ariTR L1 (Turkey)
+### ariTR L1 (Turkey) — [Explorer](https://build.avax.network/explorer/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM)
 
 | Property | Value |
 |----------|-------|
@@ -30,12 +42,11 @@ Traditional cross-border fintech relies on SWIFT/SEPA with 1-3 day settlement an
 | Blockchain ID | `2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM` |
 | Blockchain ID (bytes32) | `0xb5a82a53e6366b84f980e4d2f13e583ca02f10eaf1ead220e23d036574799345` |
 | RPC URL | `https://nodes-prod.18.182.4.86.sslip.io/ext/bc/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/rpc` |
-| Explorer | [View on Avalanche Explorer](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM) |
 | Subnet ID | `2Sw7W5coLCB4EZRADRyfTCuPBF5QqxMxj3jL8cUWPpCdso1MGX` |
 | Consensus | Proof of Authority (managed validator via Builder Console) |
 | Native Token | ARI (gas token, 1 gwei min base fee) |
 
-### ariEU L1 (Europe)
+### ariEU L1 (Europe) — [Explorer](https://build.avax.network/explorer/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt)
 
 | Property | Value |
 |----------|-------|
@@ -43,7 +54,6 @@ Traditional cross-border fintech relies on SWIFT/SEPA with 1-3 day settlement an
 | Blockchain ID | `7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt` |
 | Blockchain ID (bytes32) | `0x0ea0530c367859873c37829bdbc918ad3da9f4c7bed68d083275efc310ab03f4` |
 | RPC URL | `https://nodes-prod.18.182.4.86.sslip.io/ext/bc/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/rpc` |
-| Explorer | [View on Avalanche Explorer](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt) |
 | Subnet ID | `5KvzdVWjkZu6YuFrWVKhpFq2ZyGqQgHEozgvJFhzJRdBfba6M` |
 | Consensus | Proof of Authority (managed validator via Builder Console) |
 | Native Token | ARI (gas token, 1 gwei min base fee) |
@@ -67,35 +77,35 @@ Genesis configurations: [`ariTR_genesis.json`](./ariTR_genesis.json) | [`ariEU_g
 
 All contracts deployed on 2026-03-09. Deployer: `0xe9ce1Cd8179134B162581BEb7988EBD2e2400503`
 
-### ariTR L1 — Turkey Jurisdiction (Chain ID 1279)
+### ariTR L1 — Turkey Jurisdiction (Chain ID 1279) — [Explorer](https://build.avax.network/explorer/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM)
 
 | Contract | Address | Purpose |
 |----------|---------|---------|
-| **ariTRY Stablecoin** (Proxy) | [`0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6) | KYC-enforced Turkish Lira stablecoin (UUPS upgradeable) |
-| **ariEUR Stablecoin** (Proxy) | [`0x78870378c9A1A3458B2188f3F6c96cD406A85DC7`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0x78870378c9A1A3458B2188f3F6c96cD406A85DC7) | Cross-currency: ariEUR deployed natively on TR L1 |
-| AriTokenHome | [`0x1090B43270a8693C111fEe23D81FAcCC8Eee7A76`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0x1090B43270a8693C111fEe23D81FAcCC8Eee7A76) | ICTT: locks ariTRY when bridging to EU |
-| AriTokenRemote (wEUR) | [`0xe94BB4716255178e01bf34d1aE6A02edADc117B5`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0xe94BB4716255178e01bf34d1aE6A02edADc117B5) | ICTT: mints wrapped EUR from EU chain |
-| AriBridgeAdapter | [`0xcCf46814bdA0cA12e997bAC9CEc3Dc90B104e0C2`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0xcCf46814bdA0cA12e997bAC9CEc3Dc90B104e0C2) | Orchestrates ICTT bridge operations |
-| AriBurnMintBridge (TRY) | [`0x74CDb2b07e6e6441b71348E7812E7208eF909f24`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0x74CDb2b07e6e6441b71348E7812E7208eF909f24) | Same-currency cross-border: burn ariTRY on TR, mint ariTRY on EU |
-| AriBurnMintBridge (EUR) | [`0xA2Aa53A97A848343F7D399e186D237E905888Df4`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0xA2Aa53A97A848343F7D399e186D237E905888Df4) | Same-currency cross-border: burn ariEUR on TR, mint ariEUR on EU |
-| AriVehicleNFT | [`0xF66B3253eBe361D2A3E14B45C82Acd2d5a1C44c1`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0xF66B3253eBe361D2A3E14B45C82Acd2d5a1C44c1) | ERC-721 vehicle ownership NFT |
-| AriVehicleEscrow | [`0x2F3e53AfE15263D1bc5f4b3a908628498CcECf55`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0x2F3e53AfE15263D1bc5f4b3a908628498CcECf55) | Atomic swap: ariTRY payment + NFT transfer |
-| AriTimelock | [`0xde2E9ADbd664bA2266300349920c4FC9cAEBeAeE`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0xde2E9ADbd664bA2266300349920c4FC9cAEBeAeE) | Governance timelock (1h delay on testnet) |
-| KycAllowList | [`0xD76af0Ef48d735BAB56302388A44B080B8A313fE`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0xD76af0Ef48d735BAB56302388A44B080B8A313fE) | On-chain KYC verification registry |
+| **ariTRY Stablecoin** (Proxy) | `0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6` | KYC-enforced Turkish Lira stablecoin (UUPS upgradeable) |
+| **ariEUR Stablecoin** (Proxy) | `0x78870378c9A1A3458B2188f3F6c96cD406A85DC7` | Cross-currency: ariEUR deployed natively on TR L1 |
+| AriTokenHome | `0x1090B43270a8693C111fEe23D81FAcCC8Eee7A76` | ICTT: locks ariTRY when bridging to EU |
+| AriTokenRemote (wEUR) | `0xe94BB4716255178e01bf34d1aE6A02edADc117B5` | ICTT: mints wrapped EUR from EU chain |
+| AriBridgeAdapter | `0xcCf46814bdA0cA12e997bAC9CEc3Dc90B104e0C2` | Orchestrates ICTT bridge operations |
+| AriBurnMintBridge (TRY) | `0x74CDb2b07e6e6441b71348E7812E7208eF909f24` | Same-currency cross-border: burn ariTRY on TR, mint ariTRY on EU |
+| AriBurnMintBridge (EUR) | `0xA2Aa53A97A848343F7D399e186D237E905888Df4` | Same-currency cross-border: burn ariEUR on TR, mint ariEUR on EU |
+| AriVehicleNFT | `0xF66B3253eBe361D2A3E14B45C82Acd2d5a1C44c1` | ERC-721 vehicle ownership NFT |
+| AriVehicleEscrow | `0x2F3e53AfE15263D1bc5f4b3a908628498CcECf55` | Atomic swap: ariTRY payment + NFT transfer |
+| AriTimelock | `0xde2E9ADbd664bA2266300349920c4FC9cAEBeAeE` | Governance timelock (1h delay on testnet) |
+| KycAllowList | `0xD76af0Ef48d735BAB56302388A44B080B8A313fE` | On-chain KYC verification registry |
 
-### ariEU L1 — Europe Jurisdiction (Chain ID 1832)
+### ariEU L1 — Europe Jurisdiction (Chain ID 1832) — [Explorer](https://build.avax.network/explorer/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt)
 
 | Contract | Address | Purpose |
 |----------|---------|---------|
-| **ariEUR Stablecoin** (Proxy) | [`0xd354bb151EAbAd1BfaaE9a36c32e3e2CB16Ae232`](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/address/0xd354bb151EAbAd1BfaaE9a36c32e3e2CB16Ae232) | KYC-enforced Euro stablecoin (UUPS upgradeable) |
-| **ariTRY Stablecoin** (Proxy) | [`0xcCf46814bdA0cA12e997bAC9CEc3Dc90B104e0C2`](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/address/0xcCf46814bdA0cA12e997bAC9CEc3Dc90B104e0C2) | Cross-currency: ariTRY deployed natively on EU L1 |
-| AriTokenHome | [`0xD76af0Ef48d735BAB56302388A44B080B8A313fE`](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/address/0xD76af0Ef48d735BAB56302388A44B080B8A313fE) | ICTT: locks ariEUR when bridging to TR |
-| AriTokenRemote (wTRY) | [`0x444c7316C7DF741ed7bf470c4B0b56c923AB08bB`](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/address/0x444c7316C7DF741ed7bf470c4B0b56c923AB08bB) | ICTT: mints wrapped TRY from TR chain |
-| AriBridgeAdapter | [`0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6`](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/address/0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6) | Orchestrates ICTT bridge operations |
-| AriBurnMintBridge (EUR) | [`0x1C3C34dAe1503E64033Ec99A4f2a61F32AA2Be0E`](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/address/0x1C3C34dAe1503E64033Ec99A4f2a61F32AA2Be0E) | Same-currency cross-border: burn ariEUR on EU, mint ariEUR on TR |
-| AriBurnMintBridge (TRY) | [`0x5EB99416745b310b6D091E7Cb91C3B0297788144`](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/address/0x5EB99416745b310b6D091E7Cb91C3B0297788144) | Same-currency cross-border: burn ariTRY on EU, mint ariTRY on TR |
-| AriTimelock | [`0x3a6b3CFbC5EC7D61E6BDD57Ba15AEa8155d5798f`](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/address/0x3a6b3CFbC5EC7D61E6BDD57Ba15AEa8155d5798f) | Governance timelock (1h delay on testnet) |
-| KycAllowList | [`0xA4Fc63413DDd3696ea8E295f73e4F52195101a35`](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/address/0xA4Fc63413DDd3696ea8E295f73e4F52195101a35) | On-chain KYC verification registry |
+| **ariEUR Stablecoin** (Proxy) | `0xd354bb151EAbAd1BfaaE9a36c32e3e2CB16Ae232` | KYC-enforced Euro stablecoin (UUPS upgradeable) |
+| **ariTRY Stablecoin** (Proxy) | `0xcCf46814bdA0cA12e997bAC9CEc3Dc90B104e0C2` | Cross-currency: ariTRY deployed natively on EU L1 |
+| AriTokenHome | `0xD76af0Ef48d735BAB56302388A44B080B8A313fE` | ICTT: locks ariEUR when bridging to TR |
+| AriTokenRemote (wTRY) | `0x444c7316C7DF741ed7bf470c4B0b56c923AB08bB` | ICTT: mints wrapped TRY from TR chain |
+| AriBridgeAdapter | `0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6` | Orchestrates ICTT bridge operations |
+| AriBurnMintBridge (EUR) | `0x1C3C34dAe1503E64033Ec99A4f2a61F32AA2Be0E` | Same-currency cross-border: burn ariEUR on EU, mint ariEUR on TR |
+| AriBurnMintBridge (TRY) | `0x5EB99416745b310b6D091E7Cb91C3B0297788144` | Same-currency cross-border: burn ariTRY on EU, mint ariTRY on TR |
+| AriTimelock | `0x3a6b3CFbC5EC7D61E6BDD57Ba15AEa8155d5798f` | Governance timelock (1h delay on testnet) |
+| KycAllowList | `0xA4Fc63413DDd3696ea8E295f73e4F52195101a35` | On-chain KYC verification registry |
 
 ### Cross-Chain Infrastructure
 
@@ -135,7 +145,7 @@ function _update(address from, address to, uint256 value) internal override when
 }
 ```
 
-**Verify on-chain:**
+**Verify on-chain** (requires [Foundry `cast`](https://book.getfoundry.sh/getting-started/installation)):
 ```bash
 # Check ariTRY token name on TR L1
 cast call 0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6 "name()(string)" \
@@ -147,7 +157,7 @@ cast call 0xd354bb151EAbAd1BfaaE9a36c32e3e2CB16Ae232 "name()(string)" \
   --rpc-url https://nodes-prod.18.182.4.86.sslip.io/ext/bc/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/rpc
 # Returns: "ARI Euro"
 
-# Check if an address is KYC-allowlisted
+# Check if the deployer is KYC-allowlisted
 cast call 0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6 "allowlisted(address)(bool)" \
   0xe9ce1Cd8179134B162581BEb7988EBD2e2400503 \
   --rpc-url https://nodes-prod.18.182.4.86.sslip.io/ext/bc/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/rpc
@@ -159,7 +169,7 @@ cast call 0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6 "totalSupply()(uint256)" \
 
 ### 2. Same-Currency Cross-Border Settlement (AriBurnMintBridge)
 
-The flagship cross-border feature. Burns native ariTRY on the source chain, sends a Teleporter message, and mints native ariTRY on the destination chain. **No wrapped tokens** — the receiver gets real ariTRY/ariEUR on both chains.
+The flagship cross-border feature. Burns native ariTRY on the source chain, sends a Teleporter message, and mints native ariTRY on the destination chain. **No wrapped tokens** — the receiver gets real ariTRY/ariEUR on both chains. This replaces SWIFT's 1-5 day settlement with seconds-long on-chain finality.
 
 ```
 Source Chain (TR L1):                         Dest Chain (EU L1):
@@ -181,7 +191,7 @@ cast call 0x74CDb2b07e6e6441b71348E7812E7208eF909f24 \
   "registeredPartners(bytes32)(address)" \
   0x0ea0530c367859873c37829bdbc918ad3da9f4c7bed68d083275efc310ab03f4 \
   --rpc-url https://nodes-prod.18.182.4.86.sslip.io/ext/bc/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/rpc
-# Returns: EU TRY bridge address
+# Returns: 0x5EB99416745b310b6D091E7Cb91C3B0297788144 (EU TRY bridge)
 ```
 
 ### 3. Cross-Currency FX Bridge (ICTT — AriTokenHome + AriTokenRemote)
@@ -205,7 +215,9 @@ User: "Transfer 1,000 TRY → EUR"  (FX rate applied by backend)
 
 ### 4. Vehicle Securitization (AriVehicleNFT + AriVehicleEscrow)
 
-Turkey's vehicle sales require a notary visit, creating delays and fraud risk. ARI replaces this with on-chain vehicle ownership NFTs and atomic escrow swaps.
+This is the feature that addresses a real human problem. In Turkey, buying a car means going to a notary, paying steep fees, and trusting that the other party won't cheat you. Most notaries don't verify payment before transferring the title. People have lost their cars, their money, and worse.
+
+ARI replaces this with on-chain vehicle ownership NFTs and atomic escrow swaps — making it impossible for either party to cheat.
 
 **AriVehicleNFT** (ERC-721):
 - Each token represents a registered vehicle with hashed VIN and plate number
@@ -217,7 +229,7 @@ Turkey's vehicle sales require a notary visit, creating delays and fraud risk. A
 1. **Create**: Operator creates escrow with seller, buyer, vehicle NFT, and price
 2. **Fund**: Buyer's ariTRY is minted to the escrow contract
 3. **Dual Confirm**: Both seller and buyer must confirm
-4. **Execute**: In a single atomic transaction: ariTRY goes to seller, 50 TRY fee goes to treasury, NFT transfers to buyer
+4. **Execute**: In a single atomic transaction: ariTRY goes to seller, 50 TRY fee goes to treasury, NFT transfers to buyer. **Neither party can cheat — payment and ownership transfer happen atomically.**
 5. **Cancel**: If either party backs out, escrowed ariTRY is burned and refunded off-chain
 
 ```
@@ -237,6 +249,19 @@ Turkey's vehicle sales require a notary visit, creating delays and fraud risk. A
        │    ║ 50 TRY → treasury ║                        │
        │    ║ NFT → buyer       ║                        │
        │    ╚═══════════════════╝                        │
+```
+
+**Verify on-chain:**
+```bash
+# Check AriVehicleNFT contract name
+cast call 0xF66B3253eBe361D2A3E14B45C82Acd2d5a1C44c1 "name()(string)" \
+  --rpc-url https://nodes-prod.18.182.4.86.sslip.io/ext/bc/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/rpc
+# Returns: "ARI Vehicle"
+
+# Check AriVehicleEscrow fee amount (50 TRY in wei)
+cast call 0x2F3e53AfE15263D1bc5f4b3a908628498CcECf55 "FEE_AMOUNT()(uint256)" \
+  --rpc-url https://nodes-prod.18.182.4.86.sslip.io/ext/bc/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/rpc
+# Returns: 50000000000000000000 (50 * 10^18)
 ```
 
 ### 5. Governance (AriTimelock)
@@ -349,6 +374,7 @@ cd contracts && npx hardhat coverage   # Coverage report
 - Docker (for PostgreSQL + Redis)
 - JDK 21
 - Node.js 20
+- [Foundry](https://book.getfoundry.sh/getting-started/installation) (optional, for `cast` on-chain verification commands)
 
 ### Quick Start
 ```bash
