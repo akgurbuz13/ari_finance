@@ -1,30 +1,39 @@
 # Fuji testnet profile for blockchain-service
 # Activate with: --spring.profiles.active=fuji
 # Requires Avalanche L1 nodes running on Fuji (managed via Platform CLI + Builder Console)
+# Deployed: 2026-03-09 — fresh L1s created via Builder Console
 
 ari:
   core-banking:
     internal-api-key: dev-internal-api-key-never-use-in-production
   blockchain:
     tr-l1:
-      rpc-url: http://127.0.0.1:9650/ext/bc/9x7zHB85vsWaX2BiVPGRWVWh4KHWcroZWGBWbzR958JYRQZWP/rpc
+      rpc-url: https://nodes-prod.18.182.4.86.sslip.io/ext/bc/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/rpc
       chain-id: 1279
-      stablecoin-address: "0x44F26f6812694184FC29D7b14FB91523948542a7"
-      timelock-address: "0x17E33D877b93bbBe3b2246f57D5aAB01E75BE1e1"
+      stablecoin-address: "0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6"
+      eur-stablecoin-address: "0x78870378c9A1A3458B2188f3F6c96cD406A85DC7"
+      timelock-address: "0xde2E9ADbd664bA2266300349920c4FC9cAEBeAeE"
     eu-l1:
-      rpc-url: http://127.0.0.1:9652/ext/bc/21Euii5No2ut9NyF7VWkkWhkeiDk2fcZkE1GkfMjNtTtgL3DWE/rpc
+      rpc-url: https://nodes-prod.18.182.4.86.sslip.io/ext/bc/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/rpc
       chain-id: 1832
-      stablecoin-address: "0x053c8E2872434cE438281b75010B6051D2577B77"
-      timelock-address: "0xb1b15b4f25cE23637f81B1C0db2DDEBb8b477a8A"
+      stablecoin-address: "0xd354bb151EAbAd1BfaaE9a36c32e3e2CB16Ae232"
+      try-stablecoin-address: "0xcCf46814bdA0cA12e997bAC9CEc3Dc90B104e0C2"
+      timelock-address: "0x3a6b3CFbC5EC7D61E6BDD57Ba15AEa8155d5798f"
     bridge:
-      tr-bridge-adapter-address: "0x6DD482b76Eb446E6fB3cE57e711ec021b8114f0e"
-      eu-bridge-adapter-address: "0x5b7bA996f044FE43CD9e2e84649dCa725570ac82"
-      tr-token-home-address: "0x48Bfa2eC3F2756631C2B3851e6F4BF74a8838D95"
-      eu-token-home-address: "0x3CC7e983d7CAA5923Ab99655b6305cA04DB10a5F"
-      tr-token-remote-address: "0x9490CA23a24EDeFc8Dc1841b25534DA2B8cB8D5b"
-      eu-token-remote-address: "0x91d314bbb8f998ae28a488DF0548Ea5ee5dbe0D5"
-      tr-blockchain-id: "0x1452a7b43d17b718f3d0452e8076427013cfd6b64f3224d28182a3c8915668a6"
-      eu-blockchain-id: "0x843d98c0f9851ffcf09c3549e8f929e344fc75f3ad5177f08851cf5a42c03e1a"
+      tr-bridge-adapter-address: "0xcCf46814bdA0cA12e997bAC9CEc3Dc90B104e0C2"
+      eu-bridge-adapter-address: "0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6"
+      tr-token-home-address: "0x1090B43270a8693C111fEe23D81FAcCC8Eee7A76"
+      eu-token-home-address: "0xD76af0Ef48d735BAB56302388A44B080B8A313fE"
+      tr-token-remote-address: "0xe94BB4716255178e01bf34d1aE6A02edADc117B5"
+      eu-token-remote-address: "0x444c7316C7DF741ed7bf470c4B0b56c923AB08bB"
+      tr-burn-mint-bridge-address: "0x74CDb2b07e6e6441b71348E7812E7208eF909f24"
+      eu-burn-mint-bridge-address: "0x1C3C34dAe1503E64033Ec99A4f2a61F32AA2Be0E"
+      tr-blockchain-id: "0xb5a82a53e6366b84f980e4d2f13e583ca02f10eaf1ead220e23d036574799345"
+      eu-blockchain-id: "0x0ea0530c367859873c37829bdbc918ad3da9f4c7bed68d083275efc310ab03f4"
+    vehicle:
+      nft-address: "0xF66B3253eBe361D2A3E14B45C82Acd2d5a1C44c1"
+      escrow-address: "0x2F3e53AfE15263D1bc5f4b3a908628498CcECf55"
+      treasury-address: "0xe9ce1Cd8179134B162581BEb7988EBD2e2400503"
     wallet:
       # Deployer key - has MINTER_ROLE, BRIDGE_OPERATOR_ROLE on all Fuji contracts
       # Set via DEPLOYER_PRIVATE_KEY env var or .env.fuji

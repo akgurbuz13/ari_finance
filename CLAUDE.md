@@ -272,7 +272,8 @@ Blockchain Service communicates via:
 | `PROGRESS.md` | Current implementation status and recent work |
 | `CLAUDE.md` | AI agent guidance (this file) |
 | `scripts/README.md` | AWS testing infrastructure |
-| `docs/avalanche-docs.md` | Avalanche L1 deployment guide |
+| `docs/avalanche-docs.md` | Avalanche L1 deployment guide (legacy) |
+| `docs/FUJI_L1_SETUP_GUIDE.md` | **Current** Fuji L1 setup guide (Platform CLI + Builder Console) |
 | `docs/compliance.md` | TR/EU regulatory requirements |
 | `docs/LOCAL_TESTING_GUIDE.md` | Step-by-step local testing guide |
 | `docs/adr/001-multi-region-data-residency.md` | Production multi-region architecture (BDDK/GDPR) |

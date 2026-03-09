@@ -1,10 +1,262 @@
 # ARI Fintech Platform
 
-**Regulated dual-region fintech on Avalanche L1s**
+**Regulated dual-region fintech on Avalanche L1s — real compliance, real cross-border settlement, real on-chain enforcement**
 
-ARI is a cross-border payments platform built for Turkey and the EU. It uses two permissioned Avalanche L1 blockchains — one per regulatory jurisdiction — connected by Avalanche's ICTT (Inter-Chain Token Transfer) bridge with Teleporter messaging.
+ARI is a cross-border payments and asset tokenization platform purpose-built for Turkey and the EU. It runs on two permissioned Avalanche L1 blockchains — one per regulatory jurisdiction — connected by Avalanche ICM (Teleporter) for cross-chain messaging. Every financial operation — stablecoin issuance, cross-border settlement, KYC enforcement, vehicle ownership transfer — is enforced on-chain.
 
-> Live on Fuji testnet. All contracts deployed and verified.
+> **Live on Fuji testnet. 13 smart contracts deployed across 2 L1s. 183 Solidity tests passing. Full-stack integration: Kotlin backend + Next.js frontend + on-chain settlement.**
+
+---
+
+## Why Avalanche L1s?
+
+Traditional cross-border fintech relies on SWIFT/SEPA with 1-3 day settlement and opaque fees. ARI replaces this with two purpose-built Avalanche L1s that settle in seconds.
+
+**The problem**: Turkey (BDDK/MASAK) and the EU (PSD2/MiCA) have incompatible regulatory frameworks. Assets, user data, and compliance rules cannot be mixed. Existing solutions either ignore this (risky) or use a single centralized database (no transparency).
+
+**Our solution**: One L1 per jurisdiction. Each chain has its own validator set, governance, and compliance rules. Cross-border transfers go through explicit bridges with full audit trails. On-chain KYC enforcement means compliance isn't just a backend check — it's cryptographically enforced at the EVM level.
+
+**Why not a single chain?** Regulatory isolation. Turkey's BDDK requires transaction processing within Turkish jurisdiction. EU's GDPR/MiCA has its own data residency requirements. Two L1s keep these boundaries clean while still enabling instant cross-border settlement via Teleporter.
+
+---
+
+## Live Chains on Fuji Testnet
+
+### ariTR L1 (Turkey)
+
+| Property | Value |
+|----------|-------|
+| Chain ID | `1279` |
+| Blockchain ID | `2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM` |
+| Blockchain ID (bytes32) | `0xb5a82a53e6366b84f980e4d2f13e583ca02f10eaf1ead220e23d036574799345` |
+| RPC URL | `https://nodes-prod.18.182.4.86.sslip.io/ext/bc/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/rpc` |
+| Explorer | [View on Avalanche Explorer](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM) |
+| Subnet ID | `2Sw7W5coLCB4EZRADRyfTCuPBF5QqxMxj3jL8cUWPpCdso1MGX` |
+| Consensus | Proof of Authority (managed validator via Builder Console) |
+| Native Token | ARI (gas token, 1 gwei min base fee) |
+
+### ariEU L1 (Europe)
+
+| Property | Value |
+|----------|-------|
+| Chain ID | `1832` |
+| Blockchain ID | `7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt` |
+| Blockchain ID (bytes32) | `0x0ea0530c367859873c37829bdbc918ad3da9f4c7bed68d083275efc310ab03f4` |
+| RPC URL | `https://nodes-prod.18.182.4.86.sslip.io/ext/bc/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/rpc` |
+| Explorer | [View on Avalanche Explorer](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt) |
+| Subnet ID | `5KvzdVWjkZu6YuFrWVKhpFq2ZyGqQgHEozgvJFhzJRdBfba6M` |
+| Consensus | Proof of Authority (managed validator via Builder Console) |
+| Native Token | ARI (gas token, 1 gwei min base fee) |
+
+### Chain Configuration (Both L1s)
+
+Both chains are fully permissioned enterprise L1s created via [Avalanche Builder Console](https://build.avax.network/console):
+
+- **Contract Deployer Allowlist**: ON — only whitelisted addresses can deploy contracts
+- **Transaction Allowlist**: ON — only whitelisted addresses can submit transactions
+- **NativeMinter Precompile**: ON — admin can mint gas tokens without external funding
+- **Warp Messaging**: Enabled for Avalanche ICM / Teleporter cross-chain communication
+- **ICM/Teleporter**: Fully set up with managed relayers for bidirectional messaging
+- **Gasless UX**: Users never touch gas tokens. The platform operator pays all gas at 1 gwei min base fee
+
+Genesis configurations: [`ariTR_genesis.json`](./ariTR_genesis.json) | [`ariEU_genesis.json`](./ariEU_genesis.json)
+
+---
+
+## Deployed Smart Contracts
+
+All contracts deployed on 2026-03-09. Deployer: `0xe9ce1Cd8179134B162581BEb7988EBD2e2400503`
+
+### ariTR L1 — Turkey Jurisdiction (Chain ID 1279)
+
+| Contract | Address | Purpose |
+|----------|---------|---------|
+| **ariTRY Stablecoin** (Proxy) | [`0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6) | KYC-enforced Turkish Lira stablecoin (UUPS upgradeable) |
+| **ariEUR Stablecoin** (Proxy) | [`0x78870378c9A1A3458B2188f3F6c96cD406A85DC7`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0x78870378c9A1A3458B2188f3F6c96cD406A85DC7) | Cross-currency: ariEUR deployed natively on TR L1 |
+| AriTokenHome | [`0x1090B43270a8693C111fEe23D81FAcCC8Eee7A76`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0x1090B43270a8693C111fEe23D81FAcCC8Eee7A76) | ICTT: locks ariTRY when bridging to EU |
+| AriTokenRemote (wEUR) | [`0xe94BB4716255178e01bf34d1aE6A02edADc117B5`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0xe94BB4716255178e01bf34d1aE6A02edADc117B5) | ICTT: mints wrapped EUR from EU chain |
+| AriBridgeAdapter | [`0xcCf46814bdA0cA12e997bAC9CEc3Dc90B104e0C2`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0xcCf46814bdA0cA12e997bAC9CEc3Dc90B104e0C2) | Orchestrates ICTT bridge operations |
+| AriBurnMintBridge (TRY) | [`0x74CDb2b07e6e6441b71348E7812E7208eF909f24`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0x74CDb2b07e6e6441b71348E7812E7208eF909f24) | Same-currency cross-border: burn ariTRY on TR, mint ariTRY on EU |
+| AriBurnMintBridge (EUR) | [`0xA2Aa53A97A848343F7D399e186D237E905888Df4`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0xA2Aa53A97A848343F7D399e186D237E905888Df4) | Same-currency cross-border: burn ariEUR on TR, mint ariEUR on EU |
+| AriVehicleNFT | [`0xF66B3253eBe361D2A3E14B45C82Acd2d5a1C44c1`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0xF66B3253eBe361D2A3E14B45C82Acd2d5a1C44c1) | ERC-721 vehicle ownership NFT |
+| AriVehicleEscrow | [`0x2F3e53AfE15263D1bc5f4b3a908628498CcECf55`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0x2F3e53AfE15263D1bc5f4b3a908628498CcECf55) | Atomic swap: ariTRY payment + NFT transfer |
+| AriTimelock | [`0xde2E9ADbd664bA2266300349920c4FC9cAEBeAeE`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0xde2E9ADbd664bA2266300349920c4FC9cAEBeAeE) | Governance timelock (1h delay on testnet) |
+| KycAllowList | [`0xD76af0Ef48d735BAB56302388A44B080B8A313fE`](https://subnets-test.avax.network/c-chain/blockchain/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/address/0xD76af0Ef48d735BAB56302388A44B080B8A313fE) | On-chain KYC verification registry |
+
+### ariEU L1 — Europe Jurisdiction (Chain ID 1832)
+
+| Contract | Address | Purpose |
+|----------|---------|---------|
+| **ariEUR Stablecoin** (Proxy) | [`0xd354bb151EAbAd1BfaaE9a36c32e3e2CB16Ae232`](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/address/0xd354bb151EAbAd1BfaaE9a36c32e3e2CB16Ae232) | KYC-enforced Euro stablecoin (UUPS upgradeable) |
+| **ariTRY Stablecoin** (Proxy) | [`0xcCf46814bdA0cA12e997bAC9CEc3Dc90B104e0C2`](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/address/0xcCf46814bdA0cA12e997bAC9CEc3Dc90B104e0C2) | Cross-currency: ariTRY deployed natively on EU L1 |
+| AriTokenHome | [`0xD76af0Ef48d735BAB56302388A44B080B8A313fE`](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/address/0xD76af0Ef48d735BAB56302388A44B080B8A313fE) | ICTT: locks ariEUR when bridging to TR |
+| AriTokenRemote (wTRY) | [`0x444c7316C7DF741ed7bf470c4B0b56c923AB08bB`](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/address/0x444c7316C7DF741ed7bf470c4B0b56c923AB08bB) | ICTT: mints wrapped TRY from TR chain |
+| AriBridgeAdapter | [`0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6`](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/address/0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6) | Orchestrates ICTT bridge operations |
+| AriBurnMintBridge (EUR) | [`0x1C3C34dAe1503E64033Ec99A4f2a61F32AA2Be0E`](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/address/0x1C3C34dAe1503E64033Ec99A4f2a61F32AA2Be0E) | Same-currency cross-border: burn ariEUR on EU, mint ariEUR on TR |
+| AriBurnMintBridge (TRY) | [`0x5EB99416745b310b6D091E7Cb91C3B0297788144`](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/address/0x5EB99416745b310b6D091E7Cb91C3B0297788144) | Same-currency cross-border: burn ariTRY on EU, mint ariTRY on TR |
+| AriTimelock | [`0x3a6b3CFbC5EC7D61E6BDD57Ba15AEa8155d5798f`](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/address/0x3a6b3CFbC5EC7D61E6BDD57Ba15AEa8155d5798f) | Governance timelock (1h delay on testnet) |
+| KycAllowList | [`0xA4Fc63413DDd3696ea8E295f73e4F52195101a35`](https://subnets-test.avax.network/c-chain/blockchain/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/address/0xA4Fc63413DDd3696ea8E295f73e4F52195101a35) | On-chain KYC verification registry |
+
+### Cross-Chain Infrastructure
+
+| Component | Value |
+|-----------|-------|
+| TeleporterMessenger | `0x253b2784c75e510dD0fF1da844684a1aC0aa5fcf` (canonical, on both L1s) |
+| ICM Relayers | 2 managed relayers (ariTR ↔ ariEU, bidirectional) |
+| Bridge Cross-Registration | All 4 burn-mint bridges cross-registered as partners |
+
+---
+
+## On-Chain Features
+
+### 1. KYC-Enforced Stablecoins (ariTRY + ariEUR)
+
+`AriStablecoinUpgradeable` — not a typical ERC-20. Compliance is enforced at the EVM level, not just in the backend:
+
+- **KYC Allowlist**: Every `transfer()`, `mint()`, and `burn()` checks that both sender and recipient are on the allowlist. Unverified addresses **cannot hold or receive tokens**. This is enforced in the `_update()` hook — there is no way to bypass it.
+- **Freeze/Unfreeze**: Sanctions screening can immediately freeze any address. Tokens remain but cannot move.
+- **MINTER_ROLE**: Only the platform's operational key can create or destroy tokens (backing fiat deposits/withdrawals).
+- **UUPS Upgradeable**: ERC-1967 proxy pattern. Contract logic can be upgraded without migrating balances.
+- **Emergency Pause**: Circuit breaker that halts all token operations platform-wide.
+- **Supply Cap**: Optional cap to limit total token issuance.
+
+```solidity
+// From AriStablecoinUpgradeable.sol — every transfer checks KYC
+function _update(address from, address to, uint256 value) internal override whenNotPaused {
+    if (from != address(0)) {
+        require(allowlisted[from], "AriStablecoin: sender not KYC verified");
+        require(!frozen[from], "AriStablecoin: sender account frozen");
+    }
+    if (to != address(0)) {
+        require(allowlisted[to], "AriStablecoin: recipient not KYC verified");
+        require(!frozen[to], "AriStablecoin: recipient account frozen");
+    }
+    super._update(from, to, value);
+}
+```
+
+**Verify on-chain:**
+```bash
+# Check ariTRY token name on TR L1
+cast call 0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6 "name()(string)" \
+  --rpc-url https://nodes-prod.18.182.4.86.sslip.io/ext/bc/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/rpc
+# Returns: "ARI Turkish Lira"
+
+# Check ariEUR token name on EU L1
+cast call 0xd354bb151EAbAd1BfaaE9a36c32e3e2CB16Ae232 "name()(string)" \
+  --rpc-url https://nodes-prod.18.182.4.86.sslip.io/ext/bc/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/rpc
+# Returns: "ARI Euro"
+
+# Check if an address is KYC-allowlisted
+cast call 0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6 "allowlisted(address)(bool)" \
+  0xe9ce1Cd8179134B162581BEb7988EBD2e2400503 \
+  --rpc-url https://nodes-prod.18.182.4.86.sslip.io/ext/bc/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/rpc
+
+# Check total supply
+cast call 0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6 "totalSupply()(uint256)" \
+  --rpc-url https://nodes-prod.18.182.4.86.sslip.io/ext/bc/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/rpc
+```
+
+### 2. Same-Currency Cross-Border Settlement (AriBurnMintBridge)
+
+The flagship cross-border feature. Burns native ariTRY on the source chain, sends a Teleporter message, and mints native ariTRY on the destination chain. **No wrapped tokens** — the receiver gets real ariTRY/ariEUR on both chains.
+
+```
+Source Chain (TR L1):                         Dest Chain (EU L1):
+┌──────────────────────┐    Teleporter    ┌──────────────────────┐
+│ AriBurnMintBridge    │───── ICM/AWM ───>│ AriBurnMintBridge    │
+│   burn(ariTRY, 1000) │                  │   mint(ariTRY, 1000) │
+│   emit BurnAndBridge │                  │   emit MintFromBridge│
+└──────────────────────┘                  └──────────────────────┘
+```
+
+- **Partner Registration**: Each bridge explicitly registers its partner on the other chain. Only messages from registered partners are accepted.
+- **Replay Protection**: Defense-in-depth — message hashes are tracked even though Teleporter has its own replay protection.
+- **Bidirectional**: 4 bridges total — TRY bridges and EUR bridges on both chains, all cross-registered.
+
+**Verify on-chain:**
+```bash
+# Check registered partner for TR TRY bridge → EU TRY bridge
+cast call 0x74CDb2b07e6e6441b71348E7812E7208eF909f24 \
+  "registeredPartners(bytes32)(address)" \
+  0x0ea0530c367859873c37829bdbc918ad3da9f4c7bed68d083275efc310ab03f4 \
+  --rpc-url https://nodes-prod.18.182.4.86.sslip.io/ext/bc/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/rpc
+# Returns: EU TRY bridge address
+```
+
+### 3. Cross-Currency FX Bridge (ICTT — AriTokenHome + AriTokenRemote)
+
+For FX transfers (TRY to EUR), ARI uses Avalanche's ICTT (Inter-Chain Token Transfer) protocol:
+
+- **AriTokenHome**: Deployed on each chain for its native stablecoin. Locks tokens when bridging out, releases when bridging back.
+- **AriTokenRemote**: Deployed on partner chain. Mints wrapped representations (wEUR on TR L1, wTRY on EU L1).
+- **Daily Limits**: Configurable per-bridge (default 10M/day). Prevents catastrophic bridge exploits.
+- **Emergency Pause**: Bridge admin can pause all operations instantly.
+
+```
+User: "Transfer 1,000 TRY → EUR"  (FX rate applied by backend)
+  │
+  ├─ TR L1: AriTokenHome locks 1,000 ariTRY
+  │         → Teleporter message sent to EU L1
+  │
+  └─ EU L1: AriTokenRemote mints 1,000 wTRY
+             Backend mints 34.50 ariEUR to receiver
+```
+
+### 4. Vehicle Securitization (AriVehicleNFT + AriVehicleEscrow)
+
+Turkey's vehicle sales require a notary visit, creating delays and fraud risk. ARI replaces this with on-chain vehicle ownership NFTs and atomic escrow swaps.
+
+**AriVehicleNFT** (ERC-721):
+- Each token represents a registered vehicle with hashed VIN and plate number
+- **VIN Uniqueness**: Same vehicle cannot be registered twice (`vinHashUsed` mapping)
+- **Transfer Restrictions**: Direct `transfer()` is blocked. Vehicles can **only** change hands through approved escrow contracts — preventing unauthorized ownership changes
+- **KYC Allowlist**: Only verified addresses can hold vehicle NFTs
+
+**AriVehicleEscrow** — atomic swap state machine:
+1. **Create**: Operator creates escrow with seller, buyer, vehicle NFT, and price
+2. **Fund**: Buyer's ariTRY is minted to the escrow contract
+3. **Dual Confirm**: Both seller and buyer must confirm
+4. **Execute**: In a single atomic transaction: ariTRY goes to seller, 50 TRY fee goes to treasury, NFT transfers to buyer
+5. **Cancel**: If either party backs out, escrowed ariTRY is burned and refunded off-chain
+
+```
+┌─────────────┐     ┌──────────────────────┐     ┌──────────────┐
+│   Seller     │     │   AriVehicleEscrow   │     │    Buyer     │
+│ (owns NFT)  │     │  (holds ariTRY funds) │     │ (has ariTRY) │
+└──────┬───────┘     └──────────┬───────────┘     └──────┬───────┘
+       │  approve(NFT)          │                         │
+       ├───────────────────────>│                         │
+       │                        │<── fund(ariTRY) ────────┤
+       │  sellerConfirm()       │                         │
+       ├───────────────────────>│                         │
+       │                        │<── buyerConfirm() ──────┤
+       │                        │                         │
+       │    ╔═══ ATOMIC SWAP ═══╗                        │
+       │    ║ ariTRY → seller   ║                        │
+       │    ║ 50 TRY → treasury ║                        │
+       │    ║ NFT → buyer       ║                        │
+       │    ╚═══════════════════╝                        │
+```
+
+### 5. Governance (AriTimelock)
+
+All critical admin operations go through `AriTimelock` (OpenZeppelin `TimelockController`):
+- 48-hour delay in production, 1-hour on testnet
+- Prevents rogue admin actions — community/regulators can review proposed changes
+- Contract upgrades, role changes, and parameter modifications must be timelocked
+
+### 6. Permissioned Chain Architecture
+
+Both L1s use Subnet-EVM precompiles for enterprise-grade permissioning:
+
+| Precompile | Purpose |
+|-----------|---------|
+| **ContractDeployerAllowList** | Only authorized addresses can deploy contracts |
+| **TransactionAllowList** | Only authorized addresses can submit transactions |
+| **NativeMinter** | Admin can mint gas tokens — no external gas token needed |
+| **FeeManager** | Adjust fee parameters without hard fork |
+| **Warp** | Enables ICM/Teleporter cross-chain messaging |
 
 ---
 
@@ -15,208 +267,64 @@ ARI is a cross-border payments platform built for Turkey and the EU. It uses two
   ┌──────────────────────────────────────────────────────┐
   │                                                      │
   │   Web App (Next.js)  ──>  Core Banking (Spring Boot) │
-  │                                  │                   │
-  │                           Outbox Events              │
-  │                                  │                   │
-  │                       Blockchain Service              │
-  │                         (Spring Boot)                │
-  │                           │       │                  │
-  └───────────────────────────┼───────┼──────────────────┘
-                              │       │
-       ┌──────────────────────┘       └───────────────────────┐
-       ▼                                                      ▼
-  ┌─── TR L1 (Chain 1279) ────┐       ┌─── EU L1 (Chain 1832) ────┐
-  │                            │       │                            │
-  │  ariTRY    (ERC-20 + KYC) │       │  ariEUR    (ERC-20 + KYC) │
-  │  TokenHome (lock/release)  │◄─────►│  TokenHome (lock/release)  │
-  │  TokenRemote (mint wEUR)   │  ICM  │  TokenRemote (mint wTRY)   │
-  │  BridgeAdapter             │       │  BridgeAdapter             │
-  │                            │       │                            │
-  └────────────────────────────┘       └────────────────────────────┘
-              Teleporter / AWM Relayer
+  │   Admin Console          │ Auth, KYC, Ledger,       │
+  │   Mobile (Flutter)       │ Payments, FX, Compliance │
+  │                          │                           │
+  │                    Outbox Events (PostgreSQL)         │
+  │                          │                           │
+  │                 Blockchain Service (Spring Boot)      │
+  │                  │ Mint, Burn, Bridge, Wallet,       │
+  │                  │ Event Listener, Settlement        │
+  └──────────────────┼───────────────────────────────────┘
+                     │
+    ┌────────────────┴────────────────────┐
+    ▼                                     ▼
+┌── TR L1 (1279) ────────┐    ┌── EU L1 (1832) ────────┐
+│                         │    │                         │
+│  ariTRY  (KYC ERC-20)  │    │  ariEUR  (KYC ERC-20)  │
+│  ariEUR  (cross-ccy)   │    │  ariTRY  (cross-ccy)   │
+│  TokenHome (lock TRY)   │◄──►│  TokenHome (lock EUR)   │
+│  TokenRemote (wEUR)     │ ICM│  TokenRemote (wTRY)     │
+│  BurnMintBridge ×2      │    │  BurnMintBridge ×2      │
+│  VehicleNFT + Escrow    │    │                         │
+│  Timelock + KycAllowList│    │  Timelock + KycAllowList│
+│                         │    │                         │
+└─────────────────────────┘    └─────────────────────────┘
+          Teleporter / AWM Relayer (managed)
 ```
 
 **Key design decisions:**
-- **One L1 per jurisdiction** — TR and EU have independent regulatory requirements. Separate chains keep compliance boundaries clean.
-- **KYC-enforced stablecoins** — ariTRY and ariEUR are ERC-20 tokens with allowlist-gated transfers. Only verified users can hold or transfer tokens.
-- **ICTT bridge for cross-border** — Cross-border transfers burn on the source chain and mint on the destination chain via Teleporter. No wrapped tokens leave their jurisdiction.
-- **Outbox pattern** — Core banking and blockchain service communicate via a shared outbox table, ensuring exactly-once delivery and crash recovery.
-
----
-
-## Live on Fuji Testnet
-
-| Contract | Chain | Address |
-|----------|-------|---------|
-| ariTRY Stablecoin | TR L1 (1279) | `0x44F26f6812694184FC29D7b14FB91523948542a7` |
-| ariEUR Stablecoin | EU L1 (1832) | `0x053c8E2872434cE438281b75010B6051D2577B77` |
-| AriTokenHome | TR L1 | `0x48Bfa2eC3F2756631C2B3851e6F4BF74a8838D95` |
-| AriTokenHome | EU L1 | `0x3CC7e983d7CAA5923Ab99655b6305cA04DB10a5F` |
-| AriTokenRemote | TR L1 | `0x9490CA23a24EDeFc8Dc1841b25534DA2B8cB8D5b` |
-| AriTokenRemote | EU L1 | `0x91d314bbb8f998ae28a488DF0548Ea5ee5dbe0D5` |
-| AriBridgeAdapter | TR L1 | `0x6DD482b76Eb446E6fB3cE57e711ec021b8114f0e` |
-| AriBridgeAdapter | EU L1 | `0x5b7bA996f044FE43CD9e2e84649dCa725570ac82` |
-| AriTimelock | TR L1 | `0x17E33D877b93bbBe3b2246f57D5aAB01E75BE1e1` |
-| AriTimelock | EU L1 | `0xb1b15b4f25cE23637f81B1C0db2DDEBb8b477a8A` |
-
-Teleporter: `0x253b2784c75e510dD0fF1da844684a1aC0aa5fcf` (standard across all Avalanche chains)
-
----
-
-## On-Chain Components (Avalanche L1)
-
-ARI's core value proposition is built on-chain. Every financial operation — stablecoin issuance, cross-border settlement, compliance enforcement — is backed by smart contracts on Avalanche L1 blockchains.
-
-### Why Avalanche L1s?
-
-Traditional cross-border fintech relies on correspondent banking networks (SWIFT, SEPA) with 1-3 day settlement and opaque fee structures. ARI replaces this with two purpose-built Avalanche L1s that settle in seconds with full transparency.
-
-**Regulatory isolation**: Turkey (BDDK/MASAK) and the EU (PSD2/MiCA) have different regulatory frameworks. By deploying a separate L1 per jurisdiction, each chain's validator set, governance, and compliance rules can be configured independently. Assets don't leak across regulatory boundaries — cross-border transfers go through an explicit bridge with audit trails.
-
-**Permissioned by design**: Both L1s use Proof of Authority consensus. Validators are known entities (the platform operator for MVP, licensed financial institutions in production). This satisfies regulators who require identifiable transaction processors, while still getting the immutability and transparency benefits of blockchain settlement.
-
-### AriStablecoin — KYC-Enforced Regulated Stablecoin
-
-`AriStablecoinUpgradeable` is not a typical ERC-20. It enforces compliance at the token level:
-
-- **KYC Allowlist**: Every `transfer()`, `mint()`, and `burn()` checks that both sender and recipient are on the KYC allowlist. Unverified addresses cannot hold or receive tokens. This is enforced in the smart contract itself — not just at the API layer.
-- **Freeze/Unfreeze**: If a sanctions screening flags an address, compliance can call `freeze(address)` to immediately block all transfers to/from that address. The tokens remain in the wallet but cannot move.
-- **Mint/Burn with Role Control**: Only addresses with `MINTER_ROLE` can create new tokens (backing new fiat deposits) or destroy them (processing withdrawals). This role is held by the blockchain service's operational key.
-- **UUPS Upgradeable**: Deployed behind an ERC-1967 proxy so contract logic can be upgraded (e.g., adding new compliance checks) without migrating token balances.
-- **Pause**: Emergency circuit breaker — `pause()` halts all token operations platform-wide.
-
-```solidity
-// Every transfer checks KYC status on-chain
-function _update(address from, address to, uint256 value) internal override {
-    require(!frozen[from], "AriStablecoin: sender frozen");
-    require(!frozen[to], "AriStablecoin: recipient frozen");
-    if (from != address(0)) require(kycAllowList.isAllowed(from), "AriStablecoin: sender not KYC");
-    if (to != address(0)) require(kycAllowList.isAllowed(to), "AriStablecoin: recipient not KYC");
-    super._update(from, to, value);
-}
-```
-
-### ICTT Bridge — Cross-Chain Token Transfer via Teleporter
-
-Cross-border transfers between TR and EU use Avalanche's native Inter-Chain Token Transfer (ICTT) protocol, powered by Teleporter/ICM messaging.
-
-**How it works:**
-
-```
-User: "Transfer 1,000 TRY to EUR account"
-         │
-         ▼
-┌─── Core Banking ────────────────────────────────────────────┐
-│  1. Get FX quote (1,000 TRY → 34.50 EUR at market rate)    │
-│  2. Debit sender's TRY ledger, credit receiver's EUR ledger │
-│  3. Publish BurnRequested + MintRequested to outbox          │
-└──────────────────────────────────────────┬──────────────────┘
-                                           │
-         ┌─────────────────────────────────┘
-         ▼
-┌─── Blockchain Service ─────────────────────────────────────┐
-│  4. Process BurnRequested:                                  │
-│     → AriTokenHome.bridgeTokens(amount, EU_BLOCKCHAIN_ID)  │
-│     → ariTRY locked in TokenHome on TR L1                   │
-│                                                             │
-│  5. Teleporter sends cross-chain message (automatic via AWM)│
-│                                                             │
-│  6. AriTokenRemote on EU L1 receives message:              │
-│     → Mints wrapped ariTRY (wTRY) on EU L1                 │
-│                                                             │
-│  7. Process MintRequested:                                  │
-│     → Mint ariEUR to receiver's custodial wallet on EU L1   │
-│                                                             │
-│  8. Settlement callback → core-banking confirms completion  │
-└─────────────────────────────────────────────────────────────┘
-```
-
-**The bridge contracts:**
-
-| Contract | Role | Deployed On |
-|----------|------|-------------|
-| `AriTokenHome` | Locks native tokens, initiates Teleporter message to remote chain | Both L1s |
-| `AriTokenRemote` | Receives Teleporter message, mints wrapped representation | Both L1s |
-| `AriBridgeAdapter` | Orchestrates bridge flow: approve → lock → message → confirm | Both L1s |
-
-Each L1 has both a TokenHome (for its native stablecoin) and a TokenRemote (for wrapped tokens from the other chain). This enables bidirectional transfers: TRY→EUR and EUR→TRY.
-
-### Custodial Wallet Management
-
-Users don't manage private keys. The platform creates and controls wallets on their behalf:
-
-1. **Deterministic derivation**: Wallets are derived from a master key + userId + index via HMAC-SHA256. The same user always gets the same wallet address.
-2. **Automatic KYC allowlisting**: When a wallet is created, the blockchain service calls `AriStablecoin.addToAllowlist(walletAddress)` so the wallet can receive tokens.
-3. **Per-chain wallets**: Each user gets separate wallets on TR L1 and EU L1 (different regulatory jurisdictions = different on-chain identities).
-
-### Verifying On-Chain
-
-All contracts are deployed on Fuji testnet and can be queried directly:
-
-```bash
-# Check ariTRY balance of any address
-cast call 0x44F26f6812694184FC29D7b14FB91523948542a7 \
-  "balanceOf(address)(uint256)" <wallet_address> \
-  --rpc-url http://127.0.0.1:9650/ext/bc/9x7zHB85.../rpc
-
-# Check if an address is KYC-allowlisted
-cast call 0x44F26f6812694184FC29D7b14FB91523948542a7 \
-  "allowlisted(address)(bool)" <wallet_address> \
-  --rpc-url http://127.0.0.1:9650/ext/bc/9x7zHB85.../rpc
-
-# Check total ariTRY supply
-cast call 0x44F26f6812694184FC29D7b14FB91523948542a7 \
-  "totalSupply()(uint256)" \
-  --rpc-url http://127.0.0.1:9650/ext/bc/9x7zHB85.../rpc
-```
-
----
-
-## How It Works
-
-### Deposit (Fiat to On-Chain)
-1. User deposits TRY via banking rail
-2. Core banking credits the user's ledger account
-3. Outbox event `MintRequested` is published
-4. Blockchain service creates a custodial wallet, adds to KYC allowlist, and mints ariTRY on-chain
-
-### Cross-Border Transfer (TRY to EUR)
-1. User requests transfer with a time-limited FX quote (30s expiry)
-2. Core banking executes double-entry ledger postings across both currencies
-3. Outbox publishes `BurnRequested` (TR side) + `MintRequested` (EU side)
-4. Blockchain service burns ariTRY via AriTokenHome on TR L1
-5. Teleporter relays the message to EU L1
-6. AriTokenRemote mints wrapped ariTRY on EU L1
-7. Settlement callback confirms completion to core banking
-
-### ICTT Bridge Flow
-```
-TR L1:  ariTRY locked in AriTokenHome
-           │
-           ▼  Teleporter message
-EU L1:  wTRY minted by AriTokenRemote
-```
+- **Outbox pattern**: Core banking publishes events to a PostgreSQL outbox table. Blockchain service polls and processes them. Guarantees exactly-once delivery and crash recovery.
+- **Custodial wallets**: Users don't manage keys. Wallets are deterministically derived (HMAC-SHA256) from a master key + userId. Auto-KYC-allowlisted on creation.
+- **Double-entry ledger**: Every financial operation creates balanced debit/credit entries. On-chain settlement is a confirmation step, not the source of truth for balances.
 
 ---
 
 ## Smart Contracts
 
-10 Solidity contracts (0.8.24), 115 tests passing:
+13 Solidity contracts (0.8.24), **183 tests passing**, OpenZeppelin 5.x:
 
-| Contract | Purpose |
-|----------|---------|
-| `AriStablecoinUpgradeable` | UUPS-upgradeable ERC-20 with KYC allowlist, freeze, pause, mint/burn roles |
-| `AriStablecoin` | Non-upgradeable version for testing |
-| `AriTokenHome` | ICTT home contract — locks native tokens, sends Teleporter messages |
-| `AriTokenRemote` | ICTT remote contract — receives messages, mints wrapped tokens |
-| `AriBridgeAdapter` | Orchestrates bridge operations with fee handling |
-| `AriTimelock` | Governance timelock for admin operations |
-| `KycAllowList` | On-chain KYC verification registry |
-| `ValidatorManager` | L1 validator set management |
+| Contract | Lines | Purpose |
+|----------|-------|---------|
+| `AriStablecoinUpgradeable` | 253 | UUPS ERC-20 with KYC allowlist, freeze, pause, mint/burn, supply cap |
+| `AriStablecoin` | ~200 | Non-upgradeable stablecoin for testing |
+| `AriTokenHome` | 317 | ICTT home: lock tokens, Teleporter message, daily limits, emergency withdraw |
+| `AriTokenRemote` | 308 | ICTT remote: mint wrapped tokens, KYC-enforced, freeze capability |
+| `AriBridgeAdapter` | ~250 | Orchestrates ICTT bridge: approve → lock → message → confirm |
+| `AriBurnMintBridge` | 161 | Same-currency bridge: burn → Teleporter → mint, replay protection |
+| `AriVehicleNFT` | 145 | ERC-721 vehicle ownership, VIN uniqueness, escrow-only transfers |
+| `AriVehicleEscrow` | 299 | Atomic swap: dual confirmation, 50 TRY fee, cancel with burn |
+| `AriTimelock` | 62 | OpenZeppelin TimelockController (48h prod, 1h testnet) |
+| `KycAllowList` | 53 | Standalone KYC registry with expiration |
+| `ValidatorManager` | ~100 | L1 validator set management |
+| `IcttInterfaces` | ~50 | Teleporter interface definitions |
+| `MockTeleporter` | ~100 | Test mock for cross-chain messaging |
+
+Source code: [`contracts/contracts/`](./contracts/contracts/)
 
 ```bash
-cd contracts && npx hardhat test    # 115 passing
-cd contracts && npx hardhat coverage
+cd contracts && npx hardhat test       # 183 passing
+cd contracts && npx hardhat coverage   # Coverage report
 ```
 
 ---
@@ -225,75 +333,128 @@ cd contracts && npx hardhat coverage
 
 | Layer | Technology |
 |-------|-----------|
-| Smart Contracts | Solidity 0.8.24, Hardhat, OpenZeppelin 5.x |
-| Backend | Kotlin, Spring Boot 3.2, JdbcTemplate, PostgreSQL 16 |
-| Blockchain Integration | Web3j 4.10, outbox pattern, receipt polling |
+| Smart Contracts | Solidity 0.8.24, Hardhat, OpenZeppelin 5.x, UUPS Proxy |
+| Backend | Kotlin, Spring Boot 3.2, JdbcTemplate, PostgreSQL 16, Redis 7 |
+| Blockchain Integration | Web3j 4.10, outbox pattern, receipt polling, event listening |
 | Frontend | Next.js 14, React 18, Tailwind CSS, Framer Motion |
+| Mobile | Flutter 3.2+ (Dart) |
+| Cross-Chain | Avalanche ICM (Teleporter), AWM Relayer, ICTT Protocol |
 | Infrastructure | Docker Compose, Platform CLI, Builder Console, Fuji testnet |
-| Cross-Chain | ICTT (Teleporter/ICM), AWM Relayer |
 
 ---
 
 ## Run Locally
 
 ### Prerequisites
-- Docker, JDK 21, Node.js 20
-- Platform CLI (`platform` command for P-Chain ops) — Install: `curl -sSfL https://build.avax.network/install/platform-cli | sh`
+- Docker (for PostgreSQL + Redis)
+- JDK 21
+- Node.js 20
 
 ### Quick Start
 ```bash
-# 1. Infrastructure
-docker compose up -d
+# 1. Clone and start infrastructure
+git clone https://github.com/akgurbuz13/ari_finance.git
+cd ari_finance
+docker compose up -d   # PostgreSQL 16 + Redis 7
 
-# 2. Backend (two terminals)
-./scripts/run-fuji.sh core-banking
-./scripts/run-fuji.sh blockchain-service
+# 2. Start core banking (terminal 1)
+./gradlew :core-banking:bootRun
+# API available at http://localhost:8080
 
-# 3. Frontend
+# 3. Start blockchain service with Fuji profile (terminal 2)
+# Set DEPLOYER_PRIVATE_KEY in .env.fuji or environment
+./gradlew :blockchain-service:bootRun --args='--spring.profiles.active=fuji'
+# Blockchain service at http://localhost:8081
+
+# 4. Start web app (terminal 3)
 cd web && npm install && npm run dev
-
-# 4. Demo
-./scripts/run-fuji.sh demo-setup   # Create user, accounts, fund on-chain
-./scripts/run-fuji.sh demo         # Full E2E: mint + cross-border + bridge
+# Web app at http://localhost:3000
 ```
 
-Web app: http://localhost:3000 | API: http://localhost:8080
+### Run Smart Contract Tests
+```bash
+cd contracts
+npm install
+npx hardhat test          # 183 tests
+npx hardhat coverage      # Coverage report
+npx hardhat compile       # Compile all contracts
+```
+
+### Run Backend Tests
+```bash
+# Core banking tests
+./gradlew :core-banking:test
+
+# Blockchain service tests (requires Java 21)
+JAVA_HOME=$(/usr/libexec/java_home -v 21) ./gradlew :blockchain-service:test --no-daemon
+```
 
 ---
 
 ## Repository Structure
 
 ```
-ova_v1/
-├── contracts/              # Solidity contracts + Hardhat tests (115 tests)
-│   ├── contracts/          # AriStablecoin, TokenHome, TokenRemote, BridgeAdapter
-│   ├── scripts/            # Deploy, configure-bridge, test-bridge
-│   └── test/               # Full test suite
-├── core-banking/           # Kotlin/Spring Boot modular monolith
-│   ├── identity/           # Auth, KYC, 2FA
-│   ├── ledger/             # Double-entry accounting
-│   ├── payments/           # Domestic, cross-border, deposit/withdrawal
-│   ├── fx/                 # FX rates + quotes
-│   └── shared/             # Outbox, security, audit
-├── blockchain-service/     # Blockchain integration service
-│   ├── contract/           # Web3j contract wrappers
-│   ├── bridge/             # ICTT bridge orchestration
-│   ├── settlement/         # Mint/Burn services
-│   └── wallet/             # Custodial wallet management
-├── web/                    # Next.js customer web app
-├── scripts/                # Run, demo, deployment scripts
-├── infra/                  # K8s manifests, Terraform
-└── docs/                   # Architecture, demo script, compliance
+ari/
+├── contracts/                 # Solidity smart contracts + Hardhat (183 tests)
+│   ├── contracts/
+│   │   ├── token/             # AriStablecoin, AriStablecoinUpgradeable
+│   │   ├── bridge/            # AriTokenHome, AriTokenRemote, AriBridgeAdapter,
+│   │   │                      # AriBurnMintBridge, IcttInterfaces
+│   │   ├── vehicle/           # AriVehicleNFT, AriVehicleEscrow
+│   │   ├── governance/        # AriTimelock, ValidatorManager
+│   │   ├── access/            # KycAllowList
+│   │   └── mocks/             # MockTeleporter (for testing)
+│   ├── scripts/               # Deploy, configure-bridge, cross-register
+│   ├── test/                  # Full test suite
+│   └── deployments/           # Deployment records (addresses, timestamps)
+├── core-banking/              # Kotlin/Spring Boot modular monolith
+│   ├── identity/              # Auth, KYC, 2FA, RBAC
+│   ├── ledger/                # Double-entry accounting engine
+│   ├── payments/              # Domestic, cross-border (FX + same-currency)
+│   ├── fx/                    # FX rates + quotes (30s TTL)
+│   ├── vehicle/               # Vehicle registration + escrow services
+│   └── shared/                # Outbox, security, audit, compliance
+├── blockchain-service/        # Blockchain integration service
+│   ├── contract/              # Web3j contract wrappers
+│   ├── bridge/                # ICTT + BurnMint bridge orchestration
+│   ├── settlement/            # Mint/Burn services
+│   ├── wallet/                # Custodial wallet management (HD derivation)
+│   └── outbox/                # Event processing from core-banking
+├── web/                       # Next.js customer web app
+├── admin-console/             # Next.js admin dashboard
+├── mobile/                    # Flutter mobile app
+├── scripts/                   # Run, demo, deployment scripts
+├── infra/                     # K8s manifests, Terraform
+├── docs/                      # Architecture, compliance, Avalanche docs
+│   └── avalanche/             # 10-part Avalanche integration guide
+├── ariTR_genesis.json         # Genesis config for TR L1
+└── ariEU_genesis.json         # Genesis config for EU L1
 ```
 
 ---
 
 ## Security Model
 
-- **KYC-gated tokens**: Only allowlisted addresses can hold ariTRY/ariEUR
-- **Role-based access**: Separate MINTER_ROLE, BRIDGE_OPERATOR_ROLE, DEFAULT_ADMIN_ROLE
-- **Freeze capability**: Compliance team can freeze individual wallets
-- **Timelock governance**: Admin operations go through AriTimelock
-- **Idempotent payments**: All payment endpoints require Idempotency-Key headers
+- **On-chain KYC enforcement**: Only allowlisted addresses can hold ariTRY/ariEUR — enforced in EVM, not just API
+- **Role-based access**: Separate `MINTER_ROLE`, `BRIDGE_OPERATOR_ROLE`, `FREEZER_ROLE`, `DEFAULT_ADMIN_ROLE`
+- **Freeze capability**: Compliance can freeze individual wallets instantly (sanctions, court orders)
+- **Timelock governance**: Admin operations go through `AriTimelock` with mandatory delay
+- **Transfer restrictions**: Vehicle NFTs can only change hands through approved escrow contracts
+- **Replay protection**: All bridge contracts track processed message hashes
+- **Permissioned chains**: Transaction and contract deployment allowlists at the EVM precompile level
 - **Double-entry ledger**: Every debit has a matching credit, fully auditable
-- **Outbox pattern**: Exactly-once event delivery between services
+- **Outbox pattern**: Exactly-once event delivery between core banking and blockchain service
+- **Idempotent payments**: All payment endpoints require `Idempotency-Key` headers
+
+---
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [`docs/avalanche/`](./docs/avalanche/) | 10-part Avalanche integration guide (architecture, L1 setup, ICTT, gasless txs, etc.) |
+| [`docs/FUJI_L1_SETUP_GUIDE.md`](./docs/FUJI_L1_SETUP_GUIDE.md) | Step-by-step guide: Platform CLI + Builder Console L1 setup |
+| [`docs/compliance.md`](./docs/compliance.md) | TR (BDDK/MASAK) and EU (MiCA/PSD2/GDPR) regulatory requirements |
+| [`docs/adr/001-multi-region-data-residency.md`](./docs/adr/001-multi-region-data-residency.md) | Architecture decision: multi-region data residency for production |
+| [`PROGRESS.md`](./PROGRESS.md) | Detailed implementation progress and session history |
+| [`ARCHITECTURE.md`](./ARCHITECTURE.md) | Original system design and phase plan |

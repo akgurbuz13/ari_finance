@@ -26,7 +26,7 @@ ari:
     internal-api-key: ${INTERNAL_API_KEY:${ARI_INTERNAL_API_KEY:}}  # No default - must be configured
   blockchain:
     tr-l1:
-      rpc-url: ${TR_L1_RPC_URL:${ARI_BLOCKCHAIN_TR_L1_RPC_URL:http://127.0.0.1:9650/ext/bc/9x7zHB85vsWaX2BiVPGRWVWh4KHWcroZWGBWbzR958JYRQZWP/rpc}}
+      rpc-url: ${TR_L1_RPC_URL:${ARI_BLOCKCHAIN_TR_L1_RPC_URL:https://nodes-prod.18.182.4.86.sslip.io/ext/bc/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/rpc}}
       chain-id: ${TR_L1_CHAIN_ID:1279}
       stablecoin-address: ${TR_STABLECOIN_ADDRESS:}
       # Cross-currency: ariEUR deployed natively on TR L1
@@ -35,7 +35,7 @@ ari:
       multisig-address: ${TR_MULTISIG_ADDRESS:}
       timelock-address: ${TR_TIMELOCK_ADDRESS:}
     eu-l1:
-      rpc-url: ${EU_L1_RPC_URL:${ARI_BLOCKCHAIN_EU_L1_RPC_URL:http://127.0.0.1:9652/ext/bc/21Euii5No2ut9NyF7VWkkWhkeiDk2fcZkE1GkfMjNtTtgL3DWE/rpc}}
+      rpc-url: ${EU_L1_RPC_URL:${ARI_BLOCKCHAIN_EU_L1_RPC_URL:https://nodes-prod.18.182.4.86.sslip.io/ext/bc/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/rpc}}
       chain-id: ${EU_L1_CHAIN_ID:1832}
       stablecoin-address: ${EU_STABLECOIN_ADDRESS:}
       # Cross-currency: ariTRY deployed natively on EU L1

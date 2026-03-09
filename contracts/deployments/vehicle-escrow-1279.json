@@ -1,0 +1,13 @@
+{
+  "network": "ari-tr-testnet",
+  "chainId": 1279,
+  "deployer": "0xe9ce1Cd8179134B162581BEb7988EBD2e2400503",
+  "operator": "0xe9ce1Cd8179134B162581BEb7988EBD2e2400503",
+  "treasury": "0xe9ce1Cd8179134B162581BEb7988EBD2e2400503",
+  "contracts": {
+    "AriVehicleNFT": "0xF66B3253eBe361D2A3E14B45C82Acd2d5a1C44c1",
+    "AriVehicleEscrow": "0x2F3e53AfE15263D1bc5f4b3a908628498CcECf55",
+    "AriStablecoin": "0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6"
+  },
+  "deployedAt": "2026-03-09T17:27:58.409Z"
+}

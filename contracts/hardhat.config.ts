@@ -19,7 +19,7 @@ const config: HardhatUserConfig = {
     },
     // ARI TR L1 (Turkey) - Fuji Chain ID 1279
     "ari-tr-testnet": {
-      url: process.env.TR_L1_RPC_URL || "http://127.0.0.1:9650/ext/bc/9x7zHB85vsWaX2BiVPGRWVWh4KHWcroZWGBWbzR958JYRQZWP/rpc",
+      url: process.env.TR_L1_RPC_URL || "https://nodes-prod.18.182.4.86.sslip.io/ext/bc/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/rpc",
       accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
       chainId: Number(process.env.TR_L1_CHAIN_ID) || 1279,
     },
@@ -30,7 +30,7 @@ const config: HardhatUserConfig = {
     },
     // ARI EU L1 (Europe) - Fuji Chain ID 1832
     "ari-eu-testnet": {
-      url: process.env.EU_L1_RPC_URL || "http://127.0.0.1:9652/ext/bc/21Euii5No2ut9NyF7VWkkWhkeiDk2fcZkE1GkfMjNtTtgL3DWE/rpc",
+      url: process.env.EU_L1_RPC_URL || "https://nodes-prod.18.182.4.86.sslip.io/ext/bc/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt/rpc",
       accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
       chainId: Number(process.env.EU_L1_CHAIN_ID) || 1832,
     },

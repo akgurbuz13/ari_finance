@@ -1,0 +1,17 @@
+{
+  "network": "ari-eu-testnet",
+  "chainId": 1832,
+  "blockchainID": "0x0ea0530c367859873c37829bdbc918ad3da9f4c7bed68d083275efc310ab03f4",
+  "deployer": "0xe9ce1Cd8179134B162581BEb7988EBD2e2400503",
+  "timestamp": "2026-03-09T17:14:31.413Z",
+  "contracts": {
+    "timelock": "0x3a6b3CFbC5EC7D61E6BDD57Ba15AEa8155d5798f",
+    "validatorManager": "0x1372CC88C48521EcB16b184DFE519ab87FE98Ee4",
+    "kycAllowList": "0xA4Fc63413DDd3696ea8E295f73e4F52195101a35",
+    "stablecoin": "0xd354bb151EAbAd1BfaaE9a36c32e3e2CB16Ae232",
+    "stablecoinImpl": "0xde2E9ADbd664bA2266300349920c4FC9cAEBeAeE",
+    "tokenHome": "0xD76af0Ef48d735BAB56302388A44B080B8A313fE",
+    "tokenRemote": "0x444c7316C7DF741ed7bf470c4B0b56c923AB08bB",
+    "bridgeAdapter": "0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6"
+  }
+}

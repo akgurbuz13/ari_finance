@@ -1,0 +1,17 @@
+{
+  "network": "ari-tr-testnet",
+  "chainId": 1279,
+  "blockchainID": "0xb5a82a53e6366b84f980e4d2f13e583ca02f10eaf1ead220e23d036574799345",
+  "deployer": "0xe9ce1Cd8179134B162581BEb7988EBD2e2400503",
+  "timestamp": "2026-03-09T17:12:24.505Z",
+  "contracts": {
+    "timelock": "0xde2E9ADbd664bA2266300349920c4FC9cAEBeAeE",
+    "validatorManager": "0xd354bb151EAbAd1BfaaE9a36c32e3e2CB16Ae232",
+    "kycAllowList": "0xD76af0Ef48d735BAB56302388A44B080B8A313fE",
+    "stablecoin": "0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6",
+    "stablecoinImpl": "0x444c7316C7DF741ed7bf470c4B0b56c923AB08bB",
+    "tokenHome": "0x1090B43270a8693C111fEe23D81FAcCC8Eee7A76",
+    "tokenRemote": "0xe94BB4716255178e01bf34d1aE6A02edADc117B5",
+    "bridgeAdapter": "0xcCf46814bdA0cA12e997bAC9CEc3Dc90B104e0C2"
+  }
+}

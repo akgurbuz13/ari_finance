@@ -1,10 +1,48 @@
 # ARI Fintech — Implementation Progress
 
-> **Last Updated:** 2026-03-07
-> **Current Phase:** Vehicle Securitization & Smart Contract Escrow
-> **Overall Completion:** ~98% of MVP + Vehicle Escrow Feature
+> **Last Updated:** 2026-03-09
+> **Current Phase:** Fuji L1 Redeployment + Competition Submission
+> **Overall Completion:** ~99% of MVP
 
 This document tracks implementation progress against the [ARCHITECTURE.md](./ARCHITECTURE.md) plan. Update this document when completing significant milestones.
+
+---
+
+## Fresh Fuji L1 Deployment (2026-03-09)
+
+Complete from-scratch creation and deployment of both Avalanche L1s on Fuji testnet using Platform CLI + Builder Console. All 13 contracts deployed and cross-registered.
+
+**L1 Creation:**
+- Created ariTR subnet (`2Sw7W5coLCB4EZRADRyfTCuPBF5QqxMxj3jL8cUWPpCdso1MGX`) and chain (ID 1279) via Platform CLI
+- Created ariEU subnet (`5KvzdVWjkZu6YuFrWVKhpFq2ZyGqQgHEozgvJFhzJRdBfba6M`) and chain (ID 1832) via Platform CLI
+- Managed validator nodes provisioned via Builder Console
+- ValidatorManager deployed and L1 conversion completed
+- ICM/Teleporter set up with 2 managed relayers (bidirectional)
+
+**Contract Deployment (all 13 contracts across both chains):**
+- AriStablecoinUpgradeable (ariTRY on TR, ariEUR on EU) via UUPS proxy
+- Cross-currency stablecoins (ariEUR on TR, ariTRY on EU)
+- AriTokenHome + AriTokenRemote on both chains (ICTT bridge)
+- AriBridgeAdapter on both chains
+- AriBurnMintBridge ×2 on each chain (TRY bridge + EUR bridge)
+- AriVehicleNFT + AriVehicleEscrow on TR L1
+- AriTimelock + KycAllowList on both chains
+
+**Cross-Registration:**
+- All 4 burn-mint bridges cross-registered as partners via `cross-register-bridges.ts`
+
+**Configuration Updates:**
+- Updated `hardhat.config.ts` with new RPC URLs
+- Updated `application-fuji.yml` with all contract addresses, chain config, blockchain IDs
+- Updated `application.yml` default RPC URLs
+- Created deployment records: `ari-tr-testnet.json`, `ari-eu-testnet.json`, `vehicle-escrow-1279.json`
+- Updated `FUJI_L1_SETUP_GUIDE.md` with all deployed values
+
+**Verification:**
+- 183 Solidity tests passing
+- Both Kotlin modules compile clean (zero warnings)
+- ariTRY `name()` returns "ARI Turkish Lira" on TR L1
+- ariEUR `name()` returns "ARI Euro" on EU L1
 
 ---
 
@@ -164,7 +202,7 @@ Pre-demo investigation and fixes:
 |-----------|--------|------------|-------|
 | Core Banking Backend | ✅ Production-Ready | 92% | All modules + same-ccy cross-border |
 | Blockchain Service | ✅ Production-Ready | 97% | Mint/Burn/ICTT Bridge/BurnMint Bridge |
-| Smart Contracts | ✅ Production-Ready | 95% | 183 tests, Vehicle NFT + Escrow added |
+| Smart Contracts | ✅ Production-Ready | 95% | 183 tests, 13 contracts deployed on Fuji |
 | Web App | ✅ Production-Ready | 95% | Full user flows |
 | Admin Console | ✅ Production-Ready | 90% | All admin features |
 | Mobile App | 🔶 Needs Review | 70% | Core flows implemented |
@@ -240,7 +278,7 @@ Pre-demo investigation and fixes:
 |-------------|--------|------|-------|
 | AriStablecoin contract | ✅ | 2026-02-03 | ERC-20 + mint/burn/freeze/allowlist |
 | AriStablecoinUpgradeable | ✅ | 2026-02-03 | UUPS proxy pattern |
-| Deploy TR L1 + EU L1 | 🔶 | Pending | Terraform ready, awaiting deployment |
+| Deploy TR L1 + EU L1 | ✅ | 2026-03-09 | Fresh Fuji L1s via Platform CLI + Builder Console |
 | Blockchain service: mint/burn | ✅ | 2026-02-04 | Full implementation with error handling |
 | Custodial wallet management | ✅ | 2026-02-04 | HD wallet derivation |
 | Gasless relayer | ✅ | 2026-02-04 | ERC-2771 meta-transactions |
