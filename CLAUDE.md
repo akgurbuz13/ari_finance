@@ -254,7 +254,14 @@ Blockchain Service communicates via:
 
 **Outbox event ownership**: Both core-banking and blockchain-service poll the same `shared.outbox_events` table. Core-banking's `OutboxPoller` MUST exclude all blockchain event types (`MintRequested`, `BurnRequested`, `CrossBorderBurnMintRequested`, etc.) to prevent stealing events from blockchain-service. When adding a new blockchain event type, add it to core-banking's exclusion list in `OutboxPoller.kt`.
 
-### Database Schemas
+### Database Access
+
+**Database name**: `ari` (NOT `ari_platform`). **User**: `ari`. **Container**: `ari-postgres`.
+```bash
+# Correct pattern:
+docker exec ari-postgres psql -U ari -d ari -c "SELECT ..."
+# identity.users columns: id, email, phone, password_hash, first_name, last_name (NOT full_name), date_of_birth, nationality, status, region, totp_secret, totp_enabled, created_at, updated_at, role
+```
 
 | Schema | Purpose |
 |--------|---------|

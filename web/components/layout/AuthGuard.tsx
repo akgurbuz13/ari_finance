@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Skeleton from '../ui/Skeleton';
 
@@ -13,19 +13,17 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const [isChecking, setIsChecking] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
 
-  useEffect(() => {
+  const checkAuth = useCallback(() => {
     const token = localStorage.getItem('accessToken');
     const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
     const isAuthRoute = AUTH_REDIRECT_ROUTES.includes(pathname);
 
     if (!token && !isPublicRoute) {
-      // Unauthenticated user trying to access a protected route
       router.replace('/login');
       return;
     }
 
     if (token && isAuthRoute) {
-      // Authenticated user trying to access login/signup — redirect to home
       router.replace('/home');
       return;
     }
@@ -33,6 +31,20 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     setIsAuthorized(true);
     setIsChecking(false);
   }, [pathname, router]);
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  // Redirect immediately when logout occurs (tokens cleared by useAuth)
+  useEffect(() => {
+    const onLogout = () => {
+      setIsAuthorized(false);
+      router.replace('/login');
+    };
+    window.addEventListener('auth-logout', onLogout);
+    return () => window.removeEventListener('auth-logout', onLogout);
+  }, [router]);
 
   if (isChecking && !isAuthorized) {
     return (

@@ -60,6 +60,7 @@ export function useAuth() {
       localStorage.removeItem('userId');
       setUser(null);
       setIsAuthenticated(false);
+      window.dispatchEvent(new Event('auth-logout'));
     }
   };
 
