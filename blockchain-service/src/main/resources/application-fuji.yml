@@ -26,8 +26,12 @@ ari:
       eu-token-home-address: "0xD76af0Ef48d735BAB56302388A44B080B8A313fE"
       tr-token-remote-address: "0xe94BB4716255178e01bf34d1aE6A02edADc117B5"
       eu-token-remote-address: "0x444c7316C7DF741ed7bf470c4B0b56c923AB08bB"
+      # Primary burn-mint bridges: TRY bridge on TR, EUR bridge on EU (handles natural direction)
       tr-burn-mint-bridge-address: "0x74CDb2b07e6e6441b71348E7812E7208eF909f24"
       eu-burn-mint-bridge-address: "0x1C3C34dAe1503E64033Ec99A4f2a61F32AA2Be0E"
+      # Secondary bridges (deployed on-chain, not yet wired in backend):
+      # TR EUR bridge: 0xA2Aa53A97A848343F7D399e186D237E905888Df4
+      # EU TRY bridge: 0x5EB99416745b310b6D091E7Cb91C3B0297788144
       tr-blockchain-id: "0xb5a82a53e6366b84f980e4d2f13e583ca02f10eaf1ead220e23d036574799345"
       eu-blockchain-id: "0x0ea0530c367859873c37829bdbc918ad3da9f4c7bed68d083275efc310ab03f4"
     vehicle:

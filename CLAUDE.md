@@ -35,7 +35,7 @@ This prevents duplicate effort and ensures you build on existing work rather tha
 |-----------|------------|--------|
 | Core Banking Backend | 92% | ✅ Production-Ready |
 | Blockchain Service | 97% | ✅ Production-Ready |
-| Smart Contracts | 92% | ✅ Tested (135 tests), deployed on Fuji |
+| Smart Contracts | 95% | ✅ Tested (183 tests), deployed on Fuji |
 | Web App | 95% | ✅ Production-Ready |
 | Admin Console | 90% | ✅ Production-Ready |
 | Mobile App | 70% | 🔶 Needs Review |
@@ -97,7 +97,7 @@ Test framework: JUnit 5 + Kotest assertions + MockK + Testcontainers.
 ```bash
 cd contracts && npm install              # Install dependencies
 cd contracts && npx hardhat compile
-cd contracts && npx hardhat test         # 135 tests
+cd contracts && npx hardhat test         # 183 tests
 cd contracts && npx hardhat coverage     # Coverage report
 ```
 

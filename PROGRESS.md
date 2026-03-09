@@ -10,7 +10,7 @@ This document tracks implementation progress against the [ARCHITECTURE.md](./ARC
 
 ## Fresh Fuji L1 Deployment (2026-03-09)
 
-Complete from-scratch creation and deployment of both Avalanche L1s on Fuji testnet using Platform CLI + Builder Console. All 13 contracts deployed and cross-registered.
+Complete from-scratch creation and deployment of both Avalanche L1s on Fuji testnet using Platform CLI + Builder Console. 20 contract instances deployed across both chains and cross-registered.
 
 **L1 Creation:**
 - Created ariTR subnet (`2Sw7W5coLCB4EZRADRyfTCuPBF5QqxMxj3jL8cUWPpCdso1MGX`) and chain (ID 1279) via Platform CLI
@@ -19,7 +19,7 @@ Complete from-scratch creation and deployment of both Avalanche L1s on Fuji test
 - ValidatorManager deployed and L1 conversion completed
 - ICM/Teleporter set up with 2 managed relayers (bidirectional)
 
-**Contract Deployment (all 13 contracts across both chains):**
+**Contract Deployment (all contracts across both chains — 20 instances total):**
 - AriStablecoinUpgradeable (ariTRY on TR, ariEUR on EU) via UUPS proxy
 - Cross-currency stablecoins (ariEUR on TR, ariTRY on EU)
 - AriTokenHome + AriTokenRemote on both chains (ICTT bridge)
@@ -202,7 +202,7 @@ Pre-demo investigation and fixes:
 |-----------|--------|------------|-------|
 | Core Banking Backend | ✅ Production-Ready | 92% | All modules + same-ccy cross-border |
 | Blockchain Service | ✅ Production-Ready | 97% | Mint/Burn/ICTT Bridge/BurnMint Bridge |
-| Smart Contracts | ✅ Production-Ready | 95% | 183 tests, 13 contracts deployed on Fuji |
+| Smart Contracts | ✅ Production-Ready | 95% | 183 tests, 20 contract instances deployed on Fuji |
 | Web App | ✅ Production-Ready | 95% | Full user flows |
 | Admin Console | ✅ Production-Ready | 90% | All admin features |
 | Mobile App | 🔶 Needs Review | 70% | Core flows implemented |
@@ -419,7 +419,7 @@ After initial implementation of Phases 1-5, a comprehensive review revealed that
 ### Low Priority
 | Issue | Impact | Effort | Notes |
 |-------|--------|--------|-------|
-| No API rate limiting in prod | Potential abuse | Medium | Kong configuration needed |
+| No API rate limiting in prod | Potential abuse | Medium | Bucket4j in-app + nginx ingress configuration needed |
 | Missing transaction export feature | User feature | Low | PDF/CSV generation |
 
 ---
@@ -482,7 +482,7 @@ Before considering a phase complete, verify:
 
 ### Contracts
 - [ ] `npx hardhat compile` succeeds
-- [ ] `npx hardhat test` passes (135 tests)
+- [ ] `npx hardhat test` passes (183 tests)
 - [ ] `npx hardhat coverage` shows >80% coverage
 
 ### Frontend
