@@ -1,5 +1,6 @@
 package com.ari.platform.ledger.internal.service
 
+import com.ari.platform.identity.internal.repository.UserRepository
 import com.ari.platform.ledger.internal.model.Account
 import com.ari.platform.ledger.internal.model.AccountStatus
 import com.ari.platform.ledger.internal.model.AccountType
@@ -16,12 +17,16 @@ import java.util.UUID
 class AccountService(
     private val accountRepository: AccountRepository,
     private val ibanGeneratorService: IbanGeneratorService,
-    private val auditService: AuditService
+    private val auditService: AuditService,
+    private val userRepository: UserRepository
 ) {
 
     @Transactional
     fun createUserWallet(userId: UUID, currency: String, region: String? = null): Account {
-        val accountRegion = region ?: regionForCurrency(currency)
+        // Use explicit region > user's home region > currency-based fallback
+        val accountRegion = region
+            ?: userRepository.findById(userId)?.region
+            ?: regionForCurrency(currency)
 
         val existing = accountRepository.findByUserIdCurrencyAndRegion(userId, currency, accountRegion)
         if (existing != null) {

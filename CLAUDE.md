@@ -27,7 +27,7 @@ This prevents duplicate effort and ensures you build on existing work rather tha
 
 ---
 
-## Implementation Status (as of 2026-03-07)
+## Implementation Status (as of 2026-03-09)
 
 > **Full details in [PROGRESS.md](./PROGRESS.md)**
 
@@ -54,6 +54,14 @@ This prevents duplicate effort and ensures you build on existing work rather tha
 - E2E mint verified on Fuji TR L1
 - CI fixes: Redis port, config prefix, JVM memory (2026-03-03)
 - Cross-border region logic fix: `regionForCurrency()` helper (2026-03-03)
+
+### Cross-Border Settlement Bug Fixes (2026-03-09)
+- Account region now derives from user's home region (identity table), not currency
+- Core-banking OutboxPoller exclusion list covers all 9 blockchain event types
+- burnAndBridge custodial flow: mint-to-operator before burn
+- V022 migration for `cross_border_same_ccy` payment type constraint
+- Transaction history API path fixed in web app
+- First successful on-chain cross-border settlement on Fuji TR L1
 
 ### Remaining Issues
 - Mobile biometric auth incomplete
@@ -174,6 +182,10 @@ When given multiple tasks, create a priority list (P1, P2, P3...) and tackle the
 | Ethers address checksum errors | Use `ethers.getAddress()` for EIP-55 checksums |
 | Test fails due to KYC | Add `await token.addToAllowlist(address)` in test setup |
 | Solidity stack too deep | Enable `viaIR: true` in hardhat.config.ts |
+| Account region defaults to currency | Region must derive from user's home region, not `regionForCurrency()` |
+| burnAndBridge reverts (balance 0) | Custodial flow: mint tokens to operator BEFORE calling burnAndBridge |
+| Core-banking steals blockchain events | Add new event types to `OutboxPoller.kt` exclusion list |
+| Wrong chain IDs on Fuji | Set `ARI_TR_CHAIN_ID=1279` and `ARI_EU_CHAIN_ID=1832` |
 
 ### Code Patterns
 
@@ -240,6 +252,8 @@ Blockchain Service communicates via:
 - **Inbound**: Reads `shared.outbox_events` table
 - **Outbound**: REST callbacks to `/api/internal/settlement-confirmed`
 
+**Outbox event ownership**: Both core-banking and blockchain-service poll the same `shared.outbox_events` table. Core-banking's `OutboxPoller` MUST exclude all blockchain event types (`MintRequested`, `BurnRequested`, `CrossBorderBurnMintRequested`, etc.) to prevent stealing events from blockchain-service. When adding a new blockchain event type, add it to core-banking's exclusion list in `OutboxPoller.kt`.
+
 ### Database Schemas
 
 | Schema | Purpose |
@@ -295,7 +309,7 @@ JAVA_HOME=$(/usr/libexec/java_home -v 21) ./gradlew :blockchain-service:test --n
 ### Contract Tests
 ```bash
 cd contracts
-npx hardhat test                    # All 115 tests
+npx hardhat test                    # All 183 tests
 npx hardhat test test/AriTokenHome.test.ts  # Specific test file
 npx hardhat coverage               # Coverage report
 ```
@@ -305,6 +319,31 @@ npx hardhat coverage               # Coverage report
 # Requires core-banking + blockchain-service running
 ./scripts/e2e-bridge-test.sh 1000  # Test 1000 TRY TR→EU transfer
 ```
+
+### Fuji Testnet Testing
+Running against real Fuji L1s requires specific environment variables:
+
+```bash
+# Terminal 1: Core Banking
+export ARI_JWT_SECRET="any-long-secret-for-dev"
+export ARI_INTERNAL_API_KEY="dev-internal-api-key-never-use-in-production"
+export ARI_TR_CHAIN_ID=1279
+export ARI_EU_CHAIN_ID=1832
+./gradlew :core-banking:bootRun
+
+# Terminal 2: Blockchain Service
+source .env.fuji   # Loads DEPLOYER_PRIVATE_KEY + chain config
+export SPRING_PROFILES_ACTIVE=fuji
+./gradlew :blockchain-service:bootRun
+
+# Terminal 3: Web App
+cd web && npm run dev
+```
+
+**Key notes:**
+- `.env.fuji` has the deployer key (`ari-deploy`, address `0xe9ce1Cd8...`) — this key is gitignored
+- Default chain IDs (99999/99998) are for **local dev only**. Fuji uses 1279 (TR) / 1832 (EU)
+- `ARI_INTERNAL_API_KEY` is required for blockchain-service → core-banking settlement callbacks
 
 ---
 

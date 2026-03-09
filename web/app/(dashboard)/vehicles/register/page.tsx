@@ -8,6 +8,7 @@ import api from '../../../../lib/api/client';
 import Card from '../../../../components/ui/Card';
 import Button from '../../../../components/ui/Button';
 import Input from '../../../../components/ui/Input';
+import Select from '../../../../components/ui/Select';
 import AvalancheBadge from '../../../../components/ui/AvalancheBadge';
 
 export default function RegisterVehiclePage() {
@@ -159,37 +160,29 @@ export default function RegisterVehiclePage() {
 
           {/* Fuel / Transmission */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div>
-              <label className="block text-body-sm font-medium text-ari-700 mb-2">
-                Fuel Type
-              </label>
-              <select
-                value={form.fuelType}
-                onChange={e => update('fuelType', e.target.value)}
-                className="w-full h-11 px-4 bg-ari-50 border border-ari-200 rounded-xl text-ari-900 text-body-sm transition-all duration-base focus:outline-none focus:bg-white focus:border-ari-900 focus:ring-1 focus:ring-ari-900/10"
-              >
-                <option value="">Select...</option>
-                <option value="Gasoline">Gasoline</option>
-                <option value="Diesel">Diesel</option>
-                <option value="Electric">Electric</option>
-                <option value="Hybrid">Hybrid</option>
-                <option value="LPG">LPG</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-body-sm font-medium text-ari-700 mb-2">
-                Transmission
-              </label>
-              <select
-                value={form.transmission}
-                onChange={e => update('transmission', e.target.value)}
-                className="w-full h-11 px-4 bg-ari-50 border border-ari-200 rounded-xl text-ari-900 text-body-sm transition-all duration-base focus:outline-none focus:bg-white focus:border-ari-900 focus:ring-1 focus:ring-ari-900/10"
-              >
-                <option value="">Select...</option>
-                <option value="Manual">Manual</option>
-                <option value="Automatic">Automatic</option>
-              </select>
-            </div>
+            <Select
+              label="Fuel Type"
+              placeholder="Select..."
+              value={form.fuelType}
+              onChange={v => update('fuelType', v)}
+              options={[
+                { value: 'Gasoline', label: 'Gasoline' },
+                { value: 'Diesel', label: 'Diesel' },
+                { value: 'Electric', label: 'Electric' },
+                { value: 'Hybrid', label: 'Hybrid' },
+                { value: 'LPG', label: 'LPG' },
+              ]}
+            />
+            <Select
+              label="Transmission"
+              placeholder="Select..."
+              value={form.transmission}
+              onChange={v => update('transmission', v)}
+              options={[
+                { value: 'Manual', label: 'Manual' },
+                { value: 'Automatic', label: 'Automatic' },
+              ]}
+            />
           </div>
 
           {/* Divider */}

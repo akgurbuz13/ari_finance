@@ -76,10 +76,11 @@ export default function HistoryPage() {
   useEffect(() => {
     if (!selectedAccount) return;
     setLoadingTx(true);
-    api.get<Transaction[]>(`/transactions/account/${selectedAccount}?limit=${limit}`)
+    api.get<{ items: Transaction[]; total: number }>(`/accounts/${selectedAccount}/transactions?limit=${limit}`)
       .then(({ data }) => {
-        setTransactions(data);
-        setHasMore(data.length >= limit);
+        const items = Array.isArray(data) ? data : data.items || [];
+        setTransactions(items);
+        setHasMore(items.length >= limit);
       })
       .finally(() => setLoadingTx(false));
   }, [selectedAccount, limit]);

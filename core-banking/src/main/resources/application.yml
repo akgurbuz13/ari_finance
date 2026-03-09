@@ -55,6 +55,11 @@ ari:
     # public-key-path: ${JWT_PUBLIC_KEY_PATH:}
     access-token-expiry: 900 # 15 minutes in seconds
     refresh-token-expiry: 604800 # 7 days in seconds
+  blockchain:
+    tr-l1:
+      chain-id: ${ARI_TR_CHAIN_ID:99999}
+    eu-l1:
+      chain-id: ${ARI_EU_CHAIN_ID:99998}
   blockchain-service:
     url: ${BLOCKCHAIN_SERVICE_URL:${ARI_BLOCKCHAIN_SERVICE_URL:http://localhost:8081}}
   internal:

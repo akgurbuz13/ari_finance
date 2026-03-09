@@ -172,18 +172,23 @@ class OutboxPollerService(
 
             // Get the burn-mint bridge on the source chain
             val bridge = contractFactory.getBurnMintBridge(sourceChainId, bridgeOperatorCredentials)
+            val operatorAddress = bridgeOperatorCredentials.address
 
-            // Ensure source wallet is allowlisted on source chain stablecoin
+            // Ensure bridge operator is allowlisted on source chain stablecoin
             val sourceStablecoin = contractFactory.getStablecoin(sourceChainId, currency, bridgeOperatorCredentials)
-            if (!sourceStablecoin.allowlisted(sourceWalletAddress)) {
-                sourceStablecoin.addToAllowlist(sourceWalletAddress)
+            if (!sourceStablecoin.allowlisted(operatorAddress)) {
+                sourceStablecoin.addToAllowlist(operatorAddress)
             }
+
+            // Custodial flow: mint ariTRY to bridge operator, then burnAndBridge burns from operator
+            // This represents the on-chain settlement of the user's fiat deposit
+            sourceStablecoin.mint(operatorAddress, amountWei)
 
             // Get the destination blockchain ID (bytes32 hex for Teleporter)
             val destBlockchainIdHex = blockchainConfig.getBlockchainId(targetChainId)
             val destBlockchainIdBytes = Numeric.hexStringToByteArray(destBlockchainIdHex)
 
-            // Single bridge call: burns on source + sends Teleporter message
+            // Bridge call: burns from operator on source + sends Teleporter message
             // Teleporter relayers deliver the message to dest chain
             // Dest bridge receives message and mints tokens
             val receipt = bridge.burnAndBridge(destBlockchainIdBytes, targetWalletAddress, amountWei)
@@ -195,7 +200,8 @@ class OutboxPollerService(
 
         } catch (e: Exception) {
             log.error("CrossBorderBurnMint failed for paymentOrderId={}: {}", paymentOrderId, e.message, e)
-            notifyCoreBanking(paymentOrderId, "bridge_transfer", "", false)
+            try { notifyCoreBanking(paymentOrderId, "bridge_transfer", "", false) } catch (_: Exception) {}
+            throw e
         }
     }
 
@@ -210,34 +216,30 @@ class OutboxPollerService(
 
         log.info("Processing VehicleMintRequest: vehicleId={}", vehicleRegistrationId)
 
-        try {
-            val operatorCredentials = walletService.getBridgeOperatorCredentials()
-            val nft = contractFactory.getVehicleNFT(operatorCredentials)
+        val operatorCredentials = walletService.getBridgeOperatorCredentials()
+        val nft = contractFactory.getVehicleNFT(operatorCredentials)
 
-            val ownerWallet = walletService.getOrCreateWalletForCurrency(UUID.fromString(ownerUserId), "TRY")
+        val ownerWallet = walletService.getOrCreateWalletForCurrency(UUID.fromString(ownerUserId), "TRY")
 
-            // Ensure owner is allowlisted on NFT contract
-            if (!nft.kycAllowlisted(ownerWallet.address)) {
-                nft.addToAllowlist(ownerWallet.address)
-            }
-
-            val vinHashBytes = org.web3j.utils.Numeric.hexStringToByteArray(vinHash)
-            val plateHashBytes = org.web3j.utils.Numeric.hexStringToByteArray(plateHash)
-
-            val receipt = nft.mint(ownerWallet.address, vinHashBytes, plateHashBytes, metadataUri)
-
-            // Extract tokenId from receipt event logs (VehicleMinted event)
-            val tokenId = extractIndexedId(receipt, VEHICLE_MINTED_TOPIC)
-
-            notifyVehicleSettlement(mapOf(
-                "type" to "VEHICLE_MINTED",
-                "vehicleRegistrationId" to vehicleRegistrationId,
-                "tokenId" to tokenId,
-                "txHash" to receipt.transactionHash
-            ))
-        } catch (e: Exception) {
-            log.error("VehicleMintRequest failed for vehicleId={}: {}", vehicleRegistrationId, e.message, e)
+        // Ensure owner is allowlisted on NFT contract
+        if (!nft.kycAllowlisted(ownerWallet.address)) {
+            nft.addToAllowlist(ownerWallet.address)
         }
+
+        val vinHashBytes = org.web3j.utils.Numeric.hexStringToByteArray(vinHash)
+        val plateHashBytes = org.web3j.utils.Numeric.hexStringToByteArray(plateHash)
+
+        val receipt = nft.mint(ownerWallet.address, vinHashBytes, plateHashBytes, metadataUri)
+
+        // Extract tokenId from receipt event logs (VehicleMinted event)
+        val tokenId = extractIndexedId(receipt, VEHICLE_MINTED_TOPIC)
+
+        notifyVehicleSettlement(mapOf(
+            "type" to "VEHICLE_MINTED",
+            "vehicleRegistrationId" to vehicleRegistrationId,
+            "tokenId" to tokenId,
+            "txHash" to receipt.transactionHash
+        ))
     }
 
     private fun handleEscrowSetup(payload: JsonNode) {
@@ -250,45 +252,41 @@ class OutboxPollerService(
 
         log.info("Processing EscrowSetupRequested: escrowId={}", escrowId)
 
-        try {
-            val operatorCredentials = walletService.getBridgeOperatorCredentials()
-            val nft = contractFactory.getVehicleNFT(operatorCredentials)
-            val escrowContract = contractFactory.getVehicleEscrow(operatorCredentials)
+        val operatorCredentials = walletService.getBridgeOperatorCredentials()
+        val nft = contractFactory.getVehicleNFT(operatorCredentials)
+        val escrowContract = contractFactory.getVehicleEscrow(operatorCredentials)
 
-            val sellerWallet = walletService.getOrCreateWalletForCurrency(UUID.fromString(sellerUserId), currency)
-            val buyerWallet = walletService.getOrCreateWalletForCurrency(UUID.fromString(buyerUserId), currency)
+        val sellerWallet = walletService.getOrCreateWalletForCurrency(UUID.fromString(sellerUserId), currency)
+        val buyerWallet = walletService.getOrCreateWalletForCurrency(UUID.fromString(buyerUserId), currency)
 
-            // Ensure buyer is allowlisted on NFT
-            if (!nft.kycAllowlisted(buyerWallet.address)) {
-                nft.addToAllowlist(buyerWallet.address)
-            }
-
-            // Approve escrow contract for the NFT — must use seller's credentials (NFT owner)
-            val sellerCredentials = walletService.getCredentials(UUID.fromString(sellerUserId))
-            val sellerNft = contractFactory.getVehicleNFT(sellerCredentials)
-            sellerNft.approve(blockchainConfig.vehicleEscrowAddress, java.math.BigInteger.valueOf(vehicleTokenId))
-
-            // Create on-chain escrow
-            val amountWei = saleAmount.multiply(BigDecimal.TEN.pow(18)).toBigInteger()
-            val receipt = escrowContract.createEscrow(
-                java.math.BigInteger.valueOf(vehicleTokenId),
-                sellerWallet.address,
-                buyerWallet.address,
-                amountWei
-            )
-
-            // Extract onChainEscrowId from logs (EscrowCreated event)
-            val onChainEscrowId = extractIndexedId(receipt, ESCROW_CREATED_TOPIC)
-
-            notifyVehicleSettlement(mapOf(
-                "type" to "ESCROW_SETUP_CONFIRMED",
-                "escrowId" to escrowId,
-                "onChainEscrowId" to onChainEscrowId,
-                "txHash" to receipt.transactionHash
-            ))
-        } catch (e: Exception) {
-            log.error("EscrowSetup failed for escrowId={}: {}", escrowId, e.message, e)
+        // Ensure buyer is allowlisted on NFT
+        if (!nft.kycAllowlisted(buyerWallet.address)) {
+            nft.addToAllowlist(buyerWallet.address)
         }
+
+        // No explicit ERC721 approve() needed. The NFT contract's _isAuthorized override
+        // allows approved escrow contracts to transfer without standard approval.
+        // This avoids the need for the seller's private key (which may not match the stored
+        // wallet if the master key changed between wallet creation and now).
+
+        // Create on-chain escrow
+        val amountWei = saleAmount.multiply(BigDecimal.TEN.pow(18)).toBigInteger()
+        val receipt = escrowContract.createEscrow(
+            java.math.BigInteger.valueOf(vehicleTokenId),
+            sellerWallet.address,
+            buyerWallet.address,
+            amountWei
+        )
+
+        // Extract onChainEscrowId from logs (EscrowCreated event)
+        val onChainEscrowId = extractIndexedId(receipt, ESCROW_CREATED_TOPIC)
+
+        notifyVehicleSettlement(mapOf(
+            "type" to "ESCROW_SETUP_CONFIRMED",
+            "escrowId" to escrowId,
+            "onChainEscrowId" to onChainEscrowId,
+            "txHash" to receipt.transactionHash
+        ))
     }
 
     private fun handleEscrowFunding(payload: JsonNode) {
@@ -299,26 +297,22 @@ class OutboxPollerService(
 
         log.info("Processing EscrowFundingRequested: escrowId={}", escrowId)
 
-        try {
-            val operatorCredentials = walletService.getBridgeOperatorCredentials()
-            val escrowContract = contractFactory.getVehicleEscrow(operatorCredentials)
+        val operatorCredentials = walletService.getBridgeOperatorCredentials()
+        val escrowContract = contractFactory.getVehicleEscrow(operatorCredentials)
 
-            // Mint ariTRY to escrow contract address
-            val amountWei = totalAmount.multiply(BigDecimal.TEN.pow(18)).toBigInteger()
-            val stablecoin = contractFactory.getStablecoin(blockchainConfig.trL1ChainId, currency, operatorCredentials)
-            stablecoin.mint(blockchainConfig.vehicleEscrowAddress, amountWei)
+        // Mint ariTRY to escrow contract address
+        val amountWei = totalAmount.multiply(BigDecimal.TEN.pow(18)).toBigInteger()
+        val stablecoin = contractFactory.getStablecoin(blockchainConfig.trL1ChainId, currency, operatorCredentials)
+        stablecoin.mint(blockchainConfig.vehicleEscrowAddress, amountWei)
 
-            // Mark escrow as funded
-            val receipt = escrowContract.fundEscrow(java.math.BigInteger.valueOf(onChainEscrowId))
+        // Mark escrow as funded
+        val receipt = escrowContract.fundEscrow(java.math.BigInteger.valueOf(onChainEscrowId))
 
-            notifyVehicleSettlement(mapOf(
-                "type" to "ESCROW_FUNDED",
-                "escrowId" to escrowId,
-                "txHash" to receipt.transactionHash
-            ))
-        } catch (e: Exception) {
-            log.error("EscrowFunding failed for escrowId={}: {}", escrowId, e.message, e)
-        }
+        notifyVehicleSettlement(mapOf(
+            "type" to "ESCROW_FUNDED",
+            "escrowId" to escrowId,
+            "txHash" to receipt.transactionHash
+        ))
     }
 
     private fun handleEscrowConfirmation(payload: JsonNode) {
@@ -328,31 +322,27 @@ class OutboxPollerService(
 
         log.info("Processing EscrowConfirmationRequested: escrowId={}, role={}", escrowId, role)
 
-        try {
-            val operatorCredentials = walletService.getBridgeOperatorCredentials()
-            val escrowContract = contractFactory.getVehicleEscrow(operatorCredentials)
+        val operatorCredentials = walletService.getBridgeOperatorCredentials()
+        val escrowContract = contractFactory.getVehicleEscrow(operatorCredentials)
 
-            val receipt = if (role == "SELLER") {
-                escrowContract.sellerConfirm(java.math.BigInteger.valueOf(onChainEscrowId))
-            } else {
-                escrowContract.buyerConfirm(java.math.BigInteger.valueOf(onChainEscrowId))
-            }
-
-            // Check if EscrowCompleted event was emitted (both confirmed)
-            val completed = receipt.logs.any { log ->
-                log.topics.isNotEmpty() && log.topics[0] == ESCROW_COMPLETED_TOPIC
-            }
-
-            notifyVehicleSettlement(mapOf(
-                "type" to "ESCROW_CONFIRMED",
-                "escrowId" to escrowId,
-                "role" to role,
-                "completed" to completed,
-                "txHash" to receipt.transactionHash
-            ))
-        } catch (e: Exception) {
-            log.error("EscrowConfirmation failed for escrowId={}: {}", escrowId, e.message, e)
+        val receipt = if (role == "SELLER") {
+            escrowContract.sellerConfirm(java.math.BigInteger.valueOf(onChainEscrowId))
+        } else {
+            escrowContract.buyerConfirm(java.math.BigInteger.valueOf(onChainEscrowId))
         }
+
+        // Check if EscrowCompleted event was emitted (both confirmed)
+        val completed = receipt.logs.any { log ->
+            log.topics.isNotEmpty() && log.topics[0] == ESCROW_COMPLETED_TOPIC
+        }
+
+        notifyVehicleSettlement(mapOf(
+            "type" to "ESCROW_CONFIRMED",
+            "escrowId" to escrowId,
+            "role" to role,
+            "completed" to completed,
+            "txHash" to receipt.transactionHash
+        ))
     }
 
     private fun handleEscrowCancellation(payload: JsonNode) {
@@ -361,21 +351,17 @@ class OutboxPollerService(
 
         log.info("Processing EscrowCancellationRequested: escrowId={}", escrowId)
 
-        try {
-            if (onChainEscrowId != null && onChainEscrowId > 0) {
-                val operatorCredentials = walletService.getBridgeOperatorCredentials()
-                val escrowContract = contractFactory.getVehicleEscrow(operatorCredentials)
-                escrowContract.cancel(java.math.BigInteger.valueOf(onChainEscrowId))
-            }
-
-            notifyVehicleSettlement(mapOf(
-                "type" to "ESCROW_CANCELLED",
-                "escrowId" to escrowId,
-                "txHash" to ""
-            ))
-        } catch (e: Exception) {
-            log.error("EscrowCancellation failed for escrowId={}: {}", escrowId, e.message, e)
+        if (onChainEscrowId != null && onChainEscrowId > 0) {
+            val operatorCredentials = walletService.getBridgeOperatorCredentials()
+            val escrowContract = contractFactory.getVehicleEscrow(operatorCredentials)
+            escrowContract.cancel(java.math.BigInteger.valueOf(onChainEscrowId))
         }
+
+        notifyVehicleSettlement(mapOf(
+            "type" to "ESCROW_CANCELLED",
+            "escrowId" to escrowId,
+            "txHash" to ""
+        ))
     }
 
     private val VEHICLE_MINTED_TOPIC = org.web3j.crypto.Hash.sha3String(
@@ -405,12 +391,8 @@ class OutboxPollerService(
     }
 
     private fun notifyVehicleSettlement(data: Map<String, Any>) {
-        try {
-            postToCoreBanking("/api/internal/vehicle-settlement", data)
-            log.info("Vehicle settlement notified: type={}", data["type"])
-        } catch (e: Exception) {
-            log.error("Failed to notify vehicle settlement: {}", e.message)
-        }
+        postToCoreBanking("/api/internal/vehicle-settlement", data)
+        log.info("Vehicle settlement notified: type={}", data["type"])
     }
 
     /**
@@ -430,18 +412,14 @@ class OutboxPollerService(
     }
 
     private fun notifyCoreBanking(paymentOrderId: String, operation: String, txHash: String, success: Boolean) {
-        try {
-            postToCoreBanking("/api/internal/settlement-confirmed", mapOf(
-                "paymentOrderId" to paymentOrderId,
-                "operation" to operation,
-                "txHash" to txHash,
-                "success" to success
-            ))
-            log.info("Core-banking notified: paymentOrderId={}, operation={}, success={}",
-                paymentOrderId, operation, success)
-        } catch (e: Exception) {
-            log.error("Failed to notify core-banking for payment={}: {}", paymentOrderId, e.message)
-        }
+        postToCoreBanking("/api/internal/settlement-confirmed", mapOf(
+            "paymentOrderId" to paymentOrderId,
+            "operation" to operation,
+            "txHash" to txHash,
+            "success" to success
+        ))
+        log.info("Core-banking notified: paymentOrderId={}, operation={}, success={}",
+            paymentOrderId, operation, success)
     }
 
     private fun postToCoreBanking(path: String, data: Map<String, Any>) {

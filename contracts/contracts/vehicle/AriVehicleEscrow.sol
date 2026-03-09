@@ -121,12 +121,9 @@ contract AriVehicleEscrow is AccessControl, ReentrancyGuard, Pausable {
         require(saleAmount > 0, "Sale amount must be > 0");
         require(vehicleNFT.ownerOf(tokenId) == seller, "Seller does not own NFT");
 
-        // Verify escrow is approved on the NFT contract
-        require(
-            vehicleNFT.getApproved(tokenId) == address(this) ||
-            vehicleNFT.isApprovedForAll(seller, address(this)),
-            "Escrow not approved for NFT"
-        );
+        // Note: No explicit ERC721 approve() needed. The NFT contract's _isAuthorized
+        // override allows approved escrow contracts to transfer, so safeTransferFrom
+        // in _executeSwap will succeed as long as setApprovedEscrow(this, true) was called.
 
         uint256 escrowId = nextEscrowId;
         nextEscrowId++;

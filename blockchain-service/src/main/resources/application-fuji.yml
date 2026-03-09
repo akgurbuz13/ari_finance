@@ -36,7 +36,7 @@ ari:
       eu-blockchain-id: "0x0ea0530c367859873c37829bdbc918ad3da9f4c7bed68d083275efc310ab03f4"
     vehicle:
       nft-address: "0xF66B3253eBe361D2A3E14B45C82Acd2d5a1C44c1"
-      escrow-address: "0x2F3e53AfE15263D1bc5f4b3a908628498CcECf55"
+      escrow-address: "0xb38f33015ED35E73b141f1169D78BEF379A57E2F"
       treasury-address: "0xe9ce1Cd8179134B162581BEb7988EBD2e2400503"
     wallet:
       # Deployer key - has MINTER_ROLE, BRIDGE_OPERATOR_ROLE on all Fuji contracts

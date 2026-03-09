@@ -125,20 +125,22 @@ function AccountCard({ account }: { account: Account }) {
   );
 }
 
-function CreateAccountCard({ onCreate }: { onCreate: (currency: string) => void }) {
+function CreateAccountCard({ onCreate, existingCurrencies }: { onCreate: (currency: string) => void; existingCurrencies: string[] }) {
+  const missingCurrency = !existingCurrencies.includes('TRY') ? 'TRY' : !existingCurrencies.includes('EUR') ? 'EUR' : null;
+  const flag = missingCurrency === 'TRY' ? '\u{1F1F9}\u{1F1F7}' : '\u{1F1EA}\u{1F1FA}';
+
+  if (!missingCurrency) return null;
+
   return (
     <button
-      onClick={() => onCreate('TRY')}
+      onClick={() => onCreate(missingCurrency)}
       className="border-2 border-dashed border-ari-200 rounded-2xl p-6 flex flex-col items-center justify-center hover:border-ari-300 transition-colors cursor-pointer min-h-[220px] w-full group"
     >
       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ari-100 group-hover:bg-ari-200 transition-colors">
         <Plus size={24} strokeWidth={1.5} className="text-ari-400 group-hover:text-ari-600 transition-colors" />
       </div>
       <p className="text-body-sm font-medium text-ari-500 mt-3 group-hover:text-ari-700 transition-colors">
-        Create new account
-      </p>
-      <p className="text-caption text-ari-400 mt-1">
-        TRY or EUR
+        {flag} Create {missingCurrency} Account
       </p>
     </button>
   );
@@ -186,6 +188,9 @@ export default function AccountsPage() {
     try {
       await api.post('/accounts', { currency });
       await loadAccounts();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to create account';
+      alert(message);
     } finally {
       setCreating(false);
     }
@@ -208,11 +213,11 @@ export default function AccountsPage() {
           )}
         </div>
         <div className="flex gap-2">
-          <Button variant="secondary" onClick={() => createAccount('TRY')} disabled={creating}>
+          <Button variant="secondary" onClick={() => createAccount('TRY')} disabled={creating || accounts.some(a => a.currency === 'TRY')}>
             <Plus size={16} strokeWidth={2} className="mr-1 inline" />
             TRY Account
           </Button>
-          <Button variant="secondary" onClick={() => createAccount('EUR')} disabled={creating}>
+          <Button variant="secondary" onClick={() => createAccount('EUR')} disabled={creating || accounts.some(a => a.currency === 'EUR')}>
             <Plus size={16} strokeWidth={2} className="mr-1 inline" />
             EUR Account
           </Button>
@@ -246,7 +251,7 @@ export default function AccountsPage() {
             <AccountCard key={account.id} account={account} />
           ))}
           {accounts.length < 2 && (
-            <CreateAccountCard onCreate={createAccount} />
+            <CreateAccountCard onCreate={createAccount} existingCurrencies={accounts.map(a => a.currency)} />
           )}
         </div>
       )}

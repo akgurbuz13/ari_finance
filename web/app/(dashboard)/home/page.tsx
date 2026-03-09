@@ -153,10 +153,11 @@ export default function HomePage() {
         setVehicles(vehicleRes.data);
 
         if (acctRes.data.length > 0) {
-          const txRes = await api.get<Transaction[]>(
-            `/transactions/account/${acctRes.data[0].id}?limit=5`
+          const txRes = await api.get<{ items: Transaction[]; total: number }>(
+            `/accounts/${acctRes.data[0].id}/transactions?limit=5`
           );
-          setTransactions(txRes.data);
+          const items = Array.isArray(txRes.data) ? txRes.data : txRes.data.items || [];
+          setTransactions(items);
         }
       } catch {
         // handled by interceptor

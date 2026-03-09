@@ -70,8 +70,8 @@ describe("AriVehicleEscrow", function () {
     const receipt = await tx.wait();
     tokenId = 0;
 
-    // Seller approves escrow for NFT
-    await nft.connect(seller).approve(escrowAddr, tokenId);
+    // No explicit ERC721 approve() needed — the NFT's _isAuthorized override
+    // allows approved escrow contracts to transfer without standard approval.
   });
 
   describe("Deployment", function () {
@@ -219,7 +219,6 @@ describe("AriVehicleEscrow", function () {
       const VIN2 = ethers.keccak256(ethers.toUtf8Bytes("ANOTHER_VIN"));
       const PLATE2 = ethers.keccak256(ethers.toUtf8Bytes("ANOTHER_PLATE"));
       await nft.mint(seller.address, VIN2, PLATE2, METADATA_URI);
-      await nft.connect(seller).approve(await escrow.getAddress(), 1);
       await escrow.connect(operator).createEscrow(1, seller.address, buyer.address, SALE_AMOUNT);
 
       await expect(

@@ -70,10 +70,10 @@ class ChainEventRepository(private val jdbcTemplate: JdbcTemplate) {
     }
 
     fun getLastProcessedBlock(chainId: Long): Long {
-        return jdbcTemplate.queryForObject(
-            "SELECT COALESCE(last_block, 0) FROM blockchain.block_cursors WHERE chain_id = ?",
-            Long::class.java, chainId
-        ) ?: 0L
+        return jdbcTemplate.query(
+            "SELECT last_block FROM blockchain.block_cursors WHERE chain_id = ?",
+            { rs, _ -> rs.getLong("last_block") }, chainId
+        ).firstOrNull() ?: 0L
     }
 
     fun updateLastProcessedBlock(chainId: Long, blockNumber: Long) {
