@@ -1,8 +1,8 @@
 # ARI Fintech Platform
 
-**Regulated dual-region fintech on Avalanche L1s — real compliance, real cross-border settlement, real on-chain enforcement**
+**Cross-border fintech on Avalanche L1s — real compliance, real on-chain settlement, global ambition**
 
-ARI is a cross-border payments and asset tokenization platform purpose-built for Turkey and the EU. It runs on two permissioned Avalanche L1 blockchains — one per regulatory jurisdiction — connected by Avalanche ICM (Teleporter) for cross-chain messaging. Every financial operation — stablecoin issuance, cross-border settlement, KYC enforcement, vehicle ownership transfer — is enforced on-chain.
+ARI is a cross-border payments and asset tokenization platform currently focused on Turkey and the EU, with a vision for global expansion. Each jurisdiction gets its own permissioned Avalanche L1 blockchain, connected by Avalanche ICM (Teleporter) for cross-chain messaging. The MVP launches with two L1s (ariTR for Turkey, ariEU for Europe) — the architecture is designed so that adding new jurisdictions means deploying a new L1 and registering it with the existing bridge network. Every financial operation — stablecoin issuance, cross-border settlement, KYC enforcement, vehicle ownership transfer — is enforced on-chain.
 
 > **Live on Fuji testnet. 13 smart contracts deployed across 2 L1s. 183 Solidity tests passing. Full-stack integration: Kotlin backend + Next.js frontend + on-chain settlement.**
 
@@ -83,8 +83,8 @@ All contracts deployed on 2026-03-09. Deployer: `0xe9ce1Cd8179134B162581BEb7988E
 |----------|---------|---------|
 | **ariTRY Stablecoin** (Proxy) | `0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6` | KYC-enforced Turkish Lira stablecoin (UUPS upgradeable) |
 | **ariEUR Stablecoin** (Proxy) | `0x78870378c9A1A3458B2188f3F6c96cD406A85DC7` | Cross-currency: ariEUR deployed natively on TR L1 |
-| AriTokenHome | `0x1090B43270a8693C111fEe23D81FAcCC8Eee7A76` | ICTT: locks ariTRY when bridging to EU |
-| AriTokenRemote (wEUR) | `0xe94BB4716255178e01bf34d1aE6A02edADc117B5` | ICTT: mints wrapped EUR from EU chain |
+| AriTokenHome | `0x1090B43270a8693C111fEe23D81FAcCC8Eee7A76` | ICTT: locks ariTRY for cross-chain bridging |
+| AriTokenRemote | `0xe94BB4716255178e01bf34d1aE6A02edADc117B5` | ICTT: receives cross-chain tokens from EU |
 | AriBridgeAdapter | `0xcCf46814bdA0cA12e997bAC9CEc3Dc90B104e0C2` | Orchestrates ICTT bridge operations |
 | AriBurnMintBridge (TRY) | `0x74CDb2b07e6e6441b71348E7812E7208eF909f24` | Same-currency cross-border: burn ariTRY on TR, mint ariTRY on EU |
 | AriBurnMintBridge (EUR) | `0xA2Aa53A97A848343F7D399e186D237E905888Df4` | Same-currency cross-border: burn ariEUR on TR, mint ariEUR on EU |
@@ -99,8 +99,8 @@ All contracts deployed on 2026-03-09. Deployer: `0xe9ce1Cd8179134B162581BEb7988E
 |----------|---------|---------|
 | **ariEUR Stablecoin** (Proxy) | `0xd354bb151EAbAd1BfaaE9a36c32e3e2CB16Ae232` | KYC-enforced Euro stablecoin (UUPS upgradeable) |
 | **ariTRY Stablecoin** (Proxy) | `0xcCf46814bdA0cA12e997bAC9CEc3Dc90B104e0C2` | Cross-currency: ariTRY deployed natively on EU L1 |
-| AriTokenHome | `0xD76af0Ef48d735BAB56302388A44B080B8A313fE` | ICTT: locks ariEUR when bridging to TR |
-| AriTokenRemote (wTRY) | `0x444c7316C7DF741ed7bf470c4B0b56c923AB08bB` | ICTT: mints wrapped TRY from TR chain |
+| AriTokenHome | `0xD76af0Ef48d735BAB56302388A44B080B8A313fE` | ICTT: locks ariEUR for cross-chain bridging |
+| AriTokenRemote | `0x444c7316C7DF741ed7bf470c4B0b56c923AB08bB` | ICTT: receives cross-chain tokens from TR |
 | AriBridgeAdapter | `0x63d1a883130feeB9e863A4Ed974Dd1448A43aaa6` | Orchestrates ICTT bridge operations |
 | AriBurnMintBridge (EUR) | `0x1C3C34dAe1503E64033Ec99A4f2a61F32AA2Be0E` | Same-currency cross-border: burn ariEUR on EU, mint ariEUR on TR |
 | AriBurnMintBridge (TRY) | `0x5EB99416745b310b6D091E7Cb91C3B0297788144` | Same-currency cross-border: burn ariTRY on EU, mint ariTRY on TR |
@@ -194,24 +194,32 @@ cast call 0x74CDb2b07e6e6441b71348E7812E7208eF909f24 \
 # Returns: 0x5EB99416745b310b6D091E7Cb91C3B0297788144 (EU TRY bridge)
 ```
 
-### 3. Cross-Currency FX Bridge (ICTT — AriTokenHome + AriTokenRemote)
+### 3. Cross-Currency FX Settlement
 
-For FX transfers (TRY to EUR), ARI uses Avalanche's ICTT (Inter-Chain Token Transfer) protocol:
-
-- **AriTokenHome**: Deployed on each chain for its native stablecoin. Locks tokens when bridging out, releases when bridging back.
-- **AriTokenRemote**: Deployed on partner chain. Mints wrapped representations (wEUR on TR L1, wTRY on EU L1).
-- **Daily Limits**: Configurable per-bridge (default 10M/day). Prevents catastrophic bridge exploits.
-- **Emergency Pause**: Bridge admin can pause all operations instantly.
+For FX transfers (TRY to EUR), the backend handles currency conversion off-chain via the double-entry ledger, then settles on-chain with native stablecoins on each respective chain. **No wrapped tokens are involved** — users only ever hold native ariTRY and ariEUR.
 
 ```
-User: "Transfer 1,000 TRY → EUR"  (FX rate applied by backend)
+User: "Transfer 1,000 TRY → EUR"
   │
-  ├─ TR L1: AriTokenHome locks 1,000 ariTRY
-  │         → Teleporter message sent to EU L1
+  ├─ Backend: FX quote (1,000 TRY → 34.50 EUR at market rate)
+  │           Double-entry ledger postings across both currencies
   │
-  └─ EU L1: AriTokenRemote mints 1,000 wTRY
-             Backend mints 34.50 ariEUR to receiver
+  ├─ TR L1: Burn 1,000 ariTRY from sender's custodial wallet
+  │
+  └─ EU L1: Mint 34.50 ariEUR to receiver's custodial wallet
 ```
+
+Both ariTRY and ariEUR are deployed natively on both chains (see contract tables above), so each chain can settle either currency independently. The FX rate is locked at quote time with a 30-second TTL, protecting users from slippage.
+
+### ICTT Bridge Infrastructure (AriTokenHome + AriTokenRemote)
+
+In addition to the burn/mint bridges used for current settlement, ARI has deployed the full Avalanche ICTT (Inter-Chain Token Transfer) bridge stack on both chains. These contracts enable token locking on a home chain and minting of wrapped representations on a remote chain — infrastructure designed for future features like decentralized cross-chain liquidity pools and atomic FX swaps.
+
+- **AriTokenHome**: Locks native tokens, sends Teleporter messages. Daily limits (default 10M/day), emergency pause, emergency withdrawal.
+- **AriTokenRemote**: Receives Teleporter messages, mints wrapped tokens with full KYC/freeze enforcement.
+- **AriBridgeAdapter**: Orchestrates the lock → message → confirm flow with fee handling.
+
+These contracts are deployed, tested (183 tests), and production-ready — representing additional on-chain infrastructure beyond the current settlement flow.
 
 ### 4. Vehicle Securitization (AriVehicleNFT + AriVehicleEscrow)
 
@@ -308,9 +316,8 @@ Both L1s use Subnet-EVM precompiles for enterprise-grade permissioning:
 │                         │    │                         │
 │  ariTRY  (KYC ERC-20)  │    │  ariEUR  (KYC ERC-20)  │
 │  ariEUR  (cross-ccy)   │    │  ariTRY  (cross-ccy)   │
-│  TokenHome (lock TRY)   │◄──►│  TokenHome (lock EUR)   │
-│  TokenRemote (wEUR)     │ ICM│  TokenRemote (wTRY)     │
-│  BurnMintBridge ×2      │    │  BurnMintBridge ×2      │
+│  BurnMintBridge ×2      │◄──►│  BurnMintBridge ×2      │
+│  ICTT TokenHome/Remote  │ ICM│  ICTT TokenHome/Remote  │
 │  VehicleNFT + Escrow    │    │                         │
 │  Timelock + KycAllowList│    │  Timelock + KycAllowList│
 │                         │    │                         │
@@ -334,7 +341,7 @@ Both L1s use Subnet-EVM precompiles for enterprise-grade permissioning:
 | `AriStablecoinUpgradeable` | 253 | UUPS ERC-20 with KYC allowlist, freeze, pause, mint/burn, supply cap |
 | `AriStablecoin` | ~200 | Non-upgradeable stablecoin for testing |
 | `AriTokenHome` | 317 | ICTT home: lock tokens, Teleporter message, daily limits, emergency withdraw |
-| `AriTokenRemote` | 308 | ICTT remote: mint wrapped tokens, KYC-enforced, freeze capability |
+| `AriTokenRemote` | 308 | ICTT remote: receive cross-chain tokens, KYC-enforced, freeze capability |
 | `AriBridgeAdapter` | ~250 | Orchestrates ICTT bridge: approve → lock → message → confirm |
 | `AriBurnMintBridge` | 161 | Same-currency bridge: burn → Teleporter → mint, replay protection |
 | `AriVehicleNFT` | 145 | ERC-721 vehicle ownership, VIN uniqueness, escrow-only transfers |
