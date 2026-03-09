@@ -54,14 +54,15 @@ export function useAuth() {
   const logout = async () => {
     try {
       await api.post('/auth/logout');
-    } finally {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('userId');
-      setUser(null);
-      setIsAuthenticated(false);
-      window.dispatchEvent(new Event('auth-logout'));
+    } catch {
+      // Ignore backend errors — we're clearing local state regardless
     }
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('userId');
+    setUser(null);
+    setIsAuthenticated(false);
+    window.dispatchEvent(new Event('auth-logout'));
   };
 
   return { user, loading, isAuthenticated, login, signup, logout, refetch: fetchUser };
