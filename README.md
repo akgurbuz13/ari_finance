@@ -2,7 +2,7 @@
 
 **Cross-border fintech on Avalanche L1s — real compliance, real on-chain settlement, global ambition**
 
-ARI is a cross-border payments and asset tokenization platform currently focused on Turkey and the EU, with a vision for global expansion. Each jurisdiction gets its own permissioned Avalanche L1 blockchain, connected by Avalanche ICM (Teleporter) for cross-chain messaging. The MVP launches with two L1s (ariTR for Turkey, ariEU for Europe) — the architecture is designed so that adding new jurisdictions means deploying a new L1 and registering it with the existing bridge network. Every financial operation — stablecoin issuance, cross-border settlement, KYC enforcement, vehicle ownership transfer — is enforced on-chain.
+ARI is a regulated cross-border payments and asset tokenization platform currently focused on Turkey and the EU, with a vision for global expansion. We are building a real enterprise fintech solution from the ground up with blockchain at its core — not retrofitting crypto onto legacy infrastructure, but designing every layer (ledger, compliance, settlement, custody) to work natively with on-chain enforcement. Each jurisdiction gets its own permissioned Avalanche L1 blockchain, connected by Avalanche ICM (Teleporter) for cross-chain messaging. The MVP launches with two L1s (ariTR for Turkey, ariEU for Europe) — the architecture is designed so that adding new jurisdictions means deploying a new L1 and registering it with the existing bridge network.
 
 > **Live on Fuji testnet. 13 smart contracts deployed across 2 L1s. 183 Solidity tests passing. Full-stack integration: Kotlin backend + Next.js frontend + on-chain settlement.**
 
