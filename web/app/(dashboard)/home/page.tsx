@@ -153,11 +153,15 @@ export default function HomePage() {
         setVehicles(vehicleRes.data);
 
         if (acctRes.data.length > 0) {
-          const txRes = await api.get<{ items: Transaction[]; total: number }>(
-            `/accounts/${acctRes.data[0].id}/transactions?limit=5`
+          const txPromises = acctRes.data.map(a =>
+            api.get<{ items: Transaction[]; total: number }>(
+              `/accounts/${a.id}/transactions?limit=5`
+            ).then(({ data }) => Array.isArray(data) ? data : data.items || [])
           );
-          const items = Array.isArray(txRes.data) ? txRes.data : txRes.data.items || [];
-          setTransactions(items);
+          const allTx = (await Promise.all(txPromises)).flat();
+          const uniqueTx = Array.from(new Map(allTx.map(tx => [tx.id, tx])).values());
+          uniqueTx.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          setTransactions(uniqueTx.slice(0, 5));
         }
       } catch {
         // handled by interceptor

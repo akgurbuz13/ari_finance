@@ -67,7 +67,9 @@ export default function HistoryPage() {
     api.get<Account[]>('/accounts').then(({ data }) => {
       setAccounts(data);
       if (data.length > 0) {
-        setSelectedAccount(data[0].id);
+        // Default to TRY account (primary), fall back to first
+        const tryAccount = data.find(a => a.currency === 'TRY');
+        setSelectedAccount((tryAccount || data[0]).id);
       }
       setLoading(false);
     });
