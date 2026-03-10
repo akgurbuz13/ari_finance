@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, ExternalLink, Car, Hash, MapPin, Gauge, Fuel, Settings2 } from 'lucide-react';
 import api from '../../../../lib/api/client';
-import type { Vehicle } from '../../../../lib/api/types';
+import type { Vehicle, VehicleEscrow } from '../../../../lib/api/types';
 import Card from '../../../../components/ui/Card';
 import Button from '../../../../components/ui/Button';
 import Skeleton from '../../../../components/ui/Skeleton';
@@ -20,13 +20,37 @@ export default function VehicleDetailPage() {
   const router = useRouter();
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeEscrow, setActiveEscrow] = useState<VehicleEscrow | null>(null);
+  const [cancelling, setCancelling] = useState(false);
 
   useEffect(() => {
     api.get(`/vehicles/${params.id}`).then(res => {
       setVehicle(res.data);
       setLoading(false);
+
+      if (res.data.status === 'IN_ESCROW') {
+        api.get('/vehicles/escrow').then(escrowRes => {
+          const escrows: VehicleEscrow[] = escrowRes.data;
+          const match = escrows.find(
+            e => e.vehicleRegistrationId === res.data.id && !['COMPLETED', 'CANCELLED'].includes(e.state)
+          );
+          if (match) setActiveEscrow(match);
+        }).catch(() => {});
+      }
     }).catch(() => setLoading(false));
   }, [params.id]);
+
+  const handleCancelEscrow = async () => {
+    if (!activeEscrow || cancelling) return;
+    setCancelling(true);
+    try {
+      await api.post(`/vehicles/escrow/${activeEscrow.id}/cancel`);
+      router.refresh();
+      window.location.reload();
+    } catch {
+      setCancelling(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -170,6 +194,57 @@ export default function VehicleDetailPage() {
             )}
           </div>
         </Card>
+
+        {/* Active Escrow Info */}
+        {vehicle.status === 'IN_ESCROW' && activeEscrow && (
+          <Card header="Active Escrow">
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <span className="micro-label block mb-1">Sale Price</span>
+                  <span className="text-body font-semibold text-ari-900">
+                    {Number(activeEscrow.saleAmount).toLocaleString()} {activeEscrow.currency}
+                  </span>
+                </div>
+                <div>
+                  <span className="micro-label block mb-1">Status</span>
+                  <StatusPill variant="info" dot>
+                    {activeEscrow.state.replace(/_/g, ' ')}
+                  </StatusPill>
+                </div>
+                <div>
+                  <span className="micro-label block mb-1">Share Code</span>
+                  <span className="text-body-sm font-mono font-semibold text-ari-900">
+                    {activeEscrow.shareCode}
+                  </span>
+                </div>
+                <div>
+                  <span className="micro-label block mb-1">Buyer</span>
+                  <span className="text-body-sm text-ari-700">
+                    {activeEscrow.buyerUserId ? 'Joined' : 'Waiting for buyer'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button
+                  fullWidth
+                  onClick={() => router.push(`/vehicles/escrow/${activeEscrow.id}`)}
+                >
+                  View Escrow Details
+                </Button>
+                <Button
+                  fullWidth
+                  variant="secondary"
+                  onClick={handleCancelEscrow}
+                  loading={cancelling}
+                >
+                  Cancel Escrow
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Sell action */}
         {vehicle.status === 'MINTED' && (
