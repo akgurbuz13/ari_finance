@@ -6,7 +6,24 @@ ARI is a regulated cross-border payments and asset tokenization platform current
 
 > **Live on Fuji testnet. 20 smart contract instances deployed across 2 L1s. 183 Solidity tests passing. Full-stack integration: Kotlin backend + Next.js frontend + on-chain settlement.**
 
-> **Live demo**: [arifinance.co](https://arifinance.co) — The frontend is deployed and browsable. The backend (Kotlin/Spring Boot + PostgreSQL + Redis + blockchain service with Fuji RPC connectivity) requires infrastructure that goes beyond static hosting, so the live site showcases the UI and flows without live API connectivity. For the full working stack, run locally with `docker compose up -d` and `./gradlew :core-banking:bootRun` (see [Run Locally](#run-locally)).
+> **Live demo**: [arifinance.co](https://arifinance.co) — Fully deployed and functional. Frontend on Vercel, backend (Core Banking API + Blockchain Service) on Render, PostgreSQL on Neon, Redis on Upstash, Avalanche L1 nodes on Builder Console (Fuji testnet). Log in with the test accounts below to explore the full platform.
+
+> **Disclaimer**: The Avalanche L1 validator nodes are managed via Builder Console on Fuji testnet. These nodes may be deactivated after the hackathon evaluation period (~2 days from 2026-03-10), which would affect blockchain settlement features (cross-border transfers, on-chain mint/burn). All other platform features (auth, KYC, domestic transfers, ledger, UI) will continue to work regardless.
+
+### Test Accounts
+
+Two pre-funded, KYC-verified accounts are available for testing:
+
+| Account | Region | Email | Password |
+|---------|--------|-------|----------|
+| Mustafa (Turkey) | TR | `mustafa@test.com` | `Testing123` |
+| Jack (Europe) | EU | `jack@test.com` | `Testing123` |
+
+Both accounts have **500,000 TRY** pre-loaded. Use them to test:
+- **Domestic transfers**: Send TRY between accounts in the same region
+- **Cross-border same-currency transfers**: Send TRY from Mustafa (TR) to Jack (EU) — settled on-chain via AriBurnMintBridge + Teleporter
+- **Transaction history**: View all account movements with blockchain settlement status
+- **Dashboard**: Real-time balance and account overview
 
 ---
 
