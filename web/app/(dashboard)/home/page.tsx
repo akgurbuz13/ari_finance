@@ -182,19 +182,19 @@ export default function HomePage() {
 
   return (
     <div className="max-w-dashboard mx-auto">
+      {/* Greeting + Date */}
+      <div className="animate-fade-in mb-6">
+        <p className="text-body-sm text-ari-400">
+          {today}
+        </p>
+        <h1 className="text-h2 font-display text-ari-900 mt-1">
+          {getGreeting()}, {displayName}
+        </h1>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* ── Main Area ── */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Greeting + Date */}
-          <div className="animate-fade-in">
-            <p className="text-body-sm text-ari-400">
-              {today}
-            </p>
-            <h1 className="text-h2 font-display text-ari-900 mt-1">
-              {getGreeting()}, {displayName}
-            </h1>
-          </div>
-
           {/* Net Worth Hero Card */}
           <div className="animate-fade-in-up">
             {accounts.length > 0 ? (
