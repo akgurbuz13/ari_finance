@@ -170,8 +170,8 @@ class OutboxPollerService(
             val amountWei = amount.multiply(BigDecimal.TEN.pow(18)).toBigInteger()
             val bridgeOperatorCredentials = walletService.getBridgeOperatorCredentials()
 
-            // Get the burn-mint bridge on the source chain
-            val bridge = contractFactory.getBurnMintBridge(sourceChainId, bridgeOperatorCredentials)
+            // Get the burn-mint bridge for the specific currency on the source chain
+            val bridge = contractFactory.getBurnMintBridge(sourceChainId, currency, bridgeOperatorCredentials)
             val operatorAddress = bridgeOperatorCredentials.address
 
             // Ensure bridge operator is allowlisted on source chain stablecoin

@@ -24,7 +24,7 @@ class ContractFactory(
     private val stablecoinContracts = ConcurrentHashMap<Long, AriStablecoinContract>()
     private val stablecoinByChainCurrency = ConcurrentHashMap<Pair<Long, String>, AriStablecoinContract>()
     private val bridgeContracts = ConcurrentHashMap<Long, AriBridgeAdapterContract>()
-    private val burnMintBridgeContracts = ConcurrentHashMap<Long, AriBurnMintBridgeContract>()
+    private val burnMintBridgeContracts = ConcurrentHashMap<Pair<Long, String>, AriBurnMintBridgeContract>()
     private val tokenHomeContracts = ConcurrentHashMap<Long, AriTokenHomeContract>()
     private val tokenRemoteContracts = ConcurrentHashMap<Long, AriTokenRemoteContract>()
     private var vehicleNftContract: AriVehicleNFTContract? = null
@@ -66,12 +66,14 @@ class ContractFactory(
     }
 
     /**
-     * Get burn-mint bridge contract for a chain.
+     * Get burn-mint bridge contract for a specific currency on a specific chain.
+     * Each chain has separate TRY and EUR bridges.
      */
-    fun getBurnMintBridge(chainId: Long, credentials: Credentials): AriBurnMintBridgeContract {
-        return burnMintBridgeContracts.computeIfAbsent(chainId) {
-            val address = config.getBurnMintBridgeAddress(chainId)
-            require(address.isNotBlank()) { "BurnMintBridge address not configured for chain $chainId" }
+    fun getBurnMintBridge(chainId: Long, currency: String, credentials: Credentials): AriBurnMintBridgeContract {
+        val key = Pair(chainId, currency)
+        return burnMintBridgeContracts.computeIfAbsent(key) {
+            val address = config.getBurnMintBridgeAddress(chainId, currency)
+            require(address.isNotBlank()) { "BurnMintBridge address not configured for currency $currency on chain $chainId" }
             AriBurnMintBridgeContract(
                 web3j = web3jProvider.getWeb3j(chainId),
                 contractAddress = address,

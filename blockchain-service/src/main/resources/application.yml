@@ -43,9 +43,11 @@ ari:
       multisig-address: ${EU_MULTISIG_ADDRESS:}
       timelock-address: ${EU_TIMELOCK_ADDRESS:}
     bridge:
-      # Burn-mint bridge contracts (same-currency cross-border)
+      # Burn-mint bridge contracts (one per chain-currency pair for bidirectional cross-border)
       tr-burn-mint-bridge-address: ${TR_BURN_MINT_BRIDGE_ADDRESS:}
+      tr-eur-burn-mint-bridge-address: ${TR_EUR_BURN_MINT_BRIDGE_ADDRESS:}
       eu-burn-mint-bridge-address: ${EU_BURN_MINT_BRIDGE_ADDRESS:}
+      eu-try-burn-mint-bridge-address: ${EU_TRY_BURN_MINT_BRIDGE_ADDRESS:}
       # ICTT bridge contracts - BridgeAdapter (high-level bridge orchestration)
       tr-bridge-adapter-address: ${TR_BRIDGE_ADAPTER_ADDRESS:}
       eu-bridge-adapter-address: ${EU_BRIDGE_ADAPTER_ADDRESS:}

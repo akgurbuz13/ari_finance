@@ -15,9 +15,11 @@ class BlockchainConfig(
     // Cross-currency stablecoins (ariTRY on EU, ariEUR on TR)
     @Value("\${ari.blockchain.tr-l1.eur-stablecoin-address:}") val trEurStablecoinAddress: String,
     @Value("\${ari.blockchain.eu-l1.try-stablecoin-address:}") val euTryStablecoinAddress: String,
-    // Burn-mint bridge addresses
+    // Burn-mint bridge addresses (one per chain-currency pair for bidirectional cross-border)
     @Value("\${ari.blockchain.bridge.tr-burn-mint-bridge-address:}") val trBurnMintBridgeAddress: String,
+    @Value("\${ari.blockchain.bridge.tr-eur-burn-mint-bridge-address:}") val trEurBurnMintBridgeAddress: String,
     @Value("\${ari.blockchain.bridge.eu-burn-mint-bridge-address:}") val euBurnMintBridgeAddress: String,
+    @Value("\${ari.blockchain.bridge.eu-try-burn-mint-bridge-address:}") val euTryBurnMintBridgeAddress: String,
     // ICTT bridge contracts
     @Value("\${ari.blockchain.bridge.tr-bridge-adapter-address:}") val trBridgeAdapterAddress: String,
     @Value("\${ari.blockchain.bridge.eu-bridge-adapter-address:}") val euBridgeAdapterAddress: String,
@@ -111,13 +113,16 @@ class BlockchainConfig(
     }
 
     /**
-     * Get burn-mint bridge address for a chain.
+     * Get burn-mint bridge address for a specific currency on a specific chain.
+     * Each chain has two bridges: one for TRY and one for EUR.
      */
-    fun getBurnMintBridgeAddress(chainId: Long): String {
-        return when (chainId) {
-            trL1ChainId -> trBurnMintBridgeAddress
-            euL1ChainId -> euBurnMintBridgeAddress
-            else -> throw IllegalArgumentException("Unknown chain ID: $chainId")
+    fun getBurnMintBridgeAddress(chainId: Long, currency: String): String {
+        return when {
+            chainId == trL1ChainId && currency == "TRY" -> trBurnMintBridgeAddress
+            chainId == trL1ChainId && currency == "EUR" -> trEurBurnMintBridgeAddress
+            chainId == euL1ChainId && currency == "EUR" -> euBurnMintBridgeAddress
+            chainId == euL1ChainId && currency == "TRY" -> euTryBurnMintBridgeAddress
+            else -> throw IllegalArgumentException("No burn-mint bridge for currency $currency on chain $chainId")
         }
     }
 

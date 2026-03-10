@@ -63,6 +63,12 @@ This prevents duplicate effort and ensures you build on existing work rather tha
 - Transaction history API path fixed in web app
 - First successful on-chain cross-border settlement on Fuji TR L1
 
+### Cross-Border Bridge Bug Fix (2026-03-10)
+- `getBurnMintBridge(chainId)` was NOT currency-aware — EU→TR TRY transfers used the EUR bridge
+- Fixed: `getBurnMintBridge(chainId, currency)` now uses 4 bridge addresses (one per chain+currency pair)
+- Config: added `tr-eur-burn-mint-bridge-address` and `eu-try-burn-mint-bridge-address` to fuji profile
+- Manual settlement: 99,950 TRY credited to Mustafa from stuck EU transit account
+
 ### Remaining Issues
 - Mobile biometric auth incomplete
 - Payment rails are intentional stubs (awaiting bank partnerships)
@@ -184,6 +190,7 @@ When given multiple tasks, create a priority list (P1, P2, P3...) and tackle the
 | Solidity stack too deep | Enable `viaIR: true` in hardhat.config.ts |
 | Account region defaults to currency | Region must derive from user's home region, not `regionForCurrency()` |
 | burnAndBridge reverts (balance 0) | Custodial flow: mint tokens to operator BEFORE calling burnAndBridge |
+| Cross-border uses wrong bridge | `getBurnMintBridge(chainId, currency)` — bridge is per (chain, currency) pair, NOT per chain alone |
 | Core-banking steals blockchain events | Add new event types to `OutboxPoller.kt` exclusion list |
 | Wrong chain IDs on Fuji | Set `ARI_TR_CHAIN_ID=1279` and `ARI_EU_CHAIN_ID=1832` |
 
@@ -256,12 +263,16 @@ Blockchain Service communicates via:
 
 ### Database Access
 
-**Database name**: `ari` (NOT `ari_platform`). **User**: `ari`. **Container**: `ari-postgres`.
+**Local**: Database `ari`, user `ari`, container `ari-postgres`.
+**Production (Neon)**: Database `neondb`, user `neondb_owner`. Credentials in auto-memory `database-credentials.md`.
 ```bash
-# Correct pattern:
+# Local:
 docker exec ari-postgres psql -U ari -d ari -c "SELECT ..."
+# Production:
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH" && PGPASSWORD='...' psql "postgresql://neondb_owner@...neon.tech/neondb?sslmode=require"
 # identity.users columns: id, email, phone, password_hash, first_name, last_name (NOT full_name), date_of_birth, nationality, status, region, totp_secret, totp_enabled, created_at, updated_at, role
 ```
+**Note**: Schemas are identical (identity, ledger, payments, shared). `ledger.entries` has a NOT NULL `balance_after` column — always calculate it when inserting manually.
 
 | Schema | Purpose |
 |--------|---------|
