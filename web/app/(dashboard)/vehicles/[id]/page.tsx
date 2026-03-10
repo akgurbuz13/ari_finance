@@ -53,9 +53,9 @@ export default function VehicleDetailPage() {
     );
   }
 
-  const explorerBase = vehicle.chainId
-    ? `https://subnets.avax.network/ari-tr`
-    : `https://subnets.avax.network/ari-tr`;
+  const explorerBase = vehicle.chainId === 1832
+    ? `https://build.avax.network/explorer/7ScHYNLYUpWHr5wN5xtBjPN9UV9dTCAYSqYgeMUc6x5ssaXLt`
+    : `https://build.avax.network/explorer/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM`;
 
   return (
     <div className="max-w-2xl mx-auto">

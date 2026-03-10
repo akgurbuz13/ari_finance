@@ -274,7 +274,7 @@ export default function EscrowDetailPage() {
                   <div className="flex items-center justify-between mt-2 px-1">
                     <span className="micro-label">{tx.label}</span>
                     <a
-                      href={`https://subnets.avax.network/ari-tr/tx/${tx.hash}`}
+                      href={`https://build.avax.network/explorer/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/tx/${tx.hash}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-caption text-ari-700 hover:text-ari-900 font-medium transition-colors"
