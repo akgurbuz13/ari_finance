@@ -353,7 +353,6 @@ export default function HomePage() {
         <div className="space-y-6">
           {/* Quick Actions */}
           <div className="animate-fade-in-up stagger-2">
-            <span className="micro-label block mb-3 -mt-1">QUICK ACTIONS</span>
             <div className="grid grid-cols-2 gap-3">
               <Link
                 href="/transfer"
