@@ -161,7 +161,7 @@ class ChainEventListener(
                 fromAddress = fromAddress,
                 toAddress = toAddress,
                 amount = amount,
-                rawData = """{"topics":${ethLog.topics},"data":"${ethLog.data}"}"""
+                rawData = buildRawDataJson(ethLog.topics, ethLog.data)
             )
         )
 
@@ -169,6 +169,11 @@ class ChainEventListener(
             log.debug("Chain event: type={}, tx={}, amount={}",
                 eventType, ethLog.transactionHash, amount)
         }
+    }
+
+    private fun buildRawDataJson(topics: List<String>, data: String): String {
+        val quotedTopics = topics.joinToString(",") { "\"$it\"" }
+        return """{"topics":[$quotedTopics],"data":"$data"}"""
     }
 
     private fun decodeAddress(topic: String): String {

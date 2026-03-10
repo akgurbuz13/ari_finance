@@ -31,7 +31,7 @@ services:
       - key: INTERNAL_API_KEY
         generateValue: true
       - key: CORS_ALLOWED_ORIGINS
-        value: "https://app.arifinance.co,https://admin.arifinance.co"
+        value: "https://arifinance.co,https://admin.arifinance.co"
       - key: ARI_REGION
         value: TR
       - key: BLOCKCHAIN_SERVICE_URL

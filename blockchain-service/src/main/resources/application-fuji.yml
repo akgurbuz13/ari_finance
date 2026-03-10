@@ -5,7 +5,7 @@
 
 ari:
   core-banking:
-    internal-api-key: dev-internal-api-key-never-use-in-production
+    internal-api-key: ${INTERNAL_API_KEY:dev-internal-api-key-never-use-in-production}
   blockchain:
     tr-l1:
       rpc-url: https://nodes-prod.18.182.4.86.sslip.io/ext/bc/2P1BXtVXL2xnUjDzLYnDu114Z8dhqV8iLrcKbMdmmWaTkmtKfM/rpc

@@ -6,7 +6,7 @@
 >
 > **Time estimate**: ~2-3 hours following this guide
 >
-> **Branch**: `deploy/mvp-live`
+> **Branch**: `main`
 
 ---
 
@@ -15,7 +15,7 @@
 ```
 arifinance.co (Dynadot DNS)
 │
-├── app.arifinance.co      → Vercel (Next.js Web App)        [FREE]
+├── arifinance.co          → Vercel (Next.js Web App)        [FREE]
 ├── admin.arifinance.co    → Vercel (Next.js Admin Console)   [FREE]
 ├── api.arifinance.co      → Render.com (Core Banking API)    [FREE]
 │
@@ -41,11 +41,12 @@ arifinance.co (Dynadot DNS)
 
 ## Before You Begin
 
-Make sure you have the `deploy/mvp-live` branch pushed:
+Make sure your `main` branch is up to date:
 
 ```bash
-git checkout deploy/mvp-live
-git log --oneline -3  # should show deployment commit
+git checkout main
+git pull origin main
+git log --oneline -3  # verify latest commits
 ```
 
 You'll need accounts on these services (all free, all support GitHub OAuth):
@@ -110,7 +111,7 @@ psql "postgresql://neondb_owner:YOUR_PASSWORD@YOUR_HOST/neondb?sslmode=require"
 # If it connects, type \q to exit
 ```
 
-> You don't need to create any tables. Flyway (in our backend) will automatically run all 19 migrations on first startup.
+> You don't need to create any tables. Flyway (in our backend) will automatically run all 23 migrations on first startup.
 
 ---
 
@@ -176,7 +177,7 @@ This is the main backend service that handles auth, accounts, transfers, and ser
 |---------|-------|
 | **Name** | `ari-core-banking` |
 | **Region** | Frankfurt (EU Central) |
-| **Branch** | `deploy/mvp-live` |
+| **Branch** | `main` |
 | **Runtime** | Docker |
 | **Dockerfile Path** | `./core-banking/Dockerfile` |
 | **Docker Context Directory** | `.` |
@@ -199,12 +200,12 @@ Scroll down to **Environment Variables** and add each one. Click **Add Environme
 | `REDIS_PASSWORD` | *(your Upstash password from Phase 2)* |
 | `JWT_SECRET` | *(the value you generated in "Before You Begin")* |
 | `INTERNAL_API_KEY` | *(the value you generated in "Before You Begin")* |
-| `CORS_ALLOWED_ORIGINS` | `https://app.arifinance.co,https://admin.arifinance.co` |
+| `CORS_ALLOWED_ORIGINS` | `https://arifinance.co,https://admin.arifinance.co` |
 | `ARI_REGION` | `TR` |
-| `BLOCKCHAIN_SERVICE_URL` | `http://localhost:8081` |
+| `BLOCKCHAIN_SERVICE_URL` | *(set after blockchain service is deployed — use its Render URL)* |
 | `JAVA_OPTS` | `-Xmx384m -XX:+UseSerialGC` |
 
-> **Note**: We'll update `BLOCKCHAIN_SERVICE_URL` after the blockchain service is deployed. Set it to `http://localhost:8081` for now.
+> **Note**: Leave `BLOCKCHAIN_SERVICE_URL` unset for now. We'll add it after the blockchain service is deployed in Step 4 (use the blockchain service's Render URL).
 
 #### Advanced Settings:
 
@@ -252,7 +253,7 @@ curl https://ari-core-banking.onrender.com/actuator/health
 |---------|-------|
 | **Name** | `ari-blockchain-service` |
 | **Region** | Frankfurt (EU Central) |
-| **Branch** | `deploy/mvp-live` |
+| **Branch** | `main` |
 | **Runtime** | Docker |
 | **Dockerfile Path** | `./blockchain-service/Dockerfile` |
 | **Docker Context Directory** | `.` |
@@ -315,7 +316,7 @@ Now that both services have URLs, update the references:
 
 ---
 
-### Step 2: Deploy Web App (`app.arifinance.co`)
+### Step 2: Deploy Web App (`arifinance.co`)
 
 1. From Vercel dashboard, click **Add New...** → **Project**
 2. Click **Import** next to `ari_finance` repo
@@ -342,7 +343,7 @@ Click **Environment Variables** and add:
 #### Git Configuration:
 
 Under **Git** section (if visible):
-- **Branch**: `deploy/mvp-live`
+- **Branch**: `main`
 
 3. Click **Deploy**
 4. Wait ~1-2 minutes for the build
@@ -375,7 +376,7 @@ Vercel gives you a URL like `ari-web.vercel.app`. Open it — you should see the
 
 #### Git Configuration:
 
-- **Branch**: `deploy/mvp-live`
+- **Branch**: `main`
 
 3. Click **Deploy**
 4. Wait ~1-2 minutes
@@ -395,18 +396,9 @@ This phase connects your custom domain `arifinance.co` to the services.
 
 ### Step 2: Add DNS Records
 
-You need to add **3 CNAME records**. In the DNS records section:
+You need to add **2 CNAME records** (the root domain `arifinance.co` is configured directly in Vercel):
 
-#### Record 1: Web App
-
-| Field | Value |
-|-------|-------|
-| **Record Type** | CNAME |
-| **Subdomain/Host** | `app` |
-| **Target/Value** | `cname.vercel-dns.com` |
-| **TTL** | Default (or 300) |
-
-#### Record 2: Admin Console
+#### Record 1: Admin Console
 
 | Field | Value |
 |-------|-------|
@@ -415,7 +407,7 @@ You need to add **3 CNAME records**. In the DNS records section:
 | **Target/Value** | `cname.vercel-dns.com` |
 | **TTL** | Default (or 300) |
 
-#### Record 3: API
+#### Record 2: API
 
 | Field | Value |
 |-------|-------|
@@ -435,7 +427,7 @@ DNS records alone aren't enough — you need to tell Vercel which domains to ser
 #### Web App:
 
 1. Go to Vercel → **ari-web** project → **Settings** → **Domains**
-2. Type `app.arifinance.co` → Click **Add**
+2. Type `arifinance.co` → Click **Add**
 3. Vercel will verify DNS. It may show:
    - **Valid Configuration** (green checkmark) — you're good!
    - **Invalid Configuration** — DNS hasn't propagated yet. Wait 5-10 minutes and click **Refresh**.
@@ -461,10 +453,7 @@ DNS records alone aren't enough — you need to tell Vercel which domains to ser
 DNS changes can take 5-30 minutes to propagate. Check:
 
 ```bash
-# Check each subdomain resolves
-dig app.arifinance.co CNAME +short
-# Expected: cname.vercel-dns.com.
-
+# Check subdomains resolve
 dig admin.arifinance.co CNAME +short
 # Expected: cname.vercel-dns.com.
 
@@ -609,7 +598,7 @@ Expected response:
 
 ### 7.2 Web App
 
-1. Open **https://app.arifinance.co**
+1. Open **https://arifinance.co**
 2. You should see the ARI landing page
 3. Click **Sign Up**
 4. Register with:
@@ -731,7 +720,7 @@ Render free tier sleeps services after 15 minutes of inactivity. To prevent cold
 1. Check `CORS_ALLOWED_ORIGINS` on core-banking Render service
 2. It must exactly match your frontend URLs:
    ```
-   https://app.arifinance.co,https://admin.arifinance.co
+   https://arifinance.co,https://admin.arifinance.co
    ```
 3. No trailing slashes, no spaces, no `http://` (must be `https://`)
 
@@ -770,7 +759,7 @@ Managed testnet nodes auto-shutdown after ~3 days.
 After completing all phases, you'll have:
 
 ```
-User → app.arifinance.co (Vercel)
+User → arifinance.co (Vercel)
          ↓ NEXT_PUBLIC_API_URL
        api.arifinance.co (Render: core-banking)
          ↓ BLOCKCHAIN_SERVICE_URL
@@ -783,7 +772,7 @@ Admin → admin.arifinance.co (Vercel)
        api.arifinance.co (Render: core-banking)
 
 Both backends share:
-  → Neon PostgreSQL (19 tables across 4 schemas)
+  → Neon PostgreSQL (23 migrations across 5 schemas)
   → Upstash Redis (caching, rate limiting)
 ```
 
