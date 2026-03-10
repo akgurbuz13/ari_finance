@@ -6,6 +6,8 @@ ARI is a regulated cross-border payments and asset tokenization platform current
 
 > **Live on Fuji testnet. 20 smart contract instances deployed across 2 L1s. 183 Solidity tests passing. Full-stack integration: Kotlin backend + Next.js frontend + on-chain settlement.**
 
+> **Live demo**: [arifinance.co](https://arifinance.co) — The frontend is deployed and browsable. The backend (Kotlin/Spring Boot + PostgreSQL + Redis + blockchain service with Fuji RPC connectivity) requires infrastructure that goes beyond static hosting, so the live site showcases the UI and flows without live API connectivity. For the full working stack, run locally with `docker compose up -d` and `./gradlew :core-banking:bootRun` (see [Run Locally](#run-locally)).
+
 ---
 
 ## The Problem
