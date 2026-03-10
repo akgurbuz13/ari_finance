@@ -105,10 +105,13 @@ const txTypeLabels: Record<string, string> = {
 function DashboardSkeleton() {
   return (
     <div className="max-w-dashboard mx-auto">
+      <div className="mb-6">
+        <Skeleton variant="text" className="w-48 h-4" />
+        <Skeleton variant="text" className="w-64 h-8 mt-2" />
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main skeleton */}
         <div className="lg:col-span-2 space-y-6">
-          <Skeleton variant="text" className="w-48 h-5" />
           <Skeleton variant="rectangular" className="w-full h-48" />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <SkeletonCard />
